@@ -1,0 +1,101 @@
+.reportes-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.reportes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.reporte-card {
+  background: var(--templa-beige);
+  border: 2px solid var(--templa-gold);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reporte-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: var(--templa-brown);
+}
+
+.reporte-card-header {
+  background: linear-gradient(135deg, var(--templa-brown) 0%, var(--templa-dark-green) 100%);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reporte-icono {
+  font-size: 2.5rem;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.reporte-categoria {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--templa-dark-brown);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.reporte-card-body {
+  padding: 20px;
+  min-height: 140px;
+}
+
+.reporte-titulo {
+  color: var(--templa-dark-brown);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: var(--templa-font-title);
+}
+
+.reporte-descripcion {
+  color: var(--templa-brown);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.reporte-card-footer {
+  padding: 0 20px 20px 20px;
+}
+
+.reporte-card-footer .btn {
+  background: linear-gradient(135deg, var(--templa-green) 0%, var(--templa-hovergreen) 100%);
+  border: none;
+  color: var(--templa-beige);
+  font-weight: 600;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.reporte-card-footer .btn:hover {
+  background: linear-gradient(135deg, var(--templa-hovergreen) 0%, var(--templa-green) 100%);
+  transform: scale(1.02);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reportes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .reportes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,501 @@
+/* ========================================
+   MODAL DE REPORTES - ESTILO TEMPLA
+   ======================================== */
+
+
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1055;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+}
+
+.modal.show {
+  display: block !important;
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  margin: 1.75rem auto;
+  pointer-events: none;
+  max-width: 1140px;
+}
+
+.modal-xl {
+  max-width: 1140px;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: var(--templa-beige);
+  background-clip: padding-box;
+  border: 2px solid var(--templa-gold);
+  border-radius: 12px;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+  outline: 0;
+}
+
+/* ========================================
+   HEADER DEL MODAL
+   ======================================== */
+
+.modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, var(--templa-brown) 0%, var(--templa-dark-green) 100%);
+  border-bottom: 3px solid var(--templa-gold);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  min-height: 75px;
+  gap: 15px;
+}
+
+.modal-title {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--templa-font-title);
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.modal-title i {
+  font-size: 1.3rem;
+  margin-right: 8px;
+  flex-shrink: 0;
+  color: var(--templa-gold);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Asegurar máxima visibilidad del texto */
+.modal-title,
+.modal-title * {
+  color: #ffffff !important;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.7) !important;
+  font-weight: 700 !important;
+}
+
+.btn-close {
+  box-sizing: content-box;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0.5em 0.5em;
+  color: var(--templa-beige);
+  background: transparent;
+  border: 2px solid var(--templa-beige);
+  border-radius: 50%;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close::before {
+  content: "✕";
+  font-weight: bold;
+}
+
+.btn-close:hover {
+  background-color: var(--templa-red);
+  border-color: var(--templa-hoverred);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* ========================================
+   BODY DEL MODAL
+   ======================================== */
+
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 2rem;
+  background-color: var(--templa-beige);
+  overflow-y: visible;
+}
+
+/* ========================================
+   CONTROLES DE FILTRO
+   ======================================== */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -0.75rem;
+  margin-left: -0.75rem;
+  margin-bottom: 2rem;
+}
+
+.col-md-3 {
+  flex: 0 0 auto;
+  width: 25%;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+
+.form-label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--templa-brown);
+  font-family: var(--templa-font-title);
+  font-size: 1rem;
+}
+
+.form-control,
+.form-select {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--templa-brown);
+  background-color: #fff;
+  border: 2px solid var(--templa-gold);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-control:focus,
+.form-select:focus {
+  color: var(--templa-brown);
+  background-color: #fff;
+  border-color: var(--templa-green);
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(132, 196, 115, 0.25);
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+
+.btn {
+  display: inline-block;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid transparent;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-family: var(--templa-font-title);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+  color: var(--templa-beige);
+  background: linear-gradient(135deg, var(--templa-green) 0%, var(--templa-hovergreen) 100%);
+  border-color: var(--templa-green);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--templa-hovergreen) 0%, var(--templa-green) 100%);
+  border-color: var(--templa-hovergreen);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.btn-secondary {
+  color: var(--templa-beige);
+  background: linear-gradient(135deg, var(--templa-brown) 0%, var(--templa-brown-disabled) 100%);
+  border-color: var(--templa-brown);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--templa-brown-disabled) 0%, var(--templa-brown) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* ========================================
+   ÁREA DEL GRÁFICO
+   ======================================== */
+
+.chart-container {
+  min-height: 540px;
+  height: 540px;
+  background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+  border: 3px solid var(--templa-gold);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--templa-green), var(--templa-gold), var(--templa-brown));
+}
+
+#chart-fechas,
+#chart-horarios,
+#chart-pedidos,
+#chart-stock {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 500px !important;
+  overflow: visible;
+}
+
+/* Estilos específicos para el gráfico de stock */
+#chart-stock {
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Asegurar que los gráficos de Google Charts se ajusten al contenedor */
+.chart-container svg {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 480px !important;
+}
+
+/* ========================================
+   FOOTER DEL MODAL
+   ======================================== */
+
+.modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1.5rem 2rem;
+  background-color: var(--templa-beige);
+  border-top: 2px solid var(--templa-gold);
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+/* ========================================
+   BACKDROP DEL MODAL
+   ======================================== */
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal-backdrop.fade {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+}
+
+/* ========================================
+   UTILIDADES
+   ======================================== */
+
+.mb-4 {
+  margin-bottom: 2rem !important;
+}
+
+.me-1 {
+  margin-right: 0.25rem !important;
+}
+
+.me-2 {
+  margin-right: 0.75rem !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.align-items-end {
+  align-items: flex-end !important;
+}
+
+.gap-2 {
+  gap: 0.5rem !important;
+}
+
+/* ========================================
+   ICONOS EN BOTONES
+   ======================================== */
+
+.btn-icon {
+  margin-right: 0.5rem;
+  font-size: 1.1em;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 0.25rem;
+  }
+  
+  .modal-content {
+    border-radius: 8px;
+  }
+  
+  .modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem 1.5rem;
+  }
+  
+  .col-md-3 {
+    width: 50%;
+    margin-bottom: 1rem;
+  }
+  
+  .chart-container {
+    min-height: 450px;
+    height: 450px;
+    padding: 15px;
+  }
+  
+  #chart-fechas,
+  #chart-horarios,
+  #chart-pedidos,
+  #chart-stock {
+    min-height: 420px !important;
+  }
+  
+  .modal-title {
+    font-size: 1.3rem;
+  }
+  
+  .modal-title i {
+    font-size: 1.2rem;
+    margin-right: 8px;
+  }
+  
+  .modal-header {
+    padding: 1.3rem 1.5rem;
+    min-height: 70px;
+    gap: 10px;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .col-md-3 {
+    width: 100%;
+  }
+  
+  .chart-container {
+    min-height: 400px;
+    height: 400px;
+    padding: 15px;
+  }
+  
+  #chart-fechas,
+  #chart-horarios,
+  #chart-pedidos,
+  #chart-stock {
+    min-height: 370px !important;
+  }
+  
+  .modal-header {
+    padding: 1rem 1rem;
+    min-height: 60px;
+    gap: 8px;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-title {
+    font-size: 1.2rem;
+  }
+  
+  .modal-title i {
+    font-size: 1.1rem;
+    margin-right: 6px;
+  }
+  
+  .chart-container {
+    min-height: 350px;
+    height: 350px;
+    padding: 10px;
+  }
+  
+  #chart-fechas,
+  #chart-horarios,
+  #chart-pedidos,
+  #chart-stock {
+    min-height: 320px !important;
+    max-height: 320px !important;
+  }
+  
+  .modal-title {
+    font-size: 1.1rem;
+  }
+  
+  .modal-title i {
+    font-size: 1rem;
+    margin-right: 6px;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+    min-height: 60px;
+    gap: 8px;
+  }
+}

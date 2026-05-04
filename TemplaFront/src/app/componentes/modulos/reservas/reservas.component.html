@@ -1,0 +1,568 @@
+<div class="reservas-container">
+  <!-- Vista Nueva Reserva -->
+  <div *ngIf="currentView === 'nueva'" class="nueva-reserva-view">
+    <div class="multi-step-header">
+      <div class="header-title-container">
+        <button type="button" class="btn-volver" (click)="cambiarVista('lista')" title="Volver a la lista">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+        <h2>{{ isEditMode ? 'Editar Reserva' : 'Nueva Reserva' }}</h2>
+      </div>
+    <div class="step-indicator">
+      <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+        <span class="step-number">1</span>
+        <span class="step-title">Comensales</span>
+      </div>
+      <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+        <span class="step-number">2</span>
+        <span class="step-title">Fecha</span>
+      </div>
+      <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
+        <span class="step-number">3</span>
+        <span class="step-title">Evento</span>
+      </div>
+      <div class="step" [class.active]="currentStep >= 4" [class.completed]="currentStep > 4">
+        <span class="step-number">4</span>
+        <span class="step-title">Horario</span>
+      </div>
+      <div class="step" [class.active]="currentStep >= 5" [class.completed]="currentStep > 5">
+        <span class="step-number">5</span>
+        <span class="step-title">Datos del Cliente</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <div class="step-title">
+      <h3>{{ getStepTitle() }}</h3>
+    </div>
+
+    <!-- Paso 1: Cantidad de Comensales -->
+    <div *ngIf="currentStep === 1" class="step-content">
+      <form [formGroup]="comensalesForm" class="comensales-form">
+        <div class="form-group">
+          <label for="cantidadComensales">¿Para cuántas personas?</label>
+          <div class="number-input-container">
+            <button type="button" class="btn-number" 
+                    (click)="decrementarComensales()">
+              -
+            </button>
+            <input type="number" 
+                   id="cantidadComensales" 
+                   formControlName="cantidadComensales" 
+                   class="form-control number-input"
+                   min="1" 
+                   max="20">
+            <button type="button" class="btn-number" 
+                    (click)="incrementarComensales()">
+              +
+            </button>
+          </div>
+          <div *ngIf="comensalesForm.get('cantidadComensales')?.invalid && comensalesForm.get('cantidadComensales')?.touched" 
+               class="error-message">
+            La cantidad debe ser entre 1 y 20 personas
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Paso 2: Fecha -->
+    <div *ngIf="currentStep === 2" class="step-content">
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button type="button" class="nav-btn" (click)="mesAnterior()">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <h3 class="month-year">{{ meses[mesActual.getMonth()] }} {{ mesActual.getFullYear() }}</h3>
+          <button type="button" class="nav-btn" (click)="mesSiguiente()">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        
+        <div class="calendar-grid">
+          <div class="day-header" *ngFor="let dia of diasSemana">{{ dia }}</div>
+          <div 
+            *ngFor="let dia of diasCalendario" 
+            class="calendar-day"
+            [class.other-month]="!dia.esDelMesActual"
+            [class.today]="dia.esHoy"
+            [class.available]="dia.tieneDisponibilidad && dia.esDelMesActual && !dia.esPasado"
+            [class.selected]="esFechaSeleccionada(dia)"
+            [class.past]="dia.esPasado"
+            (click)="seleccionarFecha(dia)">
+            {{ dia.dia }}
+          </div>
+        </div>
+        
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <div class="legend-color available"></div>
+            <span>Disponible</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color selected"></div>
+            <span>Seleccionado</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color past"></div>
+            <span>No disponible</span>
+          </div>
+        </div>
+        
+        <div *ngIf="reservaData.fechaReserva" class="selected-date">
+          <i class="fas fa-calendar-check"></i>
+          Fecha seleccionada: {{ reservaData.fechaReserva | date:'dd/MM/yyyy' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 3: Tipo de Evento -->
+    <div *ngIf="currentStep === 3" class="step-content">
+      <form [formGroup]="eventoForm" class="evento-form">
+        <div class="form-group">
+          <label>¿Cuál es el motivo de tu reserva?</label>
+          <div class="evento-options">
+            <div *ngFor="let evento of eventosReserva" 
+                 class="evento-option"
+                 [class.selected]="eventoForm.get('evento')?.value === evento"
+                 (click)="eventoForm.patchValue({evento: evento})">
+              <div class="evento-card">
+                <div class="evento-icon">
+                  <i [class]="getEventoIcon(evento)"></i>
+                </div>
+                <div class="evento-name">{{ getEventoDisplayName(evento) }}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="eventoForm.get('evento')?.invalid && eventoForm.get('evento')?.touched" 
+               class="error-message">
+            Debe seleccionar un tipo de evento
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Paso 4: Horario -->
+    <div *ngIf="currentStep === 4" class="step-content">
+      <form [formGroup]="horarioForm" class="horario-form">
+        <div class="form-group">
+          <label>Selecciona el horario de tu preferencia</label>
+          <div class="evento-horario-info" *ngIf="eventoForm.get('evento')?.value">
+            <small class="text-muted">
+              <i class="fas fa-info-circle"></i>
+              <span *ngIf="eventoForm.get('evento')?.value === 'ALMUERZO'">
+                Horarios de almuerzo disponibles: 12:00 - 14:30
+              </span>
+              <span *ngIf="eventoForm.get('evento')?.value === 'CENA'">
+                Horarios de cena disponibles: 20:00 - 22:00
+              </span>
+              <span *ngIf="eventoForm.get('evento')?.value !== 'ALMUERZO' && eventoForm.get('evento')?.value !== 'CENA'">
+                Todos los horarios disponibles para este evento
+              </span>
+            </small>
+          </div>
+          <div class="horario-options">
+            <div *ngFor="let horario of horariosDisponibles" 
+                 class="horario-option"
+                 [class.selected]="horarioForm.get('horario')?.value === horario"
+                 (click)="horarioForm.patchValue({horario: horario})">
+              <div class="horario-card">
+                {{ horario }}
+              </div>
+            </div>
+          </div>
+          <div *ngIf="horarioForm.get('horario')?.invalid && horarioForm.get('horario')?.touched" 
+               class="error-message">
+            Debe seleccionar un horario
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Paso 5: Datos del Cliente -->
+    <div *ngIf="currentStep === 5" class="step-content">
+      <div class="client-form-container centered-form">
+        
+        <form [formGroup]="personaMesaForm" class="persona-form">
+          <!-- Primera fila: Nombre y Apellido -->
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" 
+                     id="nombre" 
+                     name="nombre" 
+                     formControlName="nombre" 
+                     class="form-control custom-input" 
+                     placeholder="Nombre">
+              <div *ngIf="personaMesaForm.get('nombre')?.invalid && personaMesaForm.get('nombre')?.touched" 
+                   class="error-message">
+                El nombre es requerido
+              </div>
+            </div>
+
+            <div class="form-group">
+              <input type="text" 
+                     id="apellido" 
+                     name="apellido" 
+                     formControlName="apellido" 
+                     class="form-control custom-input" 
+                     placeholder="Apellido">
+              <div *ngIf="personaMesaForm.get('apellido')?.invalid && personaMesaForm.get('apellido')?.touched" 
+                   class="error-message">
+                El apellido es requerido
+              </div>
+            </div>
+          </div>
+
+          <!-- Segunda fila: DNI ---->
+          <div class="form-row">
+            <div class="form-group full-width">
+              <input type="text" 
+                     id="dni" 
+                     name="dni" 
+                     formControlName="dni" 
+                     class="form-control custom-input" 
+                     placeholder="DNI" 
+                     maxlength="8">
+              <div *ngIf="personaMesaForm.get('dni')?.invalid && personaMesaForm.get('dni')?.touched" 
+                   class="error-message">
+                <span *ngIf="personaMesaForm.get('dni')?.errors?.['required']">El DNI es requerido</span>
+                <span *ngIf="personaMesaForm.get('dni')?.errors?.['pattern']">El DNI debe tener 8 dígitos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tercera fila: Email y Teléfono -->
+          <div class="form-row">
+            <div class="form-group">
+              <input type="email" 
+                     id="email" 
+                     name="email" 
+                     formControlName="email" 
+                     class="form-control custom-input" 
+                     placeholder="ejemplo@templa.com *" 
+                     required>
+              <div *ngIf="personaMesaForm.get('email')?.invalid && personaMesaForm.get('email')?.touched" 
+                   class="error-message">
+                <span *ngIf="personaMesaForm.get('email')?.errors?.['required']">El email es obligatorio para enviar la confirmación</span>
+                <span *ngIf="personaMesaForm.get('email')?.errors?.['email']">Ingrese un email válido</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <input type="tel" 
+                     id="telefono" 
+                     name="telefono" 
+                     formControlName="telefono" 
+                     class="form-control custom-input" 
+                     placeholder="351811074">
+              <div *ngIf="personaMesaForm.get('telefono')?.invalid && personaMesaForm.get('telefono')?.touched" 
+                   class="error-message">
+                El teléfono es requerido
+              </div>
+            </div>
+          </div>
+
+          <!-- Separador -->
+          <div class="section-divider"></div>
+
+        </form>
+      </div>
+
+      <!-- Resumen de la reserva - Solo mostrar cuando los datos estén completos -->
+      <div class="reserva-resumen-container" *ngIf="personaMesaForm.valid && personaMesaForm.get('nombre')?.value && personaMesaForm.get('apellido')?.value && personaMesaForm.get('dni')?.value && personaMesaForm.get('telefono')?.value">
+        <div class="reserva-resumen-card">
+          <div class="resumen-header">
+            <h4><i class="fas fa-clipboard-check"></i> Resumen de tu reserva</h4>
+            <p class="resumen-subtitle">Confirma que todos los datos sean correctos</p>
+          </div>
+          
+          <div class="resumen-content">
+            <div class="resumen-section">
+              <h5><i class="fas fa-user"></i> Datos del Cliente</h5>
+              <div class="resumen-row">
+                <span class="resumen-label">Nombre completo:</span>
+                <span class="resumen-value">{{ personaMesaForm.get('nombre')?.value }} {{ personaMesaForm.get('apellido')?.value }}</span>
+              </div>
+              <div class="resumen-row">
+                <span class="resumen-label">DNI:</span>
+                <span class="resumen-value">{{ personaMesaForm.get('dni')?.value }}</span>
+              </div>
+              <div class="resumen-row">
+                <span class="resumen-label">Teléfono:</span>
+                <span class="resumen-value">{{ personaMesaForm.get('telefono')?.value }}</span>
+              </div>
+              <div class="resumen-row" *ngIf="personaMesaForm.get('email')?.value">
+                <span class="resumen-label">Email:</span>
+                <span class="resumen-value">{{ personaMesaForm.get('email')?.value }}</span>
+              </div>
+              
+              <!-- Mensaje informativo sobre email de confirmación -->
+              <div class="email-confirmation-info" *ngIf="personaMesaForm.get('email')?.value" 
+                   style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin-top: 10px;">
+                <p style="color: #27ae60; margin: 0; font-size: 0.9em;">
+                  <i class="fas fa-envelope"></i> 
+                  Se enviará un email de confirmación a esta dirección
+                </p>
+              </div>
+            </div>
+            
+            <div class="resumen-divider"></div>
+            
+            <div class="resumen-section">
+              <h5><i class="fas fa-calendar-alt"></i> Detalles de la Reserva</h5>
+              <div class="resumen-row">
+                <span class="resumen-label">Fecha:</span>
+                <span class="resumen-value">{{ reservaData.fechaReserva | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="resumen-row">
+                <span class="resumen-label">Horario:</span>
+                <span class="resumen-value">{{ reservaData.horario }}</span>
+              </div>
+              <div class="resumen-row">
+                <span class="resumen-label">Comensales:</span>
+                <span class="resumen-value">{{ reservaData.cantidadComensales }} personas</span>
+              </div>
+              <div class="resumen-row">
+                <span class="resumen-label">Evento:</span>
+                <span class="resumen-value">{{ getEventoDisplayName(reservaData.evento) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Botones de navegación -->
+    <div class="navigation-buttons">
+      <button type="button" 
+              class="btn btn-secondary" 
+              *ngIf="currentStep > 1" 
+              (click)="prevStep()">
+        <i class="fas fa-arrow-left"></i> Anterior
+      </button>
+      
+      <button type="button" 
+              class="btn btn-primary" 
+              *ngIf="currentStep < totalSteps" 
+              [disabled]="!validateCurrentStep()"
+              (click)="nextStep()">
+        Siguiente <i class="fas fa-arrow-right"></i>
+      </button>
+      
+      <button type="button" 
+              class="btn btn-success" 
+              *ngIf="currentStep === totalSteps" 
+              [disabled]="!validateCurrentStep()"
+              (click)="confirmarReserva()">
+        <i class="fas fa-check"></i> {{ isEditMode ? 'Actualizar Reserva' : 'Confirmar Reserva' }}
+      </button>
+    </div>
+  </div>
+  </div>
+
+  <!-- Vista Lista de Reservas -->
+<div *ngIf="currentView === 'lista'" class="lista-reservas-view">
+    <!-- Header con título y filtros -->
+    <div class="header pt-3 px-3">
+      <!-- Título a la izquierda -->
+      <div class="header-left">
+        <h1 class="texto-elegante">Gestión de Reservas</h1>
+      </div>
+
+      <!-- Controles a la derecha -->
+      <div class="header-right">
+        <!-- Input de búsqueda -->
+        <div class="search-container">
+          <input type="text" 
+                 id="busqueda" 
+                 name="busqueda" 
+                 class="form-control custom-input"
+                 placeholder="🔎Buscar reserva..." 
+                 [(ngModel)]="busqueda" 
+                 (ngModelChange)="onBusquedaChange()">
+        </div>
+
+        <!-- Grupo de filtros por evento - Cambiar a dropdown -->
+        <div class="dropdown event-filter">
+          <select class="form-select" 
+                  [(ngModel)]="eventoSeleccionado" 
+                  (ngModelChange)="onEventoChange($event)">
+            <option value="TODOS">Todos los eventos</option>
+            <option value="ALMUERZO">Almuerzo</option>
+            <option value="CENA">Cena</option>
+            <option value="CUMPLEAÑOS">Cumpleaños</option>
+            <option value="VIP">VIP</option>
+          </select>
+        </div>
+
+        <!-- Grupo de filtros de fecha -->
+        <div class="date-filter-group">
+          <!-- Fecha Desde -->
+          <div class="date-input-container">
+            <label class="date-label">Desde:</label>
+            <input type="date" 
+                   class="form-control custom-date-input" 
+                   [(ngModel)]="fechaDesde"
+                   (ngModelChange)="onFechaChange()" 
+                   title="Fecha desde">
+          </div>
+
+          <!-- Fecha Hasta -->
+          <div class="date-input-container">
+            <label class="date-label">Hasta:</label>
+            <input type="date" 
+                   class="form-control custom-date-input" 
+                   [(ngModel)]="fechaHasta"
+                   (ngModelChange)="onFechaChange()" 
+                   title="Fecha hasta">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="header-divider">
+
+    <div class="body mt-5 mx-5 px-5">
+      <!-- Botones alineados a la derecha -->
+      <div class="mb-3 d-flex justify-content-end" style="gap: 10px;">
+        <button class="btn custom-btn-secondary" (click)="abrirModalDisponibilidad()" type="button">
+          <span class="btn-icon">📅</span>
+          Gestionar Disponibilidad
+        </button>
+        <button class="btn custom-btn" (click)="cambiarVista('nueva')" type="button">
+          <span class="btn-icon">➕</span>
+          Nueva Reserva
+        </button>
+      </div>
+
+      <!-- Loading spinner -->
+      <div *ngIf="loading" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <!-- Tabla con datos reales -->
+      <div class="listado" *ngIf="!loading">
+        <table class="table table-hover table-striped custom-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nº Reserva</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Horario</th>
+              <th scope="col">Comensales</th>
+              <th scope="col">Evento</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            <!-- Mostrar mensaje si no hay datos -->
+            <tr *ngIf="reservas.length === 0">
+              <td colspan="8" class="text-center text-muted py-4">
+                No se encontraron reservas
+              </td>
+            </tr>
+
+            <!-- Iterar sobre las reservas -->
+            <tr *ngFor="let reserva of reservas; let i = index">
+              <th scope="row">{{ i + 1 + (paginaActual * tamanoPagina) }}</th>
+              <td>{{ reserva.nroReserva }}</td>
+              <td>{{ getNombreCliente(reserva.idPersona, reserva) }}</td>
+              <td>{{ reserva.fechaReserva | date:'dd/MM/yyyy' }}</td>
+              <td>{{ reserva.horario }}</td>
+              <td>{{ reserva.cantidadComensales }}</td>
+              <td>
+                <span class="badge badge-evento" [class]="'badge-' + reserva.evento.toLowerCase()">
+                  {{ getEventoDisplayName(reserva.evento) }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-warning" 
+                          (click)="editarReserva(reserva)"
+                          title="Editar reserva">
+                    ✏️
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" 
+                          (click)="eliminarReserva(reserva.id!)"
+                          title="Eliminar reserva">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ✅ Paginación dinámica -->
+      <div class="pagination-container d-flex justify-content-between align-items-center mt-4" 
+           *ngIf="pageInfo && pageInfo.totalElements > 0">
+        
+        <div class="pagination-info">
+          <span class="text-muted">
+            Mostrando {{ (pageInfo.number * pageInfo.size) + 1 }}-{{ Math.min((pageInfo.number + 1) * pageInfo.size, pageInfo.totalElements) }} 
+            de {{ pageInfo.totalElements }} registros
+          </span>
+        </div>
+
+        <nav aria-label="Paginación de reservas" *ngIf="pageInfo.totalPages > 1">
+          <ul class="pagination custom-pagination mb-0">
+            <!-- Botón anterior -->
+            <li class="page-item" [class.disabled]="pageInfo.first">
+              <a class="page-link" href="#" 
+                 (click)="irAPagina(pageInfo.number - 1); $event.preventDefault()" 
+                 [attr.tabindex]="pageInfo.first ? -1 : null"
+                 [attr.aria-disabled]="pageInfo.first">‹</a>
+            </li>
+            
+            <!-- Números de página -->
+            @for (pagina of obtenerPaginasVisibles(); track pagina) {
+              @if (pagina === null) {
+                <li class="page-item disabled">
+                  <span class="page-link">...</span>
+                </li>
+              } @else {
+                <li class="page-item" [class.active]="pagina === pageInfo.number">
+                  <a class="page-link" href="#" 
+                     (click)="irAPagina(pagina); $event.preventDefault()">
+                    {{ pagina + 1 }}
+                  </a>
+                </li>
+              }
+            }
+
+            <!-- Botón siguiente -->
+            <li class="page-item" [class.disabled]="pageInfo.last">
+              <a class="page-link" href="#" 
+                 (click)="irAPagina(pageInfo.number + 1); $event.preventDefault()"
+                 [attr.tabindex]="pageInfo.last ? -1 : null"
+                 [attr.aria-disabled]="pageInfo.last">›</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal de Disponibilidad -->
+<app-disponibilidad-modal 
+  #disponibilidadModal
+  (disponibilidadesCreadas)="onDisponibilidadesCreadas()">
+</app-disponibilidad-modal>
+
+<!-- ✅ NUEVO: Selector de Reportes -->
+<app-selector-reportes-modal 
+  *ngIf="mostrarSelectorReportes"
+  (confirmar)="onReporteSeleccionado($event)"
+  (cancelar)="onCancelarSelector()">
+</app-selector-reportes-modal>
+
+<!-- Modal de Reportes Existente -->
+<app-reportes-modal #reportesModal></app-reportes-modal>
+
+<!-- ✅ NUEVO: Modal de Clientes con Reservas -->
+<app-clientes-reservas-modal #clientesReservasModal></app-clientes-reservas-modal>

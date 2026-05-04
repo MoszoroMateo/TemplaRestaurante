@@ -1,0 +1,122 @@
+.custom-table thead th:nth-child(1) { /* NRO MESA */
+    width: 10%;
+}
+
+.custom-table thead th:nth-child(2) { /* MOZO */
+    width: 18%;
+}
+
+.custom-table thead th:nth-child(3) { /* FECHA */
+    width: 15%;
+}
+
+.custom-table thead th:nth-child(4) { /* ESTADO */
+    width: 12%;
+}
+
+.custom-table thead th:nth-child(5) { /* TOTAL */
+    width: 12%;
+}
+
+.custom-table thead th:nth-child(6), /* VER */
+.custom-table thead th:nth-child(7), /* MODIFICAR */
+.custom-table thead th:nth-child(8), /* ESTADO */
+.custom-table thead th:nth-child(9) { /* CANCELAR */
+    width: 7%;
+}
+
+.custom-badge {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    min-width: 90px;
+}
+
+.badge-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.badge-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #74c0fc;
+}
+
+.badge-primary {
+    background-color: #cce7ff;
+    color: #004085;
+    border: 1px solid #74c0fc;
+}
+
+.badge-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #00d4aa;
+}
+
+.badge-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #e74c3c;
+}
+
+.badge-secondary {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #6c757d;
+}
+
+
+/* ===== DROPDOWN DE ACCIONES ===== */
+.dropdown-menu {
+    min-width: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--templa-gold);
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--templa-gold);
+    color: white;
+}
+
+.dropdown-item:active {
+    background-color: var(--templa-brown);
+    color: white;
+}
+
+.dropdown-divider {
+    margin: 5px 0;
+    border-top: 1px solid var(--templa-gold);
+}
+
+.btn-edit.dropdown-toggle::after {
+    margin-left: 5px;
+}
+
+/* Botones deshabilitados sin borde */
+.btn-edit:disabled,
+.btn-edit.disabled,
+.btn-delete:disabled,
+.btn-delete.disabled,
+.btn-view:disabled,
+.btn-view.disabled {
+    background-color: transparent;
+    border: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}

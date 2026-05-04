@@ -1,0 +1,322 @@
+<div class="mapa-mesas-container" (click)="cerrarMenuContextual($event)" (touchstart)="cerrarMenuContextual($event)">
+  
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- HEADER CON CONTROLES -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="header-controles">
+    <div class="controles-izquierda">
+      <h2 class="titulo">
+        <i class="fas fa-map-marked-alt"></i>
+        Mapa de Mesas
+      </h2>
+      
+      <!-- Toggle Modo Configuración -->
+      <div class="toggle-config" *ngIf="puedeConfigurar">
+        <label class="switch">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="modoConfiguracion"
+            (change)="toggleModoConfiguracion()"
+          >
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">
+          <i class="fas fa-cog"></i>
+          {{ modoConfiguracion ? 'Configuración ON' : 'Configuración OFF' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Controles de Zoom -->
+    <div class="controles-zoom">
+      <button class="btn-zoom" (click)="zoomOut()" title="Alejar">
+        <i class="fas fa-search-minus"></i>
+      </button>
+      <span class="zoom-nivel">{{ (escalaZoom * 100).toFixed(0) }}%</span>
+      <button class="btn-zoom" (click)="zoomIn()" title="Acercar">
+        <i class="fas fa-search-plus"></i>
+      </button>
+      <button class="btn-zoom" (click)="resetearZoomYPan()" title="Resetear Vista">
+        <i class="fas fa-undo"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TABS DE PISOS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="tabs-pisos">
+    <button 
+      *ngFor="let piso of pisos"
+      class="tab-piso"
+      [class.activo]="pisoActual === piso.numero"
+      (click)="cambiarPiso(piso.numero)"
+    >
+      <i class="fas fa-building"></i>
+      {{ piso.nombre }}
+      <span class="badge-mesas">{{ contarMesasPiso(piso.numero) }}</span>
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- CONTENEDOR PRINCIPAL -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="contenido-principal">
+    
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- PANEL LATERAL (solo en modo configuración) -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="panel-lateral" *ngIf="modoConfiguracion">
+      <div class="panel-header">
+        <h3><i class="fas fa-list"></i> Mesas Disponibles</h3>
+        <input 
+          type="text" 
+          class="busqueda-mesa" 
+          placeholder="Buscar mesa..."
+          [(ngModel)]="busquedaMesa"
+          (input)="filtrarMesas()"
+        >
+      </div>
+
+      <div class="lista-mesas">
+        <div 
+          *ngFor="let mesa of mesasFiltradas"
+          class="item-mesa"
+          [class.vinculada]="estaVinculada(mesa)"
+          [draggable]="!estaVinculada(mesa)"
+          (dragstart)="onDragStartPanel($event, mesa)"
+        >
+          <div class="mesa-info">
+            <i class="fas fa-circle"
+               [class.icono-disponible]="mesa.estadoMesa === EstadoMesa.DISPONIBLE"
+               [class.icono-ocupada]="mesa.estadoMesa === EstadoMesa.OCUPADA"
+               [class.icono-reservada]="mesa.estadoMesa === EstadoMesa.RESERVADA"
+               [class.icono-fuera-servicio]="mesa.estadoMesa === EstadoMesa.FUERA_SERVICIO"
+            ></i>
+            <span class="mesa-numero">{{ mesa.numeroMesa }}</span>
+          </div>
+          <span class="mesa-estado-badge" [class]="mesa.estadoMesa.toLowerCase()">
+            {{ formatearEstado(mesa.estadoMesa) }}
+          </span>
+          <i *ngIf="estaVinculada(mesa)" class="fas fa-check-circle icono-vinculada"></i>
+        </div>
+
+        <div *ngIf="mesasFiltradas.length === 0" class="sin-resultados">
+          <i class="fas fa-inbox"></i>
+          <p>No se encontraron mesas</p>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <small>
+          <i class="fas fa-info-circle"></i>
+          Arrastra una mesa al plano para vincularla
+        </small>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ÁREA DEL MAPA -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div 
+      class="area-mapa"
+      #mapaContainer
+      (wheel)="onWheel($event)"
+      (mousedown)="onMouseDown($event)"
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp()"
+      (mouseleave)="onMouseUp()"
+      (touchstart)="onTouchStart($event)"
+      (touchmove)="onTouchMove($event)"
+      (touchend)="onTouchEnd($event)"
+      (touchcancel)="onTouchEnd($event)"
+      (dragover)="onDragOverMapa($event)"
+      (drop)="onDropEnMapa($event)"
+      (dragleave)="onDragLeaveMapa()"
+    >
+      <div class="mapa-wrapper" [style.transform]="transformStyle">
+        
+        <!-- Imagen del plano -->
+        <img 
+          [src]="pisoSeleccionado.imagenUrl" 
+          alt="Plano del {{ pisoSeleccionado.nombre }}"
+          class="plano-imagen"
+          draggable="false"
+          (load)="onImagenCargada()"
+        >
+
+        <!-- Círculos de mesas -->
+        <div 
+          *ngFor="let mesa of mesasDelPisoActual"
+          class="mesa-circulo"
+          [class.estado-disponible]="mesa.estadoMesa === EstadoMesa.DISPONIBLE"
+          [class.estado-ocupada]="mesa.estadoMesa === EstadoMesa.OCUPADA"
+          [class.estado-reservada]="mesa.estadoMesa === EstadoMesa.RESERVADA"
+          [class.estado-fuera-servicio]="mesa.estadoMesa === EstadoMesa.FUERA_SERVICIO"
+          [attr.data-id]="mesa.idMesa"
+          [style.left.px]="getPosXEscalada(mesa)"
+          [style.top.px]="getPosYEscalada(mesa)"
+          (click)="onClickMesa($event, mesa)"
+          [draggable]="modoConfiguracion"
+          (dragstart)="onDragStartPanel($event, mesa)"
+        >
+          <span class="mesa-numero-circulo">{{ mesa.numeroMesa }}</span>
+          <i class="fas fa-grip-vertical drag-handle" *ngIf="modoConfiguracion"></i>
+        </div>
+
+        <!-- Preview de mesa durante drag -->
+        <div 
+          *ngIf="previewMesaPosition && mesaArrastrandoDesdePanel"
+          class="mesa-circulo mesa-preview"
+          [class.estado-disponible]="mesaArrastrandoDesdePanel.estadoMesa === EstadoMesa.DISPONIBLE"
+          [class.estado-ocupada]="mesaArrastrandoDesdePanel.estadoMesa === EstadoMesa.OCUPADA"
+          [class.estado-reservada]="mesaArrastrandoDesdePanel.estadoMesa === EstadoMesa.RESERVADA"
+          [class.estado-fuera-servicio]="mesaArrastrandoDesdePanel.estadoMesa === EstadoMesa.FUERA_SERVICIO"
+          [style.left.px]="previewMesaPosition.x"
+          [style.top.px]="previewMesaPosition.y"
+        >
+          <span class="mesa-numero-circulo">{{ mesaArrastrandoDesdePanel.numeroMesa }}</span>
+        </div>
+
+      </div>
+
+      <!-- Indicador de arrastre -->
+      <div class="indicador-arrastre" *ngIf="mesaArrastrandoDesdePanel && !previewMesaPosition">
+        <i class="fas fa-hand-pointer"></i>
+        Suelta aquí para colocar {{ mesaArrastrandoDesdePanel.numeroMesa }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- MENÚ CONTEXTUAL -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div 
+    class="menu-contextual"
+    *ngIf="menuContextual.visible"
+    [style.left.px]="menuContextual.x"
+    [style.top.px]="menuContextual.y"
+    (click)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <div class="menu-header">
+      <strong>{{ menuContextual.mesa?.numeroMesa }}</strong>
+      <span class="estado-actual"
+            [class.icono-disponible]="menuContextual.mesa?.estadoMesa === EstadoMesa.DISPONIBLE"
+            [class.icono-ocupada]="menuContextual.mesa?.estadoMesa === EstadoMesa.OCUPADA"
+            [class.icono-reservada]="menuContextual.mesa?.estadoMesa === EstadoMesa.RESERVADA"
+            [class.icono-fuera-servicio]="menuContextual.mesa?.estadoMesa === EstadoMesa.FUERA_SERVICIO">
+        {{ menuContextual.mesa?.estadoMesa }}
+      </span>
+    </div>
+
+    <div class="menu-opciones">
+      <!-- Cambiar Estado -->
+      <button 
+        class="menu-item"
+        (click)="cambiarEstadoMesa(EstadoMesa.DISPONIBLE)"
+      >
+        <i class="fas fa-check-circle icono-disponible"></i>
+        Marcar DISPONIBLE
+      </button>
+
+      <button 
+        class="menu-item"
+        (click)="cambiarEstadoMesa(EstadoMesa.OCUPADA)"
+      >
+        <i class="fas fa-circle icono-ocupada"></i>
+        Marcar OCUPADA
+      </button>
+
+      <button 
+        class="menu-item"
+        (click)="cambiarEstadoMesa(EstadoMesa.RESERVADA)"
+      >
+        <i class="fas fa-bookmark icono-reservada"></i>
+        Marcar RESERVADA
+      </button>
+
+      <button 
+        class="menu-item"
+        (click)="cambiarEstadoMesa(EstadoMesa.FUERA_SERVICIO)"
+      >
+        <i class="fas fa-times-circle icono-fuera-servicio"></i>
+        Marcar FUERA DE SERVICIO
+      </button>
+
+      <hr class="menu-divider">
+
+      <!-- Crear Pedido (solo si está DISPONIBLE) -->
+      <button 
+        class="menu-item destacado"
+        (click)="abrirModalPedido()"
+        *ngIf="menuContextual.mesa?.estadoMesa === EstadoMesa.DISPONIBLE"
+      >
+        <i class="fas fa-shopping-cart"></i>
+        Crear Pedido
+      </button>
+
+      <!-- Ver Pedido (solo si está OCUPADA) -->
+      <button 
+        class="menu-item destacado"
+        (click)="verPedidoMesa()"
+        *ngIf="menuContextual.mesa?.estadoMesa === EstadoMesa.OCUPADA"
+      >
+        <i class="fas fa-receipt"></i>
+        Ver Pedido
+      </button>
+
+      <!-- Desvincular (solo en modo configuración) -->
+      <button 
+        class="menu-item peligro"
+        (click)="desvincularMesa()"
+        *ngIf="modoConfiguracion"
+      >
+        <i class="fas fa-unlink"></i>
+        Desvincular del Plano
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- LEYENDA -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div *ngIf="!modoConfiguracion" class="leyenda">
+    <div class="leyenda-item">
+      <span class="color-box color-disponible"></span>
+      Disponible
+    </div>
+    <div class="leyenda-item">
+      <span class="color-box color-ocupada"></span>
+      Ocupada
+    </div>
+    <div class="leyenda-item">
+      <span class="color-box color-reservada"></span>
+      Reservada
+    </div>
+    <div class="leyenda-item">
+      <span class="color-box color-fuera-servicio"></span>
+      Fuera de Servicio
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- AYUDA DE CONTROLES -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="ayuda-controles">
+    <div class="ayuda-item">
+      <i class="fas fa-mouse"></i>
+      <span>Arrastra para mover el mapa</span>
+    </div>
+    <div class="ayuda-item">
+      <i class="fas fa-mouse-pointer"></i>
+      <span>Click en mesa para opciones</span>
+    </div>
+    <div class="ayuda-item">
+      <i class="fas fa-search-plus"></i>
+      <span>Scroll para zoom</span>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,216 @@
+<!-- productos.component.html -->
+<div class="header pt-3 px-3">
+    <!-- Título a la izquierda -->
+    <div class="header-left">
+        <h1 class="texto-elegante">Listado de Productos</h1>
+    </div>
+
+    <!-- Controles a la derecha -->
+    <div class="header-right">
+        <!-- Input de búsqueda -->
+        <div class="search-container">
+            <input type="text" id="busqueda" name="busqueda" class="form-control custom-input"
+                placeholder="🔎 Buscar producto..." 
+                [(ngModel)]="busqueda" 
+                (input)="onBusquedaChange()">
+        </div>
+
+        <!-- Filtro por Tipo -->
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por tipo">
+            <input type="radio" class="btn-check" name="tipo" id="INSUMO" 
+                value="INSUMO" [(ngModel)]="tipoSeleccionado" 
+                (change)="onTipoChange('INSUMO')" autocomplete="off">
+            <label class="btn custom-radio" for="INSUMO">Insumo</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="ACOMPAÑANTE" 
+                value="ACOMPAÑANTE" [(ngModel)]="tipoSeleccionado" 
+                (change)="onTipoChange('ACOMPAÑANTE')" autocomplete="off">
+            <label class="btn custom-radio" for="ACOMPAÑANTE">Acompañante</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="BEBIDA" 
+                value="BEBIDA" [(ngModel)]="tipoSeleccionado" 
+                (change)="onTipoChange('BEBIDA')" autocomplete="off">
+            <label class="btn custom-radio" for="BEBIDA">Bebida</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="TODOS_TIPO" 
+                value="" [(ngModel)]="tipoSeleccionado" 
+                (change)="onTipoChange('')" autocomplete="off" checked>
+            <label class="btn custom-radio" for="TODOS_TIPO">Todos</label>
+        </div>
+
+        <!-- Filtro por Estado -->
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por estado">
+            <input type="radio" class="btn-check" name="estado" id="ACTIVOS" 
+                   value="ACTIVOS" [(ngModel)]="estadoSeleccionado" 
+                   (change)="onEstadoChange('ACTIVOS')" autocomplete="off" checked>
+            <label class="btn custom-radio" for="ACTIVOS">Activos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="TODOS_ESTADO" 
+                   value="TODOS" [(ngModel)]="estadoSeleccionado" 
+                   (change)="onEstadoChange('TODOS')" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS_ESTADO">Todos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="INACTIVOS" 
+                   value="INACTIVOS" [(ngModel)]="estadoSeleccionado" 
+                   (change)="onEstadoChange('INACTIVOS')" autocomplete="off">
+            <label class="btn custom-radio" for="INACTIVOS">Inactivos</label>
+        </div>
+    </div>
+</div>
+
+<hr class="header-divider">
+
+<div class="body mt-5 mx-5 px-5">
+    <!-- Botón Nuevo Producto -->
+    <div class="mb-3 d-flex justify-content-end">
+        <button class="btn custom-btn" (click)="openNewProductModal()">
+            <span class="btn-icon">➕</span>
+            Nuevo Producto
+        </button>
+    </div>
+
+    <!-- ✅ Loading spinner -->
+    <div *ngIf="cargando" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+
+
+    <!-- ✅ Tabla con datos reales -->
+    <div class="listado" *ngIf="!cargando">
+        <table class="table table-hover table-striped custom-table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Unidad</th>
+                    <th scope="col">Stock Actual</th>
+                    <th scope="col">Stock Min</th>
+                    <th scope="col">Stock Max</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <!-- ✅ Mostrar mensaje si no hay datos -->
+                <tr *ngIf="productos.length === 0">
+                    <td colspan="10" class="text-center text-muted py-4">
+                        No se encontraron productos
+                    </td>
+                </tr>
+                
+                <!-- ✅ Iterar sobre los productos -->
+                @for (producto of productos; track producto.id; let i = $index) {
+                    <tr>
+                        <th scope="row">{{ i + 1 + ((paginaActual) * tamanoPagina) }}</th>
+                        <td>
+                           {{ producto.nombre }}
+                        </td>
+                        <td>
+                            <span *ngIf="producto.tipo === 'INSUMO'" class="text-muted">
+                                --
+                            </span>
+                            <span *ngIf="producto.tipo !== 'INSUMO'" class="text-success fw-bold">
+                                ${{ producto.precio | number:'1.2-2' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" [ngClass]="getBadgeClassTipo(producto.tipo)">
+                                {{ producto.tipo || 'Sin tipo' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ getUnidadMedidaCorta(producto.unidadMedida) }}</span>
+                        </td>
+                        <td>
+                            <span [ngClass]="getStockClass(producto)" class="fw-bold">
+                                {{ producto.stockActual | number:'1.0-3' }}
+                            </span>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ producto.stockMinimo }}
+                            </small>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ producto.stockMaximo }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge" [ngClass]="getBadgeClassEstado(producto.activo || false)">
+                                {{ (producto.activo || false) ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-edit" 
+                                    (click)="openNewProductModal(producto)"
+                                    title="Editar">
+                                ✏️
+                            </button>
+                            <button class="btn btn-sm btn-delete" 
+                                    (click)="eliminarProducto(producto)"
+                                    title="Eliminar">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- ✅ Paginación dinámica -->
+        <div class="pagination-container d-flex justify-content-between align-items-center mt-4" 
+             *ngIf="pageInfo && pageInfo.totalElements > 0">
+            
+            <div class="pagination-info">
+                <span class="text-muted">
+                    Mostrando {{ (paginaActual * tamanoPagina) + 1 }}-{{ Math.min((paginaActual + 1) * tamanoPagina, pageInfo.totalElements) }} 
+                    de {{ pageInfo.totalElements }} registros
+                </span>
+            </div>
+
+            <nav aria-label="Paginación de productos" *ngIf="pageInfo.totalPages > 1">
+                <ul class="pagination custom-pagination mb-0">
+                    <!-- Botón anterior -->
+                    <li class="page-item" [class.disabled]="paginaActual === 0">
+                        <a class="page-link" href="#" 
+                           (click)="irAPagina(paginaActual - 1); $event.preventDefault()" 
+                           [attr.tabindex]="paginaActual === 0 ? -1 : null"
+                           [attr.aria-disabled]="paginaActual === 0">‹</a>
+                    </li>
+                    
+                    <!-- Números de página -->
+                    @for (pagina of obtenerPaginasVisibles(); track pagina) {
+                    @if (pagina === null) {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    } @else {
+                        <li class="page-item" [class.active]="pagina === paginaActual">
+                            <a class="page-link" href="#" 
+                               (click)="irAPagina(pagina); $event.preventDefault()">
+                                {{ pagina + 1 }}
+                            </a>
+                        </li>
+                    }
+                    }
+
+                    <!-- Botón siguiente -->
+                    <li class="page-item" [class.disabled]="paginaActual === (pageInfo.totalPages - 1)">
+                        <a class="page-link" href="#" 
+                           (click)="irAPagina(paginaActual + 1); $event.preventDefault()"
+                           [attr.tabindex]="paginaActual === (pageInfo.totalPages - 1) ? -1 : null"
+                           [attr.aria-disabled]="paginaActual === (pageInfo.totalPages - 1)">›</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Reportes se abre programáticamente con modalService -->

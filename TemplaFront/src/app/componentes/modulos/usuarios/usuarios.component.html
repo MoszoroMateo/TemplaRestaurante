@@ -1,0 +1,181 @@
+<!-- usuarios.component.html - VERSIÓN CORREGIDA -->
+    <div class="header pt-3 px-3">
+        <!-- Título a la izquierda -->
+        <div class="header-left">
+            <h1 class="texto-elegante">Listado de Usuarios</h1>
+        </div>
+
+        <!-- Controles a la derecha -->
+        <div class="header-right">
+            <!-- Input de búsqueda -->
+            <div class="search-container">
+                <input type="text" id="username" name="username" class="form-control custom-input"
+                    placeholder="🔎 Buscar usuario..." 
+                    [(ngModel)]="busqueda" 
+                    (input)="onBusquedaChange()">
+            </div>
+
+            <!-- Filtro por Rol -->
+            <div class="btn-group filter-group" role="group" aria-label="Filtro por rol">
+                <input type="radio" class="btn-check" name="rol" id="ADMINISTRADOR" 
+                    value="ADMINISTRADOR" [(ngModel)]="rolSeleccionado" 
+                    (change)="onRolChange('ADMINISTRADOR')" autocomplete="off">
+                <label class="btn custom-radio" for="ADMINISTRADOR">Administrador</label>
+
+                <input type="radio" class="btn-check" name="rol" id="MOZO" 
+                    value="MOZO" [(ngModel)]="rolSeleccionado" 
+                    (change)="onRolChange('MOZO')" autocomplete="off">
+                <label class="btn custom-radio" for="MOZO">Mozo</label>
+
+                <input type="radio" class="btn-check" name="rol" id="COCINA" 
+                    value="COCINA" [(ngModel)]="rolSeleccionado" 
+                    (change)="onRolChange('COCINA')" autocomplete="off">
+                <label class="btn custom-radio" for="COCINA">Cocina</label>
+
+                <input type="radio" class="btn-check" name="rol" id="ENCARGADO" 
+                    value="ENCARGADO" [(ngModel)]="rolSeleccionado" 
+                    (change)="onRolChange('ENCARGADO')" autocomplete="off">
+                <label class="btn custom-radio" for="ENCARGADO">Encargado</label>
+
+                <input type="radio" class="btn-check" name="rol" id="TODOS_ROL" 
+                    value="" [(ngModel)]="rolSeleccionado" 
+                    (change)="onRolChange('')" autocomplete="off" checked>
+                <label class="btn custom-radio" for="TODOS_ROL">Todos</label>
+            </div>
+
+            <!-- Filtro por Estado -->
+            <div class="btn-group filter-group" role="group" aria-label="Filtro por estado">
+                <input type="radio" class="btn-check" name="estado" id="ACTIVOS" 
+                       [value]="true" [(ngModel)]="activoSeleccionado" 
+                       (change)="onActivoChange(true)" autocomplete="off" checked>
+                <label class="btn custom-radio" for="ACTIVOS">Activos</label>
+
+                <input type="radio" class="btn-check" name="estado" id="TODOS_ESTADO" 
+                       value="TODOS" (change)="onEstadoChange('TODOS')" autocomplete="off">
+                <label class="btn custom-radio" for="TODOS_ESTADO">Todos</label>
+
+                <input type="radio" class="btn-check" name="estado" id="BAJA" 
+                       [value]="false" [(ngModel)]="activoSeleccionado" 
+                       (change)="onActivoChange(false)" autocomplete="off">
+                <label class="btn custom-radio" for="BAJA">Baja</label>
+            </div>
+        </div>
+    </div>
+
+    <hr class="header-divider">
+
+    <div class="body mt-5 mx-5 px-5">
+        <!-- Botón Nuevo Usuario -->
+        <div class="mb-3 d-flex justify-content-end">
+            <button class="btn custom-btn" (click)="openNewUserModal()">
+                <span class="btn-icon">➕</span>
+                Nuevo Usuario
+            </button>
+        </div>
+
+        <!-- ✅ Loading spinner -->
+        <div *ngIf="cargando" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+
+        <!-- ✅ Mensaje de error -->
+        <div *ngIf="error" class="alert alert-danger text-center">
+            {{ error }}
+        </div>
+
+        <!-- ✅ Tabla con datos reales -->
+        <div class="listado" *ngIf="!cargando">
+            <table class="table table-hover table-striped custom-table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Persona</th>
+                        <th scope="col">Rol</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <!-- ✅ Mostrar mensaje si no hay datos -->
+                    <tr *ngIf="usuariosPaginados.length === 0">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No se encontraron usuarios
+                        </td>
+                    </tr>
+                    
+                    <!-- ✅ Iterar sobre los usuarios -->
+                    @for (usuario of usuariosPaginados; track usuario.id; let i = $index) {
+                        <tr>
+                            <th scope="row">{{ i + 1 + ((paginaActual - 1) * itemsPorPagina) }}</th>
+                            <td>{{ usuario.username }}</td>
+                            <td>
+                                <span class="text-muted" *ngIf="!usuario.personaNombre">Sin asignar</span>
+                                <span *ngIf="usuario.personaNombre">{{ usuario.personaNombre }}</span>
+                            </td>
+                            <td>
+                                <span class="badge" [ngClass]="getBadgeClassRol(usuario.rolUsuario)">
+                                    {{ usuario.rolUsuario }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge" [ngClass]="getBadgeClassEstado(usuario.activo)">
+                                    {{ usuario.activo ? 'Activo' : 'Baja' }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-edit" 
+                                        (click)="openNewUserModal(usuario)"
+                                        title="Editar">
+                                    ✏️
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- ✅ Paginación dinámica - CORREGIDA -->
+            <div class="pagination-container d-flex justify-content-between align-items-center mt-4" 
+                 *ngIf="usuariosFiltrados.length > 0">
+                
+                <div class="pagination-info">
+                    <span class="text-muted">
+                        {{ rangoMostrado }}
+                    </span>
+                </div>
+
+                <nav aria-label="Paginación de usuarios" *ngIf="totalPaginas > 1">
+                    <ul class="pagination custom-pagination mb-0">
+                        <!-- Botón anterior -->
+                        <li class="page-item" [class.disabled]="paginaActual === 1">
+                            <a class="page-link" href="#" 
+                               (click)="irAPagina(paginaActual - 1); $event.preventDefault()" 
+                               [attr.tabindex]="paginaActual === 1 ? -1 : null"
+                               [attr.aria-disabled]="paginaActual === 1">‹</a>
+                        </li>
+                        
+                        <!-- Números de página -->
+                        @for (pagina of paginas; track pagina) {
+                            <li class="page-item" [class.active]="pagina === paginaActual">
+                                <a class="page-link" href="#" 
+                                   (click)="irAPagina(pagina); $event.preventDefault()">
+                                    {{ pagina }}
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Botón siguiente -->
+                        <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+                            <a class="page-link" href="#" 
+                               (click)="irAPagina(paginaActual + 1); $event.preventDefault()"
+                               [attr.tabindex]="paginaActual === totalPaginas ? -1 : null"
+                               [attr.aria-disabled]="paginaActual === totalPaginas">›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>

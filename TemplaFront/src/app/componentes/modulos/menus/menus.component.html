@@ -1,0 +1,160 @@
+<div class="header pt-3 px-3">
+    <!-- Título a la izquierda -->
+    <div class="header-left">
+        <h1 class="texto-elegante">Menús</h1>
+    </div>
+
+    <!-- Controles a la derecha -->
+    <div class="header-right">
+        <!-- Input de búsqueda -->
+        <div class="search-container">
+            <input type="text" id="busqueda" name="busqueda" class="form-control custom-input" 
+                   (input)="onBusquedaChange()"
+                   placeholder="🔎Buscar menú..." [(ngModel)]="busqueda">
+        </div>
+
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por estado">
+            <input type="radio" class="btn-check" name="estado" id="ACTIVOS" value="ACTIVOS" 
+                   (change)="onEstadoChange('ACTIVOS')"
+                   [(ngModel)]="estadoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="ACTIVOS">Activos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="TODOS_ESTADO" value="TODOS" 
+                   (change)="onEstadoChange('TODOS')"
+                   [(ngModel)]="estadoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS_ESTADO">Todos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="INACTIVOS" value="INACTIVOS" 
+                   (change)="onEstadoChange('INACTIVOS')"
+                   [(ngModel)]="estadoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="INACTIVOS">Inactivos</label>
+        </div>
+    </div>
+</div>
+
+<hr class="header-divider">
+
+<div class="body mt-5 px-5">
+    <!-- ✅ Loading spinner -->
+    <div *ngIf="cargando" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <!-- ✅ Grid de menús -->
+    <div *ngIf="!cargando" class="menus-grid">
+        <div class="menu-card" *ngFor="let menu of menus" (click)="abrirModalEditarMenu(menu)">
+            <!-- ✅ Header con nombre y badge -->
+            <div class="menu-header">
+                <h3 class="menu-nombre">{{ menu.nombre }}</h3>
+                <div class="estado-badge" [ngClass]="getEstadoBadgeClass(menu)">
+                    {{ getEstadoTexto(menu) }}
+                </div>
+            </div>
+
+            <!-- ✅ Línea divisora debajo del título -->
+            <div class="menu-title-divider"></div>
+
+            <!-- ✅ Contenido -->
+            <div class="menu-content">
+                <!-- Descripción -->
+                <p class="menu-descripcion">{{ menu.descripcion }}</p>
+
+                <!-- Separador -->
+                <div class="content-divider"></div>
+
+                <!-- ✅ Disponibilidad por fechas -->
+                <div class="menu-field" *ngIf="menu.disponibleDesde || menu.disponibleHasta">
+                    <span class="field-label">Disponibilidad:</span>
+                    <div class="field-value">
+                        Desde: {{ menu.disponibleDesde }}
+                        <span *ngIf="menu.disponibleHasta"> hasta: {{ menu.disponibleHasta }}</span>
+                    </div>
+                </div>
+
+                <!-- Separador -->
+                <div class="content-divider" *ngIf="menu.disponibleDesde || menu.disponibleHasta"></div>
+
+                <!-- ✅ Contenidos -->
+                <div class="menu-field">
+                    <span class="field-label">Contenidos:</span>
+                    <div class="field-value">
+                        {{ formatearContenidos(menu) }}
+                    </div>
+                </div>
+
+                <!-- Separador -->
+                <div class="content-divider"></div>
+
+                <!-- ✅ Precio -->
+                <div class="menu-field price-field">
+                    <span class="field-label">Precio:</span>
+                    <span class="field-value price">${{ menu.precio | number:'1.2-2' }}</span>
+                </div>
+
+                <!-- Separador -->
+                <div class="content-divider"></div>
+
+                <!-- ✅ Indicador de edición -->
+                <div class="click-indicator">
+                    <span>Clic para editar</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ✅ Mensaje cuando no hay menús -->
+    <div *ngIf="!cargando && (!menus || menus.length === 0)" class="no-menus">
+        <div class="text-center py-5">
+            <h4 class="text-muted">No se encontraron menús</h4>
+            <p class="text-muted">Intenta ajustar los filtros o agrega un nuevo menú</p>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Paginación -->
+<div *ngIf="!cargando && pageInfo && pageInfo.totalPages > 1" class="pagination-container">
+    <nav aria-label="Navegación de páginas">
+        <ul class="pagination justify-content-center">
+            <!-- Botón anterior -->
+            <li class="page-item" [class.disabled]="pageInfo.first">
+                <button class="page-link" (click)="irAPagina(pageInfo.number - 1)" [disabled]="pageInfo.first">
+                    Anterior
+                </button>
+            </li>
+
+            <!-- Números de página -->
+            <li class="page-item" *ngFor="let pagina of obtenerPaginasVisibles()" 
+                [class.active]="pagina === pageInfo.number"
+                [class.disabled]="pagina === null">
+                <button class="page-link" 
+                        (click)="pagina !== null && irAPagina(pagina)"
+                        [disabled]="pagina === null">
+                    {{ pagina === null ? '...' : (pagina + 1) }}
+                </button>
+            </li>
+
+            <!-- Botón siguiente -->
+            <li class="page-item" [class.disabled]="pageInfo.last">
+                <button class="page-link" (click)="irAPagina(pageInfo.number + 1)" [disabled]="pageInfo.last">
+                    Siguiente
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Info de paginación -->
+    <div class="pagination-info text-center mt-2">
+        <small class="text-muted">
+            Mostrando {{ pageInfo.numberOfElements }} de {{ pageInfo.totalElements }} menús
+            (Página {{ pageInfo.number + 1 }} de {{ pageInfo.totalPages }})
+        </small>
+    </div>
+</div>
+
+<!-- ✅ Botón flotante para agregar -->
+<button class="floating-btn" (click)="abrirModalNuevoMenu()">
+    ➕
+</button>

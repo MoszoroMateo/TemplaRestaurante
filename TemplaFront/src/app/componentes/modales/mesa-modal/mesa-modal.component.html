@@ -1,0 +1,64 @@
+<div class="modal-content d-flex align-items-center">
+  <!-- Header del modal -->
+  <div class="modal-header custom-header d-flex justify-content-between align-items-center">
+    <h4 class="modal-title">{{ modalTitle }}</h4>
+    <button type="button" class="btn-close custom-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <!-- Body del modal -->
+  <div class="modal-body custom-body">
+    <form [formGroup]="mesaForm">
+      
+      <!-- Primera fila: Número de Mesa -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <input type="text" 
+                 id="numeroMesa" 
+                 name="numeroMesa"
+                 formControlName="numeroMesa" 
+                 class="form-control custom-input"
+                 [class.is-invalid]="isFieldInvalid('numeroMesa')"
+                 placeholder="Número de Mesa (Ej: VIP, 15, Terraza A...)"
+                 maxlength="20">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('numeroMesa')">
+            {{ getFieldError('numeroMesa') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Segunda fila: Estado -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <select id="estadoMesa" 
+                  name="estadoMesa"
+                  formControlName="estadoMesa" 
+                  class="form-select custom-input"
+                  [class.is-invalid]="isFieldInvalid('estadoMesa')">
+            <option [value]="null" disabled>Estado de la Mesa</option>
+            <option [value]="EstadoMesa.DISPONIBLE">{{ getEstadoTexto(EstadoMesa.DISPONIBLE) }}</option>
+            <option [value]="EstadoMesa.OCUPADA">{{ getEstadoTexto(EstadoMesa.OCUPADA) }}</option>
+            <option [value]="EstadoMesa.RESERVADA">{{ getEstadoTexto(EstadoMesa.RESERVADA) }}</option>
+            <option [value]="EstadoMesa.FUERA_SERVICIO">{{ getEstadoTexto(EstadoMesa.FUERA_SERVICIO) }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('estadoMesa')">
+            {{ getFieldError('estadoMesa') }}
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer del modal -->
+  <div class="modal-footer custom-footer">
+    <button type="button" class="btn custom-btn-cancel" (click)="activeModal.dismiss()">
+      Cancelar
+    </button>
+    <button type="button" 
+            class="btn custom-btn-save" 
+            (click)="save()"
+            [disabled]="mesaForm.invalid">
+      {{ submitButtonText }}
+    </button>
+  </div>
+</div>

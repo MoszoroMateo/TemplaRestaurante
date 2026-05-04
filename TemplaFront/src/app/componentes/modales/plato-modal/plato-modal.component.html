@@ -1,0 +1,169 @@
+<div class="modal-content d-flex align-items-center">
+    <!-- Header del modal -->
+    <div class="modal-header custom-header d-flex justify-content-between align-items-center">
+        <h4 class="modal-title">{{ isEditMode ? 'Editar Plato' : 'Nuevo Plato' }}</h4>
+        <button type="button" class="btn-close custom-close" aria-label="Close" (click)="cancel()"></button>
+    </div>
+
+    <!-- Body del modal -->
+    <div class="modal-body custom-body">
+        <form [formGroup]="platoForm" (ngSubmit)="save()">
+
+            <!-- Primera fila: Nombre -->
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <input type="text" class="form-control custom-input" formControlName="nombre"
+                        placeholder="Nombre del Plato">
+                </div>
+            </div>
+
+            <!-- Segunda fila: Descripción -->
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <textarea class="form-control custom-input" formControlName="descripcion" rows="3"
+                        placeholder="Descripción del plato..."
+                        style="height: auto; min-height: 70px; resize: none;"></textarea>
+                </div>
+            </div>
+
+            <!-- Tercera fila: Precio y Tipo -->
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="number" class="form-control custom-input" formControlName="precio" step="0.01" min="0"
+                        placeholder="Precio $">
+                </div>
+
+                <div class="form-group">
+                    <select class="form-select custom-input" formControlName="tipoPlato">
+                        <option value="">Tipo de Plato</option>
+                        <option *ngFor="let tipo of tiposPlatoOptions" [value]="tipo">
+                            {{ tipo }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cuarta fila: Disponible (solo en edición) -->
+            <div class="form-row" *ngIf="isEditMode">
+                <div class="form-group">
+                    <div class="toggle-container">
+                        <!-- ✅ CAMBIAR: Usar método personalizado en lugar del FormControl -->
+                        <label class="toggle-switch" (click)="confirmarToggleDisponibilidad()">
+                            <input type="checkbox" formControlName="disponible"
+                                (change)="confirmarToggleDisponibilidad()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">
+                            {{ platoForm.get('disponible')?.value ? 'Plato Disponible' : 'Plato No Disponible' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ✅ NUEVO: Botón de eliminar al lado del toggle -->
+                <div class="form-group" *ngIf="!platoForm.get('disponible')?.value">
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-eliminar-definitivo" (click)="eliminarPlatoModal()"
+                            title="Eliminar plato definitivamente">
+                            🗑️ Eliminar Definitivamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="imagen" class="form-label">Imagen del Plato</label>
+                    <div class="imagen-upload-container">
+                        <!-- Input de archivo -->
+                        <input type="file" id="imagen" class="form-control custom-input" accept="image/*"
+                            (change)="onImagenSeleccionada($event)">
+
+                        <!-- Preview de la imagen -->
+                        <div class="imagen-preview" *ngIf="imagenPreview">
+                            <img [src]="imagenPreview" alt="Preview" class="img-preview">
+                            <button type="button" class="btn-remove-image" (click)="removerImagen()">
+                                ❌
+                            </button>
+                        </div>
+
+                        <!-- Mensaje de ayuda -->
+                        <small class="form-text text-muted">
+                            Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sexta fila: Ingredientes -->
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="toggle-label">Ingredientes *</span>
+                        <button type="button" class="btn btn-agregar" (click)="agregarIngrediente()">
+                            ➕ Agregar Ingrediente
+                        </button>
+                    </div>
+
+                    <!-- Lista de ingredientes -->
+                    <div formArrayName="ingredientes">
+                        <div *ngFor="let ingredienteControl of ingredientesFormArray.controls; let i = index"
+                            [formGroupName]="i" class="ingrediente-row">
+
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <label class="ingrediente-label">Producto</label>
+                                    <select class="form-select custom-input form-select-sm" formControlName="idProducto"
+                                        style="height: 60px; font-size: 20px;">
+                                        <option value="">Seleccionar...</option>
+                                        <option *ngFor="let producto of productos" [value]="producto.id">
+                                            {{ producto.nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="ingrediente-label">Cantidad</label>
+                                    <!-- ✅ NUEVO: Input group con unidad de medida -->
+                                    <div class="input-group">
+                                        <input type="number" class="form-control custom-input form-control-sm"
+                                            formControlName="cantidad" min="0" step="0.1"
+                                            style="height: 60px; font-size: 20px; border-radius: 8px 0 0 0;"
+                                            placeholder="0.0">
+                                        <!-- ✅ NUEVO: Mostrar unidad de medida -->
+                                        <span class="input-group-text" style="height: 60px;">
+                                            {{ getUnidadParaIngrediente(ingredienteControl) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <button type="button" class="btn btn-eliminar w-100"
+                                        (click)="eliminarIngrediente(i)" [disabled]="ingredientesFormArray.length <= 1">
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensaje de error general 
+                <div class="alert alert-warning mt-2"
+                    *ngIf="ingredientesFormArray.length === 0 || (platoForm.get('ingredientes')?.invalid && platoForm.get('ingredientes')?.touched)"
+                    style="background-color: rgba(255, 193, 7, 0.2); border: 1px solid var(--templa-gold); color: var(--templa-dark-green);">
+                    <small>⚠️ Debe agregar al menos un ingrediente válido</small>
+                </div>-->
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer del modal -->
+    <div class="modal-footer custom-footer">
+        <button type="button" class="btn custom-btn-cancel" (click)="cancel()">
+            Cancelar
+        </button>
+        <button type="button" class="btn custom-btn-save" [disabled]="platoForm.invalid" (click)="save()">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+        </button>
+    </div>
+</div>

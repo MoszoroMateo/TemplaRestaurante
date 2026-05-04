@@ -1,0 +1,137 @@
+<div class="container-fluid p-4 bg-templa-beige min-vh-100">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0 text-templa-brown">
+          <i class="bi bi-people-fill me-2"></i>
+          Clientes con Más Reservas
+        </h2>
+        <button class="btn btn-secondary" (click)="volver()">
+          <i class="bi bi-arrow-left me-2"></i>Volver
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="info-badge bg-white border border-templa-gold p-2 rounded">
+              <span class="fs-5 me-2"></span>
+              <span class="text-templa-brown">Total de clientes: {{datos.length}}</span>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <button class="btn btn-success btn-sm" (click)="actualizarDatos()" [disabled]="loading">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                Actualizar
+              </button>
+              <button class="btn btn-danger" (click)="exportarPDF()" [disabled]="loading || datos.length === 0">
+                <i class="bi bi-file-pdf me-1"></i>
+                PDF
+              </button>
+              <button class="btn btn-success" (click)="exportarExcel()" [disabled]="loading || datos.length === 0">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-templa-green mb-3" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mb-0 text-templa-brown">Cargando datos de clientes...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="row" *ngIf="!loading && datos.length > 0">
+    <!-- Gráfico -->
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-header bg-templa-green text-dark">
+          <h5 class="mb-0">
+            Distribución de Reservas por Cliente
+          </h5>
+        </div>
+        <div class="card-body">
+          <div id="pieChart" style="height: 500px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full width table -->
+  <div class="row mt-4" *ngIf="!loading && datos.length > 0">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-header bg-templa-green text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-list-ul me-2"></i>
+            Lista Completa de Clientes
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Cliente</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th class="text-center">Total Reservas</th>
+                  <th>Evento Favorito</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cliente of datos; let i = index">
+                  <td>{{i + 1}}</td>
+                  <td>
+                    <strong>{{cliente.nombreCompleto}}</strong>
+                  </td>
+                  <td>{{cliente.email}}</td>
+                  <td>{{cliente.telefono}}</td>
+                  <td class="text-center">
+                    {{cliente.totalReservas}}
+                  </td>
+                  <td>{{cliente.eventoMasFrecuente}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div class="row" *ngIf="!loading && datos.length === 0">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-body text-center py-5">
+          <div class="fs-1 mb-3">📭</div>
+          <h3 class="text-templa-brown">No hay datos disponibles</h3>
+          <p class="text-muted">No se encontraron clientes con reservas en el sistema.</p>
+          <button class="btn btn-templa-green mt-3" (click)="actualizarDatos()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Intentar nuevamente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

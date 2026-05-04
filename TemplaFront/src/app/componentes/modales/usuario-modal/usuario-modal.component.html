@@ -1,0 +1,85 @@
+<!-- usuario-modal.component.html -->
+<div class="modal-content d-flex align-items-center">
+  <!-- Header del modal -->
+  <div class="modal-header custom-header d-flex justify-content-between align-items-center">
+    <h4 class="modal-title">{{isEditMode ? 'Editar Usuario' : 'Alta de Usuario'}}</h4>
+    <button type="button" class="btn-close custom-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+  </div>
+  
+  <!-- Body del modal -->
+  <div class="modal-body custom-body">
+    <form>
+      <!-- Username -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <input type="text" id="username" name="username" class="form-control custom-input"
+                 placeholder="Username" [(ngModel)]="usuario.username" required>
+        </div>
+      </div>
+
+      <!-- Password (requerida para creación, opcional para edición) -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <input type="password" id="password" name="password" class="form-control custom-input"
+                 [placeholder]="isEditMode ? 'Nueva Password (opcional)' : 'Password'" 
+                 [(ngModel)]="usuario.password" 
+                 [required]="!isEditMode">
+        </div>
+      </div>
+
+      <!-- Rol y Estado -->
+      <div class="form-row">
+        <div class="form-group">
+          <select class="form-select custom-select" 
+                  [(ngModel)]="usuario.rolUsuario" 
+                  name="rolUsuario" required>
+            <option value="" disabled selected>Seleccionar Rol</option>
+            <option value="ADMINISTRADOR">Administrador</option>
+            <option value="MOZO">Mozo</option>
+            <option value="COCINA">Cocina</option>
+            <option value="ENCARGADO">Encargado</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <div class="toggle-container"> 
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="usuario.activo" name="activo">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Activo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seleccionar Persona - Solo en modo creación -->
+      <div class="form-row" *ngIf="!isEditMode">
+        <div class="form-group full-width">
+          <select class="form-select custom-select" 
+                  [(ngModel)]="usuario.personaDni" 
+                  name="personaDni">
+            <option [ngValue]="null">Seleccionar Persona</option>
+            <option *ngFor="let persona of personas" [ngValue]="persona.dni">
+              {{ persona.nombre }} {{ persona.apellido }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer del modal -->
+  <div class="modal-footer custom-footer">
+    <button type="button" 
+            class="btn custom-btn-cancel" 
+            (click)="activeModal.dismiss()">
+      Cancelar
+    </button>
+    <button type="button" 
+            class="btn custom-btn-save" 
+            (click)="save()"
+            [disabled]="!usuario.username || !usuario.rolUsuario || (!isEditMode && !usuario.password)">
+      Guardar
+    </button>
+  </div>
+</div>

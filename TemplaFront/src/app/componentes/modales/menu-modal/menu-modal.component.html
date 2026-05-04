@@ -1,0 +1,179 @@
+<div class="modal-content d-flex align-items-center">
+  <!-- Header del modal -->
+  <div class="modal-header custom-header d-flex justify-content-between align-items-center">
+    <h4 class="modal-title">{{ esEdicion ? 'Editar Menú' : 'Nuevo Menú' }}</h4>
+    <button type="button" class="btn-close custom-close" aria-label="Close" (click)="onCancelar()"></button>
+  </div>
+
+  <!-- Body del modal -->
+  <div class="modal-body custom-body">
+    <form #formTemplate="ngForm">
+      
+      <!-- Información básica del menú -->
+      <div class="form-row">
+        <div class="form-group">
+          <input 
+            type="text" 
+            id="nombre" 
+            class="form-control custom-input" 
+            [(ngModel)]="menuForm.nombre"
+            name="nombre"
+            placeholder="Nombre del Menú"
+            required>
+        </div>
+        
+        <div class="form-group">
+          <input 
+            type="number" 
+            id="precio" 
+            class="form-control custom-input" 
+            [(ngModel)]="menuForm.precio"
+            name="precio"
+            step="0.01"
+            min="0"
+            placeholder="Precio"
+            required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group full-width">
+          <textarea 
+            id="descripcion" 
+            class="form-control custom-input" 
+            rows="3"
+            [(ngModel)]="menuForm.descripcion"
+            name="descripcion"
+            placeholder="Descripción del menú (opcional)..."></textarea>
+        </div>
+      </div>
+      
+      <!-- Período de disponibilidad del menú -->
+      <div class="form-row">
+        <div class="form-group full-width text-center">
+          <label class="form-label">Período de disponibilidad del menú</label>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="input-label">Desde</label>
+          <input 
+            type="date" 
+            id="disponibleDesde" 
+            class="form-control custom-input" 
+            [(ngModel)]="menuForm.disponibleDesde"
+            name="disponibleDesde"
+            required>
+        </div>
+        
+        <div class="form-group">
+          <label class="input-label">Hasta</label>
+          <input 
+            type="date" 
+            id="disponibleHasta" 
+            class="form-control custom-input" 
+            [(ngModel)]="menuForm.disponibleHasta"
+            name="disponibleHasta"
+            placeholder="Fecha fin (opcional)">
+        </div>
+      </div>
+
+      <!-- Toggle para activo -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <div class="toggle-container">
+            <span class="toggle-label">Menú activo</span>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="activo" name="activo">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selección de contenidos -->
+      <div class="form-row">
+        <div class="form-group">
+          <select 
+            id="tipoContenido" 
+            class="form-select custom-input" 
+            [(ngModel)]="tipoSeleccionado"
+            name="tipoContenido"
+            (change)="onTipoChange()">
+            <option value="" disabled selected>Selecciona el tipo de contenido</option>
+            <option *ngFor="let tipo of tiposContenido" [value]="tipo.valor">
+              {{ tipo.texto }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <select 
+            id="itemContenido" 
+            class="form-select custom-input" 
+            [(ngModel)]="itemSeleccionado"
+            name="itemContenido"
+            [disabled]="itemsDisponibles.length === 0">
+            <option [value]="null" disabled>Seleccionar item...</option>
+            <option *ngFor="let item of itemsDisponibles" [value]="item.id">
+              {{ item.nombre }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full-width">
+          <button 
+            type="button" 
+            class="btn custom-btn-add w-100"
+            (click)="agregarItem()"
+            [disabled]="!tipoSeleccionado || !itemSeleccionado">
+            Agregar Item al Menú
+          </button>
+        </div>
+      </div>
+      
+      <!-- Lista de items agregados -->
+      <div *ngIf="itemsAgregados.length > 0" class="items-agregados">
+        <div class="items-list">
+          <div class="item-card" *ngFor="let item of itemsAgregados; let i = index">
+            <div class="item-info">
+              <span class="item-nombre">{{ item.nombre }}</span>
+              <span class="item-tipo">{{ item.tipo === 'PLATO' ? 'Plato' : 'Producto' }} - {{ item.tipoEspecifico }}</span>
+            </div>
+            <button 
+              type="button" 
+              class="btn btn-sm custom-btn-remove"
+              (click)="quitarItem(i)">
+              Quitar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="itemsAgregados.length === 0" class="no-items">
+        <p class="text-muted text-center">
+          No hay items agregados al menú
+        </p>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer del modal -->
+  <div class="modal-footer custom-footer">
+    <button type="button" class="btn custom-btn-cancel" (click)="onCancelar()" [disabled]="guardando">
+      Cancelar
+    </button>
+    <button 
+      type="button" 
+      class="btn custom-btn-save" 
+      (click)="onGuardar()"
+      [disabled]="!esFormularioValido() || guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      {{ esEdicion ? 'Actualizar' : 'Crear' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,1183 @@
+/* ============================================
+   RESERVA PÚBLICA - TEMPLA RESTAURANTE
+   ============================================ */
+
+/* Importar fuente Amethysta */
+@import url('https://fonts.googleapis.com/css2?family=Amethysta&display=swap');
+
+/* Variables de colores Templa */
+:root {
+  --templa-brown: #755143;
+  --templa-green: #84C473;
+  --templa-red: #C47373;
+  --templa-gold: #d2a46d;
+  --templa-dark-green: #696848;
+  --templa-light: #f8f9fa;
+  --templa-dark: #2c3e50;
+  --templa-beige: #F4EADD;
+  --templa-hovergreen: #6fa95e;
+}
+
+/* Aplicar fuente a todo el componente */
+.reserva-publica-container {
+  font-family: 'Amethysta', serif;
+  background: var(--templa-beige);
+  min-height: 100vh;
+  padding: 3rem 1rem;
+}
+
+/* Títulos con estilo Templa */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Amethysta', serif;
+  letter-spacing: 2px;
+  font-weight: 400;
+}
+
+.display-4 {
+  letter-spacing: 4px;
+}
+
+.lead {
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+}
+
+/* Step Indicator */
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  position: relative;
+  padding: 0 2rem;
+}
+
+.step-indicator::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--templa-beige);
+  z-index: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  max-width: 120px;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--templa-beige);
+  color: var(--templa-brown);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  border: 3px solid var(--templa-beige);
+}
+
+.step.active .step-number {
+  background: var(--templa-gold);
+  color: white;
+  border-color: var(--templa-gold);
+}
+
+.step.completed .step-number {
+  background: var(--templa-green);
+  color: white;
+  border-color: var(--templa-green);
+}
+
+.step-title {
+  font-size: 0.85rem;
+  color: var(--templa-brown);
+  text-align: center;
+  font-weight: 500;
+}
+
+.step.active .step-title,
+.step.completed .step-title {
+  color: var(--templa-dark-green);
+  font-weight: 600;
+}
+
+/* Card Styles */
+.card {
+  border: 1px solid var(--templa-gold);
+  border-radius: 0;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.border-templa-gold {
+  border-color: var(--templa-gold) !important;
+}
+
+.card-body {
+  padding: 3rem;
+}
+
+/* Comensales Form */
+.step-content {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.comensales-form {
+  text-align: center;
+  width: 100%;
+}
+
+.number-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.btn-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 0;
+  border: 2px solid var(--templa-gold);
+  background: white;
+  color: var(--templa-gold);
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-number:hover {
+  background: var(--templa-gold);
+  color: white;
+}
+
+.number-input {
+  width: 80px;
+  height: 60px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+  border: 2px solid var(--templa-gold);
+  border-radius: 0;
+  background: white;
+  color: var(--templa-dark-green);
+}
+
+/* Calendario */
+.calendar-container {
+  background: white;
+  border-radius: 0;
+  padding: 30px;
+  border: 1px solid var(--templa-gold);
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.nav-btn {
+  background: var(--templa-brown);
+  color: white;
+  border: none;
+  border-radius: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: 'Amethysta', serif;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: var(--templa-gold);
+  transform: scale(1.05);
+}
+
+.month-year {
+  font-size: 22px;
+  color: var(--templa-brown);
+  margin: 0;
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 2px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.day-header {
+  text-align: center;
+  font-weight: 400;
+  color: var(--templa-brown);
+  padding: 10px 5px;
+  font-size: 14px;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  cursor: pointer;
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.calendar-day.other-month {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+
+
+/* Día con disponibilidad */
+.calendar-day.available {
+  background-color: var(--templa-green);
+  color: white;
+  cursor: pointer;
+}
+
+.calendar-day.available:hover {
+  background-color: var(--templa-hovergreen);
+  transform: scale(1.1);
+}
+
+.calendar-day.today {
+  background-color: var(--templa-gold) !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.calendar-day.selected {
+  background-color: var(--templa-brown) !important;
+  color: white !important;
+  border-color: var(--templa-brown);
+  font-weight: 500;
+  transform: scale(1.05);
+}
+
+.calendar-day.past {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-family: 'Amethysta', serif;
+  color: var(--templa-brown);
+  letter-spacing: 0.5px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+}
+
+.legend-color.today {
+  background-color: var(--templa-gold);
+}
+
+.legend-color.available {
+  background-color: var(--templa-green);
+}
+
+.legend-color.selected {
+  background-color: var(--templa-brown);
+}
+
+.legend-color.past {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.selected-date {
+  text-align: center;
+  padding: 15px;
+  background-color: var(--templa-beige);
+  border-radius: 0;
+  border: 1px solid var(--templa-gold);
+  color: var(--templa-brown);
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+  margin-top: 15px;
+}
+
+.selected-date i {
+  color: var(--templa-green);
+  margin-right: 8px;
+}
+
+/* Evento Options */
+.evento-form {
+  width: 100%;
+}
+
+.evento-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.evento-option {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.evento-option:hover {
+  transform: translateY(-2px);
+}
+
+.evento-card {
+  background: white;
+  border: 2px solid var(--templa-beige);
+  border-radius: 0;
+  padding: 25px 15px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.evento-option.selected .evento-card {
+  border-color: var(--templa-gold);
+  background: var(--templa-beige);
+  box-shadow: 0 4px 12px rgba(210, 164, 109, 0.2);
+}
+
+.evento-icon {
+  font-size: 2.5rem;
+  color: var(--templa-gold);
+  margin-bottom: 10px;
+}
+
+.evento-name {
+  font-weight: 600;
+  color: var(--templa-dark-green);
+}
+
+/* Horario Options */
+.horario-form {
+  width: 100%;
+}
+
+.evento-horario-info {
+  margin: 10px 0 20px 0;
+  padding: 10px 15px;
+  background-color: var(--templa-beige);
+  border-left: 4px solid var(--templa-gold);
+  border-radius: 0;
+  font-family: 'Amethysta', serif;
+}
+
+.evento-horario-info small {
+  color: var(--templa-brown);
+  font-size: 0.95rem;
+  font-family: 'Amethysta', serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.5px;
+}
+
+.evento-horario-info i {
+  color: var(--templa-gold);
+}
+
+.horario-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.horario-option {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.horario-option:hover {
+  transform: translateY(-2px);
+}
+
+.horario-card {
+  background: white;
+  border: 2px solid var(--templa-beige);
+  border-radius: 0;
+  padding: 15px 10px;
+  text-align: center;
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+  font-size: 1.1rem;
+  color: var(--templa-dark-green);
+  transition: all 0.3s ease;
+}
+
+.horario-option.selected .horario-card {
+  border-color: var(--templa-gold);
+  background: var(--templa-gold);
+  color: white;
+  box-shadow: 0 4px 12px rgba(210, 164, 109, 0.3);
+}
+
+/* Form Persona */
+.client-form-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.persona-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.persona-form .form-row .full-width {
+  grid-column: 1 / -1;
+}
+
+.persona-form .form-group {
+  margin-bottom: 0;
+}
+
+.custom-input {
+  background-color: white;
+  border: 2px solid var(--templa-beige);
+  border-radius: 0;
+  padding: 12px 15px;
+  font-size: 1rem;
+  font-family: 'Amethysta', serif;
+  color: var(--templa-brown);
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+  border-color: var(--templa-gold);
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(210, 164, 109, 0.25);
+}
+
+.custom-input::placeholder {
+  color: #999;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 5px;
+}
+
+.section-divider {
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--templa-beige), transparent);
+  margin: 20px 0;
+}
+
+/* Resumen */
+.reserva-resumen-container {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reserva-resumen-card {
+  background: var(--templa-beige);
+  border: 2px solid var(--templa-gold);
+  border-radius: 0;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resumen-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid white;
+}
+
+.resumen-header h4 {
+  color: var(--templa-brown);
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 2px;
+  font-weight: 400;
+}
+
+.resumen-header i {
+  color: var(--templa-gold);
+  margin-right: 10px;
+}
+
+.resumen-subtitle {
+  color: var(--templa-brown);
+  margin: 0;
+  font-size: 0.95rem;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 0.5px;
+}
+
+.resumen-content {
+  display: grid;
+  gap: 20px;
+}
+
+.resumen-section h5 {
+  color: var(--templa-brown);
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+
+.resumen-section h5 i {
+  color: var(--templa-gold);
+  margin-right: 8px;
+}
+
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid white;
+}
+
+.resumen-label {
+  color: var(--templa-brown);
+  font-weight: 400;
+  font-family: 'Amethysta', serif;
+}
+
+.resumen-value {
+  color: var(--templa-brown);
+  font-weight: 500;
+  font-family: 'Amethysta', serif;
+}
+
+.resumen-divider {
+  height: 2px;
+  background: white;
+  margin: 10px 0;
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 10px;
+}
+
+.btn {
+  padding: 12px 32px;
+  border-radius: 0;
+  font-weight: 400;
+  font-size: 1.1rem;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+}
+
+.btn-primary {
+  background-color: var(--templa-gold);
+  color: white;
+  margin-left: auto;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--templa-brown);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(139, 111, 71, 0.3);
+}
+
+.btn-success {
+  background-color: var(--templa-green);
+  color: white;
+  margin-left: auto;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: var(--templa-dark-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(45, 95, 63, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Text Colors */
+.text-templa-brown {
+  color: var(--templa-brown) !important;
+}
+
+.text-templa-green {
+  color: var(--templa-green) !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Tablet y pantallas intermedias (769px - 1024px) */
+@media (max-width: 1024px) {
+  /* Títulos */
+  .display-4 {
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+  }
+
+  .lead {
+    font-size: 1rem;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    padding: 0 1rem;
+  }
+
+  .step {
+    max-width: 100px;
+  }
+
+  .step-number {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+  }
+
+  .step-title {
+    font-size: 0.8rem;
+  }
+
+  /* Card */
+  .card-body {
+    padding: 2rem;
+  }
+
+  /* Calendario */
+  .calendar-container {
+    padding: 20px;
+  }
+
+  .month-year {
+    font-size: 20px;
+  }
+
+  /* Opciones de evento y horario */
+  .evento-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .horario-options {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  /* Resumen */
+  .reserva-resumen-card {
+    padding: 25px;
+  }
+
+  .resumen-header h4 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Container */
+  .reserva-publica-container {
+    padding: 2rem 0.5rem;
+  }
+
+  /* Títulos */
+  .display-4 {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+
+  .lead {
+    font-size: 0.95rem;
+  }
+
+  h3.text-templa-brown {
+    font-size: 1.5rem;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    padding: 0 0.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .step {
+    max-width: 70px;
+  }
+  
+  .step-number {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+  
+  .step-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Card */
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  /* Paso 1 - Comensales */
+  .number-input-container {
+    gap: 10px;
+  }
+
+  .btn-number {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+
+  .number-input {
+    width: 70px;
+    height: 55px;
+    font-size: 1.8rem;
+  }
+
+  /* Paso 2 - Calendario */
+  .calendar-container {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .calendar-header {
+    margin-bottom: 15px;
+  }
+
+  .month-year {
+    font-size: 18px;
+  }
+
+  .nav-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .calendar-grid {
+    gap: 3px;
+  }
+
+  .day-header {
+    font-size: 12px;
+    padding: 8px 3px;
+  }
+
+  .calendar-day {
+    font-size: 0.85rem;
+  }
+
+  .calendar-legend {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .legend-item {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .legend-color {
+    width: 14px;
+    height: 14px;
+  }
+
+  .selected-date {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  /* Paso 3 - Eventos */
+  .evento-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .evento-card {
+    padding: 20px 10px;
+  }
+
+  .evento-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .evento-name {
+    font-size: 0.9rem;
+  }
+
+  /* Paso 4 - Horarios */
+  .horario-options {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .horario-card {
+    padding: 12px 8px;
+    font-size: 1rem;
+  }
+
+  .evento-horario-info {
+    padding: 8px 12px;
+  }
+
+  .evento-horario-info small {
+    font-size: 0.85rem;
+  }
+
+  /* Paso 5 - Formulario */
+  .client-form-container {
+    max-width: 100%;
+  }
+
+  .persona-form .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .custom-input {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  /* Resumen */
+  .reserva-resumen-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .reserva-resumen-card {
+    padding: 20px;
+    margin: 20px 0 0;
+  }
+
+  .resumen-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+
+  .resumen-header h4 {
+    font-size: 1.2rem;
+  }
+
+  .resumen-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .resumen-section h5 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .resumen-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 6px 0;
+  }
+
+  .resumen-label,
+  .resumen-value {
+    font-size: 0.9rem;
+  }
+
+  .resumen-value {
+    text-align: left;
+  }
+
+  /* Botones de navegación */
+  .navigation-buttons {
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  /* Container */
+  .reserva-publica-container {
+    padding: 1.5rem 0.5rem;
+  }
+
+  /* Títulos */
+  .display-4 {
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+
+  .lead {
+    font-size: 0.9rem;
+  }
+
+  h3.text-templa-brown {
+    font-size: 1.3rem;
+  }
+
+  /* Step indicator */
+  .step-indicator::before {
+    display: none;
+  }
+
+  .step {
+    max-width: 60px;
+  }
+
+  .step-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+
+  .step-title {
+    font-size: 0.6rem;
+  }
+
+  /* Card */
+  .card-body {
+    padding: 1rem;
+  }
+
+  /* Paso 1 - Comensales */
+  .btn-number {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .number-input {
+    width: 60px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  /* Paso 2 - Calendario */
+  .calendar-container {
+    padding: 10px;
+  }
+
+  .month-year {
+    font-size: 16px;
+  }
+
+  .nav-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+
+  .calendar-grid {
+    gap: 2px;
+  }
+
+  .day-header {
+    font-size: 10px;
+    padding: 6px 2px;
+  }
+
+  .calendar-day {
+    font-size: 0.75rem;
+  }
+
+  .calendar-legend {
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .legend-item {
+    font-size: 10px;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+  }
+
+  .selected-date {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  /* Paso 3 - Eventos */
+  .evento-options {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .evento-card {
+    padding: 18px 10px;
+  }
+
+  .evento-icon {
+    font-size: 1.8rem;
+  }
+
+  .evento-name {
+    font-size: 0.85rem;
+  }
+
+  /* Paso 4 - Horarios */
+  .horario-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .horario-card {
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+
+  /* Paso 5 - Formulario */
+  .custom-input {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  /* Resumen */
+  .reserva-resumen-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .reserva-resumen-card {
+    padding: 15px;
+    margin: 15px 0 0;
+  }
+
+  .resumen-header h4 {
+    font-size: 1.1rem;
+  }
+
+  .resumen-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .resumen-section h5 {
+    font-size: 0.95rem;
+  }
+
+  .resumen-label,
+  .resumen-value {
+    font-size: 0.85rem;
+  }
+
+  /* Botones */
+  .btn {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+  
+  .navigation-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn-primary {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .btn-success {
+    width: 100%;
+  }
+}

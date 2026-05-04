@@ -1,0 +1,349 @@
+:root {
+  --templa-brown: #755143;
+  --templa-brown-disabled: #5c3f34;
+  --templa-beige: #F4EADD; 
+  --templa-gold: #d2a46d;
+  --templa-dark-green: #696848;
+  --templa-green: #84C473;
+  --templa-hovergreen: #91da7e;
+  --templa-black: #1E1E1E;
+  --templa-red: #C47373;
+  --templa-hoverred: #da7e7e;
+
+  /* Fondos de estados (pasteles) */
+  --templa-bg-disponible: #e8f5e3;
+  --templa-text-disponible: #4a7c3f;
+  --templa-bg-ocupada: #e2e3e5;
+  --templa-text-ocupada: #383d41;
+  --templa-bg-reservada: #f8f0e3;
+  --templa-text-reservada: #8b7548;
+  --templa-bg-fuera-servicio: #f8e3e3;
+  --templa-text-fuera-servicio: #8b5555;
+
+  --templa-font-title: 'Amethysta';
+  --templa-font-text: 'Amiko'; 
+}
+
+/* Fondo global para evitar espacios blancos */
+html, body {
+  background-color: #F4EADD;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.modal-content {
+  border-radius: 50px; 
+  box-shadow: 0 4px 50px 25px rgba(0, 0, 0, 0.3);
+  background-color: var(--templa-beige);
+  overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px !important;
+    gap: 20px;
+}
+
+.header-left {
+    flex-shrink: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* ✅ Espaciado entre elementos */
+    flex-wrap: wrap; /* ✅ Permite que se envuelvan en pantallas pequeñas */
+}
+
+.texto-elegante {
+    font-family: var(--templa-font-title);
+    font-size: 28px;
+    color: var(--templa-dark-green);
+    margin: 0;
+    font-weight: 600;
+}
+
+.search-container {
+    min-width: 250px;
+}
+
+.custom-input {
+    background-color: var(--templa-gold);
+    border: none;
+    height: 35px;
+    border-radius: 8px;
+    padding: 15px 20px;
+    font-size: 20px;
+    color: white;
+    font-family: var(--templa-font-text);
+    /*box-shadow: 0 4px 5px 1px rgba(0, 0, 0, 0.5) !important;*/
+
+}
+
+.custom-input::placeholder {
+    color: white;
+    opacity: 0.8;
+}
+
+.custom-input:focus {
+    background-color: var(--templa-gold);
+    border: none;
+    box-shadow: 0 0 0 0.2rem rgba(212, 165, 116, 0.5);
+    color: white;
+}
+
+.filter-group {
+    background-color: var(--templa-gold);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 35px;
+}
+
+.custom-radio {
+    font-family: var(--templa-font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    border: none;
+    color: var(--templa-brown);
+    border-color: var(--templa-gold);
+    background-color: var(--templa-gold);
+}
+
+.custom-radio:hover {
+    background-color: var(--templa-brown);
+    border-color: var(--templa-brown);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-check:checked + .custom-radio {
+    background-color: var(--templa-brown) !important;
+    border-color: var(--templa-brown) !important;
+    color: white !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(139, 111, 71, 0.3);
+}
+
+.header-divider {
+    margin: 0;
+    opacity: 0.3;
+}
+
+.custom-btn {
+    background-color: var(--templa-green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-family: var(--templa-font-body);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(139, 195, 74, 0.3);
+}
+
+.custom-btn:hover {
+    background-color: var(--templa-hovergreen);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 195, 74, 0.4);
+    color: white;
+}
+
+.btn-icon {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.pagination-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.pagination-info {
+    color: var(--templa-dark-green);
+    font-size: 14px;
+}
+
+.custom-pagination .page-link {
+    color: var(--templa-brown);
+    border: none;
+    padding: 8px 12px;
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.custom-pagination .page-link:hover {
+    background-color: var(--templa-gold);
+    border: none;
+    color: var(--templa-brown);
+}
+
+.custom-pagination .page-item.active .page-link {
+    background-color: var(--templa-brown);
+    border: none;
+    color: white;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border: none;
+}
+
+/* ✅ NUEVO: Botón eliminar definitivo */
+.btn-eliminar-definitivo {
+  background-color: var(--templa-red);
+  color: white;
+  border: 1px solid var(--templa-red);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-eliminar-definitivo:hover {
+  background-color: var(--templa-hoverred);
+  border-color: var(--templa-hoverred);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* ✅ MEJORAR: Toggle no clickeable directamente */
+.toggle-switch {
+  cursor: pointer;
+}
+/* ===== TABLA PERSONALIZADA ===== */
+.custom-table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 25px 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table thead th {
+    background-color: var(--templa-brown);
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 15px 12px;
+    font-size: 14px;
+}
+
+.custom-table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== TABLA PERSONALIZADA ===== */
+.custom-table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 25px 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table thead th {
+    background-color: var(--templa-brown);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    padding: 15px 12px;
+    font-size: 14px;
+}
+
+.custom-table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+    text-align: center;
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Grupo de filtros de fecha */
+.date-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--templa-gold);
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 35px;
+}
+
+.date-input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-label {
+    font-family: var(--templa-font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--templa-brown);
+    margin: 0;
+    white-space: nowrap;
+}
+
+.custom-date-input {
+    background-color: var(--templa-brown);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 13px;
+    min-width: 130px;
+    height: 28px;
+    color: white;
+    font-family: var(--templa-font-body);
+    transition: all 0.3s ease;
+}
+
+.custom-date-input:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: white;
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    outline: none;
+    color: white;
+}
+
+.custom-date-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Estilo para el calendario picker */
+.custom-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2);
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+
+/* ✅ Responsive para la nueva fila */
+@media (max-width: 768px) {
+  .btn-eliminar-definitivo {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}

@@ -1,0 +1,95 @@
+<div class="cocina-container">
+  <!-- Header simple -->
+  <div class="header-section">
+    <div class="header-title">
+      <h2>🍽️ Cocina - Pedidos Activos</h2>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-spinner">Cargando pedidos...</div>
+  </div>
+
+  <!-- Lista de pedidos agrupados por estado de detalles -->
+  <div class="pedidos-grid" *ngIf="!isLoading">
+    <div class="pedido-card-agrupada" 
+         *ngFor="let pedidoAgrupado of pedidosAgrupados; let i = index; trackBy: trackByPedidoAgrupado">
+      
+      <!-- Header del pedido con información del estado del grupo -->
+      <div class="pedido-header">
+        <div class="pedido-info-row">
+          <div class="fecha-info">
+            {{formatearFecha(pedidoAgrupado.pedidoOriginal.fechaHora)}}
+          </div>
+          <div class="mesa-info-center">
+            <strong>Mesa {{pedidoAgrupado.pedidoOriginal.numeroMesa}}</strong>
+          </div>
+          <div class="estado-detalle">
+            <span class="estado-badge" 
+                  [ngClass]="obtenerClaseBadgeEstadoDetalle(pedidoAgrupado.estadoDetalle)">
+              {{formatearEstadoDetalle(pedidoAgrupado.estadoDetalle)}}
+            </span>
+          </div>
+        </div>
+        <div class="usuario-info">
+          <span>Mozo: {{pedidoAgrupado.pedidoOriginal.nombreUsuario}}</span>
+          <span class="pedido-id">Pedido #{{pedidoAgrupado.pedidoOriginal.idPedido}}</span>
+        </div>
+      </div>
+
+      <!-- Separador -->
+      <div class="pedido-title-divider"></div>
+
+      <!-- Detalles del grupo por estado -->
+      <div class="pedido-detalles">
+        <div class="items-resumen">
+          <span class="total-items">{{pedidoAgrupado.cantidadItems}} item(s)</span>
+        </div>
+        <div class="detalle-item" *ngFor="let detalle of pedidoAgrupado.detalles">
+          <div class="item-info">
+            <div class="item-nombre">
+              <strong>{{detalle.nombreItem}}</strong>
+              <span class="item-tipo">({{detalle.tipo}})</span>
+            </div>
+            <div class="item-cantidad">
+              Cantidad: <strong>{{detalle.cantidad}}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ Botones de acción según el estado -->
+      <div class="pedido-actions">
+        <!-- Botón de Cocinar para pedidos pendientes -->
+        <button *ngIf="pedidoAgrupado.estadoDetalle === EstadoPedidoDetalle.PENDIENTE"
+                class="btn-cocinar-pedido"
+                (click)="iniciarPreparacionItems(pedidoAgrupado)">
+          🍳 Cocinar
+        </button>
+        
+        <!-- Botón de Listo para Entregar para pedidos en preparación -->
+        <button *ngIf="pedidoAgrupado.estadoDetalle === EstadoPedidoDetalle.EN_PREPARACION"
+                class="btn-listo-entregar"
+                (click)="marcarItemsListosParaEntregar(pedidoAgrupado)">
+          ✅ Listo para Entregar
+        </button>
+
+      </div>
+
+      <!-- Indicador visual para agrupar cards del mismo pedido -->
+      <div class="pedido-group-indicator" 
+           *ngIf="esMismoPedidoSiguiente(i)">
+        <div class="grupo-conectar"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay pedidos -->
+  <div class="no-pedidos" *ngIf="!isLoading && pedidosAgrupados.length === 0">
+    <div class="no-pedidos-icon">🍽️</div>
+    <h3>No hay pedidos activos</h3>
+    <p>Los nuevos pedidos aparecerán aquí automáticamente</p>
+  </div>
+</div>

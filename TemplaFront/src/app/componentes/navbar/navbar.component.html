@@ -1,0 +1,148 @@
+<div class="navbar-layout">
+  <!-- Barra lateral -->
+  <nav class="navbar-container" [class.expanded]="isExpanded">
+    <!-- Botón desplegable con animación hamburguesa/X -->
+    <div class="navbar-toggle" (click)="toggleNavbar()">
+      <svg class="ham hamRotate ham8" [class.active]="isExpanded" viewBox="0 0 100 100" width="50" height="50">
+        <path class="line top"
+          d="m 30,33 h 40 c 3.722839,0 7.5,3.126468 7.5,8.578427 0,5.451959 -2.727029,8.421573 -7.5,8.421573 h -20" />
+        <path class="line middle" d="m 30,50 h 40" />
+        <path class="line bottom"
+          d="m 70,67 h -40 c 0,0 -7.5,-0.802118 -7.5,-8.365747 0,-7.563629 7.5,-8.634253 7.5,-8.634253 h 20" />
+      </svg>
+    </div>
+
+    <!-- Menú de navegación -->
+    <div class="navbar-menu">
+
+      <!-- ✅ Iconos principales con submenu en navbar colapsado -->
+      <div class="direct-icons" *ngIf="modulosPrincipales.length > 0 && !isExpanded">
+        <div *ngFor="let item of modulosPrincipales" class="nav-item-wrapper">
+
+          <!-- Si NO tiene submenú, es link directo -->
+          <a *ngIf="!item.hasSubmenu" [routerLink]="item.route" routerLinkActive="active" class="nav-item direct-icon">
+            <i class="nav-icon" [ngClass]="item.icon.startsWith('bi-') ? ['bi', item.icon] : item.icon.split(' ')"></i>
+            <span class="nav-label" [class.visible]="isExpanded">{{item.label}}</span>
+          </a>
+
+          <!-- ✅ Si tiene submenú y navbar colapsado -->
+          <div *ngIf="item.hasSubmenu" class="nav-item-with-submenu">
+            <!-- Botón principal -->
+            <button class="nav-item direct-icon" [class.submenu-active]="expandedSubmenu === item.id"
+              (click)="toggleSubmenu(item.id)">
+              <i class="nav-icon" [ngClass]="item.icon.startsWith('bi-') ? ['bi', item.icon] : item.icon.split(' ')"></i>
+              <span class="nav-label" [class.visible]="isExpanded">{{item.label}}</span>
+            </button>
+
+            <!-- ✅ Submenu colapsado (solo iconos, sin expandir navbar) -->
+            <div class="collapsed-submenu" [class.visible]="expandedSubmenu === item.id && !isExpanded"
+              *ngIf="item.submenu && item.submenu.length > 0">
+              <a *ngFor="let subItem of item.submenu" [routerLink]="subItem.route" routerLinkActive="active"
+                class="nav-item submenu-icon" [title]="subItem.label">
+                <i class="nav-icon" [ngClass]="getSubmenuIcon(subItem.label).startsWith('bi-') ? ['bi', getSubmenuIcon(subItem.label)] : getSubmenuIcon(subItem.label).split(' ')"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ Menú expandido completo (solo visible cuando navbar está abierto) -->
+      <div *ngIf="isExpanded" class="expanded-menu">
+
+        <!-- ✅ AGREGAR: Módulos principales en el menú expandido -->
+        <div *ngFor="let item of modulosPrincipales" class="menu-item-container">
+
+          <!-- Item principal -->
+          <div class="nav-item-wrapper" [class.has-submenu]="item.hasSubmenu"
+            [class.submenu-open]="expandedSubmenu === item.id">
+
+            <!-- Si NO tiene submenú, es un link directo -->
+            <a *ngIf="!item.hasSubmenu" [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+              <i class="nav-icon" [ngClass]="item.icon.startsWith('bi-') ? ['bi', item.icon] : item.icon.split(' ')"></i>
+              <span class="nav-label" [class.visible]="isExpanded">{{item.label}}</span>
+            </a>
+
+            <!-- Si tiene submenú, es un botón -->
+            <button *ngIf="item.hasSubmenu" class="nav-item nav-item-button" (click)="toggleSubmenu(item.id)">
+              <i class="nav-icon" [ngClass]="item.icon.startsWith('bi-') ? ['bi', item.icon] : item.icon.split(' ')"></i>
+              <span class="nav-label" [class.visible]="isExpanded">{{item.label}}</span>
+              <span class="submenu-arrow" [class.visible]="isExpanded"
+                [class.rotated]="expandedSubmenu === item.id">▶</span>
+            </button>
+          </div>
+
+          <!-- Submenú expandido (con texto completo) -->
+          <div class="submenu" [class.visible]="isExpanded && expandedSubmenu === item.id" *ngIf="item.hasSubmenu">
+            <a *ngFor="let subItem of item.submenu" [routerLink]="subItem.route" routerLinkActive="active"
+              class="submenu-item">
+              {{subItem.label}}
+            </a>
+          </div>
+        </div>
+
+        <!-- ✅ MANTENER: Módulos secundarios -->
+        <div *ngFor="let item of modulosSecundarios" class="menu-item-container">
+
+          <!-- Item principal -->
+          <div class="nav-item-wrapper" [class.has-submenu]="item.hasSubmenu"
+            [class.submenu-open]="expandedSubmenu === item.id">
+
+            <!-- Si NO tiene submenú, es un link directo -->
+            <a *ngIf="!item.hasSubmenu" [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+              <i class="nav-icon" [ngClass]="item.icon.startsWith('bi-') ? ['bi', item.icon] : item.icon.split(' ')"></i>
+              <span class="nav-label" [class.visible]="isExpanded">{{item.label}}</span>
+            </a>
+
+            <!-- Si tiene submenú, es un botón -->
+            <button *ngIf="item.hasSubmenu" class="nav-item nav-item-button" (click)="toggleSubmenu(item.id)">
+              <i class="nav-icon" [ngClass]="item.icon.startsWith('bi-') ? ['bi', item.icon] : item.icon.split(' ')"></i>
+              <span class="nav-label" [class.visible]="isExpanded">{{item.label}}</span>
+              <span class="submenu-arrow" [class.visible]="isExpanded"
+                [class.rotated]="expandedSubmenu === item.id">▶</span>
+            </button>
+          </div>
+
+          <!-- Submenú expandido (con texto completo) -->
+          <div class="submenu" [class.visible]="isExpanded && expandedSubmenu === item.id" *ngIf="item.hasSubmenu">
+            <a *ngFor="let subItem of item.submenu" [routerLink]="subItem.route" routerLinkActive="active"
+              class="submenu-item">
+              {{subItem.label}}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón inferior (logout) -->
+    <div class="navbar-bottom">
+      <button class="nav-item bottom-btn" (click)="logout()">
+        <i class="nav-icon bi bi-box-arrow-right"></i>
+        <span class="nav-label" [class.visible]="isExpanded">Salir</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Header superior -->
+  <header class="header-container" [class.expanded]="isExpanded">
+    <!-- Notificaciones a la izquierda -->
+    <div class="header-left-section">
+      <button class="notification-btn" (click)="showNotifications()">
+        <i class="notification-icon bi bi-bell-fill"></i>
+        <span class="notification-badge" *ngIf="notificationCount > 0">{{notificationCount}}</span>
+      </button>
+    </div>
+
+    <!-- Logo central -->
+    <div class="header-logo">
+      <img src="assets/imagenes/LogoNavbar.png" alt="Templa" class="templa-logo">
+    </div>
+
+    <!-- Información del usuario -->
+    <div class="header-user-section">
+      <div class="user-info">
+        <i class="user-icon bi bi-person-circle"></i>
+        <span class="user-text">Usuario: {{username}}</span>
+      </div>
+    </div>
+  </header>
+</div>

@@ -1,0 +1,254 @@
+/* ===== GRID STYLES ===== */
+.menus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 50px;
+  margin-right: 85px;
+}
+
+/* Máximo 4 columnas */
+@media (min-width: 1400px) {
+  .menus-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .menus-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .menus-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .menus-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== CARD STYLES ===== */
+.menu-card {
+  background: white;
+  border-radius: 0 20px 20px 0;
+  box-shadow: 0 4px 25px 7px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid #e8e5e0;
+  cursor: pointer;
+}
+
+.menu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== HEADER CARD ===== */
+.menu-header {
+  padding: 15px 20px 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.menu-nombre {
+  font-family: var(--templa-font-text);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--templa-black);
+  margin: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.menu-title-divider {
+  height: 1px;
+  background-color: #e8e5e0;
+  margin: 10px 20px 15px 20px;
+}
+
+/* ===== ESTADO BADGE ===== */
+.estado-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.estado-disponible {
+  background-color: var(--templa-green);
+  color: white;
+}
+
+.estado-no-disponible {
+  background-color: var(--templa-red);
+  color: white;
+}
+
+/* ===== CONTENT STYLES ===== */
+.menu-content {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-descripcion {
+  font-family: var(--templa-font-text);
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== CONTENT DIVIDER ===== */
+.content-divider {
+  height: 1px;
+  background-color: #e8e5e0;
+  margin: 10px 0;
+}
+
+/* ===== FIELD STYLES (MEJORADO PARA TEXTO LARGO) ===== */
+.menu-field {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  gap: 4px;
+}
+
+.field-label {
+  font-family: var(--templa-font-text);
+  font-weight: 600;
+  color: var(--templa-dark-green);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.field-value {
+  font-family: var(--templa-font-text);
+  font-size: 13px;
+  color: var(--templa-brown);
+  line-height: 1.4;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* ===== PRICE FIELD (LAYOUT HORIZONTAL) ===== */
+.menu-field.price-field {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.price-field .field-label {
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+.field-value.price {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--templa-green);
+  text-align: right;
+  margin-left: 10px;
+}
+
+/* ===== CLICK INDICATOR ABAJO DEL PRECIO ===== */
+.click-indicator {
+  text-align: center;
+  padding: 4px 0;
+  font-family: var(--templa-font-text);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--templa-brown);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
+}
+
+.menu-card:hover .click-indicator {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
+/* ===== NO MENUS MESSAGE ===== */
+.no-menus {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.no-menus h4 {
+  font-family: var(--templa-font-title);
+  font-size: 24px;
+  color: var(--templa-dark-green);
+  margin-bottom: 0.5rem;
+}
+
+.no-menus p {
+  font-family: var(--templa-font-text);
+  font-size: 16px;
+  color: var(--templa-brown);
+}
+
+/* ===== FLOATING BUTTON ===== */
+.floating-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--templa-green);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(132, 196, 115, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-btn:hover {
+  background-color: var(--templa-hovergreen);
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(132, 196, 115, 0.6);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .menus-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-right: 0;
+  }
+
+  .floating-btn {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}

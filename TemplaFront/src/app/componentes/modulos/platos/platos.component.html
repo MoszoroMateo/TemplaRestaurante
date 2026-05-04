@@ -1,0 +1,174 @@
+<div class="header pt-3 px-3">
+    <!-- Título a la izquierda -->
+    <div class="header-left">
+        <h1 class="texto-elegante">Platos</h1>
+    </div>
+
+    <!-- Controles a la derecha -->
+    <div class="header-right">
+        <!-- Input de búsqueda -->
+        <div class="search-container">
+            <!-- ✅ CAMBIAR: usar onBusquedaChange igual que personas -->
+            <input type="text" id="busqueda" name="busqueda" class="form-control custom-input" 
+                   (input)="onBusquedaChange()"
+                   placeholder="🔎Buscar plato..." [(ngModel)]="busqueda">
+        </div>
+
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por tipo">
+            <!-- ✅ CAMBIAR: usar onTipoChange igual que personas -->
+            <input type="radio" class="btn-check" name="tipo" id="ENTRADA" value="ENTRADA" 
+                   (change)="onTipoChange('ENTRADA')"
+                   [(ngModel)]="tipoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="ENTRADA">Entrada</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="PRINCIPAL" value="PRINCIPAL" 
+                   (change)="onTipoChange('PRINCIPAL')"
+                   [(ngModel)]="tipoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="PRINCIPAL">Principal</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="TODOS_TIPO" value="TODOS" 
+                   (change)="onTipoChange('TODOS')"
+                   [(ngModel)]="tipoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS_TIPO">Todos</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="POSTRE" value="POSTRE" 
+                   (change)="onTipoChange('POSTRE')"
+                   [(ngModel)]="tipoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="POSTRE">Postre</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="BEBIDA" value="BEBIDA" 
+                   (change)="onTipoChange('BEBIDA')"
+                   [(ngModel)]="tipoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="BEBIDA">Bebida</label>
+        </div>
+
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por estado">
+            <input type="radio" class="btn-check" name="estado" id="DISPONIBLES" value="DISPONIBLES" 
+                   (change)="onEstadoChange('DISPONIBLES')"
+                   [(ngModel)]="estadoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="DISPONIBLES">Disponibles</label>
+
+            <input type="radio" class="btn-check" name="estado" id="TODOS_ESTADO" value="TODOS" 
+                   (change)="onEstadoChange('TODOS')"
+                   [(ngModel)]="estadoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS_ESTADO">Todos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="NO_DISPONIBLES" value="NO_DISPONIBLES" 
+                   (change)="onEstadoChange('NO_DISPONIBLES')"
+                   [(ngModel)]="estadoSeleccionado" autocomplete="off">
+            <label class="btn custom-radio" for="NO_DISPONIBLES">No Disponibles</label>
+        </div>
+    </div>
+</div>
+
+<hr class="header-divider">
+
+<div class="body mt-5 px-5">
+    <!-- ✅ Loading spinner -->
+    <div *ngIf="cargando" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <!-- ✅ Grid de platos -->
+    <div *ngIf="!cargando" class="platos-grid">
+        <div class="plato-card" *ngFor="let plato of platos" (click)="abrirModalEditarPlato(plato)">
+            <!-- ✅ Header con nombre y badge -->
+            <div class="plato-header">
+                <h3 class="plato-nombre">{{ plato.nombre }}</h3>
+                <div class="estado-badge" [ngClass]="getEstadoBadgeClass(plato)">
+                    {{ getEstadoTexto(plato) }}
+                </div>
+            </div>
+
+            <!-- ✅ Imagen del plato -->
+            <div class="plato-imagen">
+                <img src="{{ plato.foto }}" [alt]="plato.nombre" class="img-fluid">
+            </div>
+
+            <!-- ✅ Contenido -->
+            <div class="plato-content">
+                <!-- Descripción -->
+                <p class="plato-descripcion">{{ plato.descripcion }}</p>
+
+                <!-- ✅ Ingredientes como en tu diseño -->
+                <div class="plato-ingredientes" *ngIf="plato.ingredientes && plato.ingredientes.length > 0">
+                    <span class="ingredientes-titulo">Ingredientes:</span>
+                    <div class="ingredientes-lista">
+                        <span *ngFor="let ing of plato.ingredientes; let last = last">
+                            {{ formatearIngrediente(ing) }}<span *ngIf="!last">; </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ✅ Tipo y precio SIN colores, solo en negro -->
+                <div class="plato-info">
+                    <span class="plato-tipo">{{ plato.tipoPlato }}</span>
+                    <span class="plato-precio">${{ plato.precio | number:'1.2-2' }}</span>
+                </div>
+            </div>
+
+            <!-- ✅ OPCIONAL: Indicador visual de que es clickeable -->
+            <div class="click-indicator">
+                <span>Click para editar</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Mensaje cuando no hay platos -->
+    <div *ngIf="!cargando && (!platos || platos.length === 0)" class="no-platos">
+        <div class="text-center py-5">
+            <h4 class="text-muted">No se encontraron platos</h4>
+            <p class="text-muted">Intenta ajustar los filtros o agrega un nuevo plato</p>
+        </div>
+    </div>
+
+    <!-- ✅ Paginación (en la esquina inferior derecha) -->
+    <div class="pagination-container d-flex justify-content-between align-items-center mt-2 mb-5"
+        *ngIf="!cargando && pageInfo && pageInfo.totalElements > 0">
+
+        <div class="pagination-info">
+            <span class="text-muted">
+                Mostrando {{ (pageInfo.number * pageInfo.size) + 1 }}-{{
+                Math.min((pageInfo.number + 1) * pageInfo.size, pageInfo.totalElements)
+                }} de {{ pageInfo.totalElements }} platos
+            </span>
+        </div>
+
+        <nav aria-label="Paginación de platos" *ngIf="pageInfo.totalPages > 1">
+            <ul class="pagination custom-pagination mb-0 mx-5 px-5">
+                <!-- Botón anterior -->
+                <li class="page-item" [class.disabled]="pageInfo.first">
+                    <a class="page-link" href="#" (click)="irAPagina(pageInfo.number - 1); $event.preventDefault()"
+                        [attr.tabindex]="pageInfo.first ? -1 : null" [attr.aria-disabled]="pageInfo.first">‹</a>
+                </li>
+
+                <!-- Números de página -->
+                @for (pagina of obtenerPaginasVisibles(); track pagina) {
+                @if (pagina === null) {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                } @else {
+                    <li class="page-item" [class.active]="pagina === pageInfo.number">
+                        <a class="page-link" href="#" (click)="irAPagina(pagina); $event.preventDefault()">
+                            {{ pagina + 1 }}
+                        </a>
+                    </li>
+                }
+                }
+
+                <!-- Botón siguiente -->
+                <li class="page-item" [class.disabled]="pageInfo.last">
+                    <a class="page-link" href="#" (click)="irAPagina(pageInfo.number + 1); $event.preventDefault()"
+                        [attr.tabindex]="pageInfo.last ? -1 : null" [attr.aria-disabled]="pageInfo.last">›</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<button class="floating-btn" (click)="abrirModalNuevoPlato()">
+    ➕
+</button>

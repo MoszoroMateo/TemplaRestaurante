@@ -1,0 +1,77 @@
+<div class="modal-content d-flex align-items-center">
+  <!-- Header del modal -->
+  <div class="modal-header custom-header d-flex justify-content-between align-items-center">
+    <h4 class="modal-title">{{isEditMode ? 'Editar Persona' : 'Alta de Persona'}}</h4>
+    <button type="button" class="btn-close custom-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+  </div>
+  <!-- Body del modal -->
+  <div class="modal-body custom-body">
+    <form>
+      <!-- Primera fila: Nombre y Apellido -->
+      <div class="form-row">
+        <div class="form-group">
+          <input type="text" id="nombre" name="nombre" class="form-control custom-input" placeholder="Nombre"
+            [(ngModel)]="persona.nombre">
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="apellido" name="apellido" class="form-control custom-input" placeholder="Apellido"
+            [(ngModel)]="persona.apellido">
+        </div>
+      </div>
+
+      <!-- Cuarta fila: Documento -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <input type="text" class="form-control custom-input" [(ngModel)]="persona.dni" name="documento"
+            placeholder="DNI">
+        </div>
+      </div>
+
+      <!-- Tercera fila: Email y Teléfono -->
+      <div class="form-row">
+        <div class="form-group">
+          <input type="email" class="form-control custom-input" [(ngModel)]="persona.email" name="email"
+            placeholder="ejemplo@templa.com">
+        </div>
+
+        <div class="form-group">
+          <input type="tel" class="form-control custom-input" [(ngModel)]="persona.telefono" name="telefono"
+            placeholder="351811074">
+        </div>
+      </div>
+
+      <!-- Segunda fila: Tipo y fecha baja -->
+      <div class="form-row">
+        <div class="form-group">
+          <select class="form-select custom-input" [(ngModel)]="persona.tipoPersona" name="tipoPersona" required>
+            <!-- ✅ CORREGIR - value null para placeholder -->
+            <option [value]="null" disabled>Tipo Persona</option>
+            <option *ngFor="let tipo of tipoPersonaOptions" [value]="tipo">
+              {{ tipo === 'PERSONAL' ? 'Personal' : 'Cliente' }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="persona.fechaBaja !== null && isEditMode !== false">
+          <input type="text" 
+                class="form-control custom-input" 
+                [value]="getFechaFormateada(persona.fechaBaja)"
+                name="fechaBaja"
+                disabled
+                readonly>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer del modal -->
+  <div class="modal-footer custom-footer">
+    <button type="button" class="btn custom-btn-cancel" (click)="activeModal.dismiss()">
+      Cancelar
+    </button>
+    <button type="button" class="btn custom-btn-save" (click)="save()">
+      Guardar
+    </button>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+<div class="resultado-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3">Verificando estado del pago...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+    <h2>Error al verificar el pago</h2>
+    <p>No pudimos verificar el estado de tu reserva. Por favor, contacta con nosotros.</p>
+    <button class="btn btn-primary mt-3" (click)="volverAlInicio()">
+      <i class="fas fa-home"></i> Volver al Inicio
+    </button>
+  </div>
+
+  <!-- Éxito -->
+  <div *ngIf="esExitoso && !loading && !error" class="success-state">
+    <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+    <h1 class="display-4">¡Pago Exitoso!</h1>
+    <p class="lead">Tu reserva VIP ha sido confirmada</p>
+    
+    <div class="reserva-details" *ngIf="reserva">
+      <div class="detail-card">
+        <h3>Detalles de tu Reserva</h3>
+        <div class="detail-row">
+          <span class="detail-label">Número de Reserva:</span>
+          <span class="detail-value">#{{ reserva.nroReserva }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Fecha:</span>
+          <span class="detail-value">{{ reserva.fechaReserva }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Horario:</span>
+          <span class="detail-value">{{ reserva.horario }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Comensales:</span>
+          <span class="detail-value">{{ reserva.cantidadComensales }} personas</span>
+        </div>
+      </div>
+      
+      <div class="success-message">
+        <i class="fas fa-crown text-warning"></i>
+        <p class="mt-2"><strong>¡Te esperamos en Templa Restaurant!</strong></p>
+        <p class="text-muted">Recibirás un correo de confirmación con los detalles de tu reserva VIP.</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg mt-4" (click)="volverAlInicio()">
+      <i class="fas fa-home"></i> Volver al Inicio
+    </button>
+  </div>
+
+  <!-- Pendiente -->
+  <div *ngIf="esPendiente && !loading && !error" class="pending-state">
+    <i class="fas fa-clock fa-5x text-warning mb-4"></i>
+    <h1 class="display-4">Pago Pendiente</h1>
+    <p class="lead">Tu pago está siendo procesado</p>
+    
+    <div class="reserva-details" *ngIf="reserva">
+      <p class="text-muted">Reserva #{{ reserva.nroReserva }}</p>
+      <p class="mt-3">Te notificaremos por correo cuando se confirme el pago.</p>
+    </div>
+
+    <button class="btn btn-primary btn-lg mt-4" (click)="volverAlInicio()">
+      <i class="fas fa-home"></i> Volver al Inicio
+    </button>
+  </div>
+
+  <!-- Fallido -->
+  <div *ngIf="esFallido && !loading && !error" class="failure-state">
+    <i class="fas fa-times-circle fa-5x text-danger mb-4"></i>
+    <h1 class="display-4">Pago Rechazado</h1>
+    <p class="lead">No se pudo procesar tu pago</p>
+    
+    <p class="text-muted mt-3">
+      Por favor, verifica los datos de tu tarjeta e intenta nuevamente.<br>
+      Si el problema persiste, intenta con otro método de pago.
+    </p>
+
+    <button class="btn btn-primary btn-lg mt-4" (click)="volverAlInicio()">
+      <i class="fas fa-home"></i> Volver al Inicio
+    </button>
+  </div>
+</div>

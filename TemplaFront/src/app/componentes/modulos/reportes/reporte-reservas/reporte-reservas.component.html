@@ -1,0 +1,132 @@
+<div class="container-fluid p-4 bg-templa-beige min-vh-100">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0 text-templa-brown">
+          <i class="bi bi-file-earmark-bar-graph me-2"></i>
+          Reporte de Reservas
+        </h2>
+        <button class="btn btn-secondary" (click)="volver()">
+          <i class="bi bi-arrow-left me-2"></i>Volver
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="fechaInicio" class="form-label fw-semibold text-templa-brown">Fecha Inicio</label>
+              <input 
+                type="date" 
+                class="form-control border-templa-gold" 
+                id="fechaInicio" 
+                [(ngModel)]="fechaInicio"
+                required>
+            </div>
+            <div class="col-md-3">
+              <label for="fechaFin" class="form-label fw-semibold text-templa-brown">Fecha Fin</label>
+              <input 
+                type="date" 
+                class="form-control border-templa-gold" 
+                id="fechaFin" 
+                [(ngModel)]="fechaFin"
+                required>
+            </div>
+            <div class="col-md-3">
+              <label for="tipoReporte" class="form-label fw-semibold text-templa-brown">Tipo de Reporte</label>
+              <select 
+                class="form-select border-templa-gold" 
+                id="tipoReporte" 
+                [(ngModel)]="tipoReporte"
+                (change)="onTipoReporteChange()">
+                <option value="fechas">Por Fecha</option>
+                <option value="horarios">Por Horario</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+              <button class="btn btn-primary flex-grow-1" (click)="generarReporte()">
+                <i class="bi bi-search me-2"></i>Generar
+              </button>
+              <button 
+                class="btn btn-danger" 
+                (click)="exportarPDF()"
+                [disabled]="datosReporte.length === 0">
+                <i class="bi bi-file-pdf me-1"></i>
+                PDF
+              </button>
+              <button 
+                class="btn btn-success" 
+                (click)="exportarExcel()"
+                [disabled]="datosReporte.length === 0">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="datosReporte.length > 0">
+  <div class="col-12">
+    <div class="card shadow-sm border-templa-gold">
+      <div class="card-header bg-templa-brown text-dark">
+        <h5 class="mb-0 fw-bold">
+          {{ tipoReporte === 'fechas' ? 'Reservas por Fecha' : 'Reservas por Horario' }}
+        </h5>
+      </div>
+      <div class="card-body">
+        <div id="chart-fechas" *ngIf="tipoReporte === 'fechas'" style="height: 500px;"></div>
+        <div id="chart-horarios" *ngIf="tipoReporte === 'horarios'" style="height: 500px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="row mt-4" *ngIf="datosReporte.length > 0">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-header bg-templa-brown text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-table me-2"></i>
+            Datos del Reporte
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>{{ tipoReporte === 'fechas' ? 'Fecha' : 'Horario' }}</th>
+                  <th class="text-center">Total Reservas</th>
+                  <th class="text-center">Total Comensales</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dato of datosReporte">
+                  <td>{{ tipoReporte === 'horarios' ? formatearHorario(dato.periodo) : dato.periodo }}</td>
+                  <td class="text-center">{{ dato.totalReservas }}</td>
+                  <td class="text-center">{{ dato.totalComensales }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4" *ngIf="datosReporte.length === 0">
+    <div class="col-12">
+      <div class="alert alert-info text-center" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Seleccione un rango de fechas y presione "Generar" para ver los resultados.
+      </div>
+    </div>
+  </div>
+</div>

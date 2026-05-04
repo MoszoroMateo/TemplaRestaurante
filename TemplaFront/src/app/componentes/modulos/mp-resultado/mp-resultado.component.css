@@ -1,0 +1,334 @@
+:root {
+  --templa-brown: #755143;
+  --templa-dark-green: #84C473;
+  --templa-gold: #d2a46d;
+  --templa-beige: #F4EADD;
+}
+
+.resultado-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--templa-beige);
+  font-family: 'Amethysta', serif;
+}
+
+.loading-state,
+.error-state,
+.success-state,
+.pending-state,
+.failure-state {
+  text-align: center;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 0.5s ease-in;
+  border: 2px solid var(--templa-brown);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading-state p {
+  color: var(--templa-brown);
+  font-size: 1.1rem;
+  margin: 0;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 0.5px;
+}
+
+.error-state h2,
+.success-state h1,
+.pending-state h1,
+.failure-state h1 {
+  color: var(--templa-brown);
+  margin-bottom: 1rem;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+}
+
+.success-state .lead,
+.pending-state .lead,
+.failure-state .lead {
+  color: #333;
+  margin-bottom: 2rem;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 0.5px;
+}
+
+.reserva-details {
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+.detail-card {
+  background: var(--templa-beige);
+  border-radius: 0;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(117, 81, 67, 0.1);
+  border: 1px solid var(--templa-brown);
+}
+
+.detail-card h3 {
+  color: var(--templa-brown);
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--templa-gold);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--templa-brown);
+  font-family: 'Amethysta', serif;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 500;
+  font-family: 'Amethysta', serif;
+}
+
+.success-message {
+  background: var(--templa-beige);
+  border-radius: 0;
+  padding: 1.5rem;
+  border-left: 4px solid var(--templa-gold);
+  border: 2px solid var(--templa-gold);
+  border-left-width: 6px;
+}
+
+.success-message i.fa-crown {
+  font-size: 2rem;
+}
+
+.success-message p {
+  margin: 0.5rem 0;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 0.5px;
+}
+
+.text-muted {
+  color: #666 !important;
+  font-size: 0.95rem;
+  font-family: 'Amethysta', serif;
+}
+
+.btn-lg {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  background-color: var(--templa-brown);
+  border: 2px solid var(--templa-brown);
+  color: white;
+  font-family: 'Amethysta', serif;
+  letter-spacing: 1px;
+}
+
+.btn-lg:hover {
+  background-color: var(--templa-dark-green);
+  border-color: var(--templa-dark-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(117, 81, 67, 0.3);
+}
+
+.btn-lg i {
+  margin-right: 0.5rem;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet landscape y escritorios pequeños */
+@media (max-width: 1024px) {
+  .resultado-container {
+    padding: 1.5rem;
+  }
+
+  .loading-state,
+  .error-state,
+  .success-state,
+  .pending-state,
+  .failure-state {
+    padding: 2.5rem 2rem;
+  }
+
+  .success-state h1,
+  .pending-state h1,
+  .failure-state h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Tablet portrait */
+@media (max-width: 768px) {
+  .resultado-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .loading-state,
+  .error-state,
+  .success-state,
+  .pending-state,
+  .failure-state {
+    padding: 2rem 1.5rem;
+    max-width: 90%;
+  }
+
+  .success-state h1,
+  .pending-state h1,
+  .failure-state h1 {
+    font-size: 1.8rem;
+  }
+
+  .error-state h2 {
+    font-size: 1.5rem;
+  }
+
+  .success-state .lead,
+  .pending-state .lead,
+  .failure-state .lead {
+    font-size: 1rem;
+  }
+
+  .detail-card {
+    padding: 1.25rem;
+  }
+
+  .detail-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .btn-lg {
+    padding: 0.65rem 1.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .resultado-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .loading-state,
+  .error-state,
+  .success-state,
+  .pending-state,
+  .failure-state {
+    padding: 1.5rem 1rem;
+    max-width: 95%;
+  }
+
+  .success-state h1,
+  .pending-state h1,
+  .failure-state h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .error-state h2 {
+    font-size: 1.3rem;
+  }
+
+  .success-state .lead,
+  .pending-state .lead,
+  .failure-state .lead {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .loading-state p {
+    font-size: 1rem;
+  }
+
+  .reserva-details {
+    margin: 1.5rem auto;
+  }
+
+  .detail-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .detail-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+  }
+
+  .detail-label {
+    font-size: 0.85rem;
+  }
+
+  .detail-value {
+    font-size: 0.95rem;
+  }
+
+  .success-message {
+    padding: 1rem;
+  }
+
+  .success-message i.fa-crown {
+    font-size: 1.5rem;
+  }
+
+  .success-message p {
+    font-size: 0.9rem;
+  }
+
+  .text-muted {
+    font-size: 0.85rem;
+  }
+
+  .btn-lg {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+
+  .btn-lg i {
+    margin-right: 0.4rem;
+  }
+
+  i.fas.fa-check-circle,
+  i.fas.fa-clock,
+  i.fas.fa-times-circle,
+  i.fas.fa-exclamation-triangle {
+    font-size: 3rem !important;
+  }
+}

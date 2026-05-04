@@ -1,0 +1,299 @@
+<!-- Landing Page - Página principal del restaurante -->
+<div class="landing-container">
+  
+  <!-- Navbar -->
+  <nav class="landing-navbar" [class.scrolled]="isScrolled">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <img src="assets/imagenes/logoHome.png" alt="Templa Logo" class="logo-img">
+      </div>
+      <ul class="navbar-menu">
+        <li><a (click)="scrollToSection('hero')" class="nav-link" [class.active]="activeSection === 'hero'">INICIO</a></li>
+        <li><a (click)="scrollToSection('aboutUs')" class="nav-link" [class.active]="activeSection === 'aboutUs'">SOBRE NOSOTROS</a></li>
+        <li><a (click)="scrollToSection('menu')" class="nav-link" [class.active]="activeSection === 'menu'">CARTA</a></li>
+        <li><a (click)="scrollToSection('experiencias')" class="nav-link" [class.active]="activeSection === 'experiencias'">EXPERIENCIAS</a></li>
+      </ul>
+      <button class="btn-reservas" (click)="scrollToSection('contact')" [class.active]="activeSection === 'contact'">CONTACTO</button>
+      <button class="btn-reservas" (click)="irAReservas()">RESERVAS</button>
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+        <span class="hamburger-icon">☰</span>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" [class.active]="isMobileMenuOpen">
+      <a (click)="scrollToSection('hero')" class="mobile-nav-link">INICIO</a>
+      <a (click)="scrollToSection('aboutUs')" class="mobile-nav-link">SOBRE NOSOTROS</a>
+      <a (click)="scrollToSection('menu')" class="mobile-nav-link">CARTA</a>
+      <a (click)="scrollToSection('experiencias')" class="mobile-nav-link">EXPERIENCIAS</a>
+      <a (click)="scrollToSection('contact')" class="mobile-nav-link">CONTACTO</a>
+      <button class="btn-nav-mobile" (click)="irAReservas()">RESERVAS</button>
+    </div>
+  </nav>
+  
+  <!-- Hero Section -->
+  <section id="hero" class="hero-section">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <h1 class="hero-title">TEMPLA</h1>
+        <p class="hero-subtitle">HACEMOS DE CÓRDOBA UNA EXPERIENCIA</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Sobre Nosotros -->
+  <section id="aboutUs" class="aboutUs-section">
+    <div class="aboutUs-container">
+      <div class="aboutUs-text">
+        <h2 class="aboutUs-title">{{ sobreNosotros.titulo }}</h2>
+        <p class="aboutUs-description" *ngFor="let parrafo of sobreNosotros.parrafos">
+          {{ parrafo }}
+        </p>
+      </div>
+      <div class="aboutUs-image">
+        <img src="assets/imagenes/chefs.png" alt="Chefs de Templa" class="chefs-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- Carta / Menu -->
+  <section id="menu" class="menu-section">
+    <div class="menu-overlay">
+      <div class="menu-buttons-container">
+        <!-- Botón 1: Menú Ejecutivo -->
+        <div class="menu-button-wrapper">
+          <button class="menu-oval-button" (click)="openMenuModal('ejecutivo')">
+            <img [src]="menuEjecutivoImage" alt="Menú Ejecutivo" class="menu-button-img">
+          </button>
+          <p class="menu-button-label">MENÚ EJECUTIVO</p>
+        </div>
+
+        <!-- Botón 2: Carta Cena -->
+        <div class="menu-button-wrapper">
+          <button class="menu-oval-button" (click)="openMenuModal('cena')">
+            <img [src]="cartaCenaImage" alt="Carta Cena" class="menu-button-img">
+          </button>
+          <p class="menu-button-label">CARTA CENA</p>
+        </div>
+
+        <!-- Botón 3: Carta de Vinos -->
+        <div class="menu-button-wrapper">
+          <button class="menu-oval-button" (click)="openMenuModal('vinos')">
+            <img [src]="cartaVinosImage" alt="Carta de Vinos" class="menu-button-img">
+          </button>
+          <p class="menu-button-label">CARTA DE VINOS</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Menú Ejecutivo -->
+  <div class="menu-modal" [class.active]="activeModal === 'ejecutivo'" (click)="closeMenuModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeMenuModal()">&times;</button>
+      <h3 class="menu-modal-schedule" [innerHTML]="menuEjecutivo.horario.replace('\n', '<br>')"></h3>
+      <div class="menu-modal-divider"></div>
+      
+      <ng-container *ngFor="let seccion of menuEjecutivo.secciones">
+        <h4 class="menu-modal-section-title">{{ seccion.titulo }}</h4>
+        <p class="menu-modal-item" *ngFor="let item of seccion.items">{{ item.nombre }}</p>
+      </ng-container>
+      
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-price" *ngIf="menuEjecutivo.precio">{{ menuEjecutivo.precio }}</p>
+      <p class="menu-modal-note" *ngIf="menuEjecutivo.nota">{{ menuEjecutivo.nota }}</p>
+    </div>
+  </div>
+
+  <!-- Modal Carta Cena -->
+  <div class="menu-modal" [class.active]="activeModal === 'cena'" (click)="closeMenuModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeMenuModal()">&times;</button>
+      <h3 class="menu-modal-schedule" [innerHTML]="cartaCena.horario.replace('\n', '<br>')"></h3>
+      <div class="menu-modal-divider"></div>
+      
+      <ng-container *ngFor="let seccion of cartaCena.secciones">
+        <h4 class="menu-modal-section-title">{{ seccion.titulo }}</h4>
+        <p class="menu-modal-item" *ngFor="let item of seccion.items">{{ item.nombre }}</p>
+      </ng-container>
+      
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-note" *ngIf="cartaCena.nota">{{ cartaCena.nota }}</p>
+    </div>
+  </div>
+
+  <!-- Modal Carta de Vinos -->
+  <div class="menu-modal" [class.active]="activeModal === 'vinos'" (click)="closeMenuModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeMenuModal()">&times;</button>
+      <h3 class="menu-modal-schedule">{{ cartaVinos.horario }}</h3>
+      <div class="menu-modal-divider"></div>
+      
+      <ng-container *ngFor="let seccion of cartaVinos.secciones">
+        <h4 class="menu-modal-section-title">{{ seccion.titulo }}</h4>
+        <p class="menu-modal-item" *ngFor="let item of seccion.items">{{ item.nombre }}</p>
+      </ng-container>
+      
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-note" *ngIf="cartaVinos.nota">{{ cartaVinos.nota }}</p>
+    </div>
+  </div>
+
+  <!-- Experiencias -->
+  <section id="experiencias" class="experiencias-section">
+    <div class="experiencias-container">
+      <h2 class="experiencias-main-title">EXPERIENCIAS</h2>
+      <div class="experiencias-grid">
+        <!-- Botón 1: Salón VIP -->
+        <div class="experiencia-card" (click)="openExperienciaModal('salon')">
+          <div class="experiencia-icon"><i class="bi bi-star-fill"></i></div>
+          <h3 class="experiencia-title">SALÓN VIP</h3>
+        </div>
+
+        <!-- Botón 2: Menú Degustación -->
+        <div class="experiencia-card" (click)="openExperienciaModal('degustacion')">
+          <div class="experiencia-icon"><i class="fa-solid fa-utensils"></i></div>
+          <h3 class="experiencia-title">MENÚ DEGUSTACIÓN</h3>
+        </div>
+
+        <!-- Botón 3: Museo -->
+        <div class="experiencia-card" (click)="openExperienciaModal('museo')">
+          <div class="experiencia-icon"><i class="fa-solid fa-landmark"></i></div>
+          <h3 class="experiencia-title">MUSEO</h3>
+        </div>
+
+        <!-- Botón 4: Eventos -->
+        <div class="experiencia-card" (click)="openExperienciaModal('eventos')">
+          <div class="experiencia-icon"><i class="bi bi-calendar-event-fill"></i></div>
+          <h3 class="experiencia-title">EVENTOS</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modales de Experiencias -->
+  <div class="menu-modal" [class.active]="activeExperienciaModal === 'salon'" (click)="closeExperienciaModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeExperienciaModal()">&times;</button>
+      <h3 class="menu-modal-schedule">{{ experienciasSalon.titulo }}</h3>
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-item" style="text-align: justify; line-height: 1.8;">{{ experienciasSalon.descripcion }}</p>
+      
+      <div class="menu-modal-divider"></div>
+      
+      <!-- Imagen del salón VIP -->
+      <div class="museo-image-container">
+        <img [src]="salonVipImage" alt="Salón VIP Templa" class="museo-image">
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-modal" [class.active]="activeExperienciaModal === 'degustacion'" (click)="closeExperienciaModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeExperienciaModal()">&times;</button>
+      <h3 class="menu-modal-schedule">{{ experienciasDegustacion.titulo }}</h3>
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-item">{{ experienciasDegustacion.descripcion }}</p>
+    </div>
+  </div>
+
+  <div class="menu-modal" [class.active]="activeExperienciaModal === 'museo'" (click)="closeExperienciaModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeExperienciaModal()">&times;</button>
+      <h3 class="menu-modal-schedule">{{ experienciasMuseo.titulo }}</h3>
+      <div class="menu-modal-divider"></div>
+      
+      <p class="menu-modal-item" style="text-align: justify; line-height: 1.8;">
+        {{ experienciasMuseo.descripcion }}
+      </p>
+      
+      <div class="menu-modal-divider"></div>
+      
+      <!-- Imagen del museo -->
+      <div class="museo-image-container">
+        <img [src]="museoImage" alt="Museo Templa" class="museo-image">
+      </div>
+      
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-note" *ngIf="experienciasMuseo.nota">{{ experienciasMuseo.nota }}</p>
+    </div>
+  </div>
+
+  <div class="menu-modal" [class.active]="activeExperienciaModal === 'eventos'" (click)="closeExperienciaModal()">
+    <div class="menu-modal-content" (click)="$event.stopPropagation()">
+      <button class="menu-modal-close" (click)="closeExperienciaModal()">&times;</button>
+      <h3 class="menu-modal-schedule">{{ experienciasEventos.titulo }}</h3>
+      <div class="menu-modal-divider"></div>
+      <p class="menu-modal-item">{{ experienciasEventos.descripcion }}</p>
+    </div>
+  </div>
+
+  <!-- Contacto -->
+  <section id="contact" class="contact-section">
+    <div class="contact-container">
+      <!-- Carrusel de Imágenes -->
+      <div class="contact-carousel">
+        <div class="carousel-container">
+          <button class="carousel-btn prev" (click)="prevSlide()">&lt;</button>
+          <div class="carousel-images">
+            <img [src]="carouselImages[currentSlide]" alt="Templa" class="carousel-image">
+          </div>
+          <button class="carousel-btn next" (click)="nextSlide()">&gt;</button>
+        </div>
+      </div>
+
+      <!-- Información de Contacto -->
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+          <p class="contact-text">{{ contacto.telefono }}</p>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+          <p class="contact-text">{{ contacto.email }}</p>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon"><i class="bi bi-instagram"></i></div>
+          <p class="contact-text">{{ contacto.instagram }}</p>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
+          <div class="contact-text-multi">
+            <p *ngFor="let horario of contacto.horarios">{{ horario }}</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+          <div class="contact-text-multi">
+            <p *ngFor="let linea of contacto.direccion">{{ linea }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>¿Listo para disfrutar?</h2>
+      <p>Reservá tu mesa ahora y viví la experiencia Templa</p>
+      <button class="btn btn-primary btn-lg" (click)="irAReservas()">
+        Hacer Reserva
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p style="color: black;">&copy; 2025 Templa Restaurante. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>

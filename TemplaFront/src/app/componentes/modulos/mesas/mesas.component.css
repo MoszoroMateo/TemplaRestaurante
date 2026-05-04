@@ -1,0 +1,118 @@
+/* ===== HEREDAR ESTILOS DE PERSONAS ===== */
+@import url('../personas/personas.component.css');
+
+/* ===== ESTILOS ESPECÍFICOS DE MESAS ===== */
+.mesa-numero {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* ===== BADGES DE ESTADOS DE MESA ===== */
+.badge-disponible {
+    background-color: var(--templa-green);
+    color: white;
+}
+
+.badge-ocupada {
+    background-color: var(--templa-bg-ocupada);
+    color: var(--templa-text-ocupada);
+}
+
+.badge-reservada {
+    background-color: var(--templa-gold);
+    color: var(--templa-brown);
+}
+
+.badge-fuera-servicio {
+    background-color: var(--templa-red);
+    color: white;
+}
+
+/* ===== BOTÓN DE CAMBIAR ESTADO ===== */
+.btn-state {
+    border: none;
+    background: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+}
+
+.btn-state:hover {
+    background-color: var(--templa-brown);
+    color: white;
+}
+
+/* ===== ESTILOS PARA SWEETALERT2 MODALES ===== */
+:host ::ng-deep .swal2-popup {
+    border-radius: 15px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+:host ::ng-deep .swal2-title {
+    color: var(--templa-brown);
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+
+:host ::ng-deep .swal2-input {
+    border: 2px solid var(--templa-beige);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+}
+
+:host ::ng-deep .swal2-input:focus {
+    border-color: var(--templa-brown);
+    box-shadow: 0 0 0 0.2rem rgba(139, 101, 76, 0.25);
+}
+
+:host ::ng-deep .swal2-select {
+    border: 2px solid var(--templa-beige);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    background-color: white;
+}
+
+:host ::ng-deep .swal2-select:focus {
+    border-color: var(--templa-brown);
+    box-shadow: 0 0 0 0.2rem rgba(139, 101, 76, 0.25);
+}
+
+:host ::ng-deep .swal2-confirm {
+    background-color: var(--templa-brown);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+:host ::ng-deep .swal2-confirm:hover {
+    background-color: var(--templa-hoverred);
+}
+
+:host ::ng-deep .swal2-cancel {
+    background-color: #6c757d;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+}
+
+:host ::ng-deep .swal2-cancel:hover {
+    background-color: #5a6268;
+}
+
+/* ===== RESPONSIVE ADICIONAL ===== */
+@media (max-width: 768px) {
+    .filter-group .btn {
+        font-size: 11px;
+        padding: 8px 12px;
+    }
+    
+    .mesa-numero {
+        font-size: 14px;
+    }
+}

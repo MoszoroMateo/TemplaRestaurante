@@ -1,0 +1,119 @@
+<div class="container-fluid p-4 bg-templa-beige min-vh-100">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0 text-templa-brown">
+          Reporte de Menús Más Pedidos
+        </h2>
+        <button class="btn btn-secondary" (click)="volver()">
+          <i class="bi bi-arrow-left me-2"></i>Volver
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="fechaInicio" class="form-label fw-semibold text-templa-brown">Fecha Inicio</label>
+              <input 
+                type="date" 
+                class="form-control border-templa-gold" 
+                id="fechaInicio" 
+                [(ngModel)]="fechaInicio"
+                required>
+            </div>
+            <div class="col-md-4">
+              <label for="fechaFin" class="form-label fw-semibold text-templa-brown">Fecha Fin</label>
+              <input 
+                type="date" 
+                class="form-control border-templa-gold" 
+                id="fechaFin" 
+                [(ngModel)]="fechaFin"
+                required>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+              <button class="btn btn-primary flex-grow-1" (click)="generarReporte()">
+                <i class="bi bi-search me-2"></i>Generar
+              </button>
+              <button 
+                class="btn btn-danger" 
+                (click)="exportarPDF()"
+                [disabled]="datosMenus.length === 0">
+                <i class="bi bi-file-pdf me-1"></i>
+                PDF
+              </button>
+              <button 
+                class="btn btn-success" 
+                (click)="exportarExcel()"
+                [disabled]="datosMenus.length === 0">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <div class="row" *ngIf="datosMenus.length > 0">
+  <div class="col-12">
+    <div class="card shadow-sm border-templa-gold">
+      <div class="card-header bg-templa-brown text-dark">
+        <h5 class="mb-0 fw-bold">
+          Menús Más Pedidos
+        </h5>
+      </div>
+      <div class="card-body">
+        <div id="chart-menus" style="height: 500px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="row mt-4" *ngIf="datosMenus.length > 0">
+    <div class="col-12">
+      <div class="card shadow-sm border-templa-gold">
+        <div class="card-header bg-templa-brown text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-table me-2"></i>
+            Datos del Reporte
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Menú</th>
+                  <th class="text-center">Cantidad de Pedidos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dato of datosMenus; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td><strong>{{ dato.nombreMenu }}</strong></td>
+                  <td class="text-center">{{ dato.cantidadPedidos }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4" *ngIf="datosMenus.length === 0">
+    <div class="col-12">
+      <div class="alert alert-info text-center" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Seleccione un rango de fechas y presione "Generar" para ver los resultados.
+      </div>
+    </div>
+  </div>
+</div>

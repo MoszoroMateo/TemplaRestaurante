@@ -1,0 +1,140 @@
+<div class="header pt-3 px-3">
+    <!-- Título a la izquierda -->
+    <div class="header-left">
+        <h1 class="texto-elegante">Gestión de Mesas</h1>
+    </div>
+
+    <!-- Controles a la derecha -->
+    <div class="header-right">
+        <!-- Input de búsqueda -->
+        <div class="search-container">
+            <input type="text" id="busqueda" name="busqueda" class="form-control custom-input"
+                placeholder="🔎Buscar mesa..." [(ngModel)]="busqueda" (input)="onBusquedaChange()">
+        </div>
+
+        <!-- Filtro por estado -->
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por estado">
+            <input type="radio" class="btn-check" name="estado" id="TODOS" value="TODOS"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('TODOS')" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS">Todos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="DISPONIBLE" value="DISPONIBLE"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('DISPONIBLE')" autocomplete="off">
+            <label class="btn custom-radio" for="DISPONIBLE">Disponible</label>
+
+            <input type="radio" class="btn-check" name="estado" id="OCUPADA" value="OCUPADA"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('OCUPADA')" autocomplete="off">
+            <label class="btn custom-radio" for="OCUPADA">Ocupada</label>
+
+            <input type="radio" class="btn-check" name="estado" id="RESERVADA" value="RESERVADA"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('RESERVADA')" autocomplete="off">
+            <label class="btn custom-radio" for="RESERVADA">Reservada</label>
+
+            <input type="radio" class="btn-check" name="estado" id="FUERA_SERVICIO" value="FUERA_SERVICIO"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('FUERA_SERVICIO')" autocomplete="off">
+            <label class="btn custom-radio" for="FUERA_SERVICIO">Fuera Servicio</label>
+        </div>
+    </div>
+</div>
+
+<hr class="header-divider">
+
+<div class="body mt-5 mx-5 px-5">
+    <!-- Botón Nueva Mesa alineado a la derecha -->
+    <div class="mb-3 d-flex justify-content-end">
+        <button class="btn custom-btn" (click)="openNewMesaModal()">
+            <span class="btn-icon">➕</span>
+            Nueva Mesa
+        </button>
+    </div>
+
+    <!-- ✅ Loading spinner -->
+    <div *ngIf="cargando" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <!-- ✅ Tabla con datos reales -->
+    <div class="listado" *ngIf="!cargando">
+        <table class="table table-hover table-striped custom-table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Número de Mesa</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <!-- ✅ Mostrar mensaje si no hay datos -->
+                <tr *ngIf="mesas.length === 0">
+                    <td colspan="4" class="text-center text-muted py-4">
+                        No se encontraron mesas
+                    </td>
+                </tr>
+
+                <!-- ✅ Iterar sobre las mesas -->
+                @for (mesa of mesas; track mesa.idMesa; let i = $index) {
+                <tr>
+                    <th scope="row">{{ i + 1 + (paginaActual * tamanoPagina) }}</th>
+                    <td class="mesa-numero">Mesa {{ mesa.numeroMesa }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="getEstadoBadgeClass(mesa.estadoMesa)">
+                            {{ getEstadoTexto(mesa.estadoMesa) }}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-edit" (click)="openNewMesaModal(mesa)" title="Editar Mesa">
+                            ✏️
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- ✅ Paginación dinámica -->
+        <div class="pagination-container d-flex justify-content-between align-items-center mt-4"
+            *ngIf="pageInfo && pageInfo.totalElements > 0">
+
+            <div class="pagination-info">
+                <span class="text-muted">
+                    Mostrando {{ (pageInfo.number * pageInfo.size) + 1 }}-{{
+                    Math.min((pageInfo.number + 1) * pageInfo.size, pageInfo.totalElements)
+                    }} de {{ pageInfo.totalElements }} registros
+                </span>
+            </div>
+
+            <nav aria-label="Paginación de mesas" *ngIf="pageInfo.totalPages > 1">
+                <ul class="pagination custom-pagination mb-0">
+                    <!-- Botón anterior -->
+                    <li class="page-item" [class.disabled]="pageInfo.first">
+                        <a class="page-link" href="#" (click)="irAPagina(pageInfo.number - 1); $event.preventDefault()"
+                            [attr.tabindex]="pageInfo.first ? -1 : null" [attr.aria-disabled]="pageInfo.first">‹</a>
+                    </li>
+                    <!-- Números de página -->
+                    @for (pagina of obtenerPaginasVisibles(); track pagina) {
+                    @if (pagina === null) {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    } @else {
+                        <li class="page-item" [class.active]="pagina === pageInfo.number">
+                            <a class="page-link" href="#" (click)="irAPagina(pagina); $event.preventDefault()">
+                                {{ pagina + 1 }}
+                            </a>
+                        </li>
+                    }
+                    }
+
+                    <!-- Botón siguiente -->
+                    <li class="page-item" [class.disabled]="pageInfo.last">
+                        <a class="page-link" href="#" (click)="irAPagina(pageInfo.number + 1); $event.preventDefault()"
+                            [attr.tabindex]="pageInfo.last ? -1 : null" [attr.aria-disabled]="pageInfo.last">›</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

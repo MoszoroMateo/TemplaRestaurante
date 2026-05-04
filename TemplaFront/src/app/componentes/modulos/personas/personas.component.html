@@ -1,0 +1,170 @@
+<div class="header pt-3 px-3">
+    <!-- Título a la izquierda -->
+    <div class="header-left">
+        <h1 class="texto-elegante">Listado de personas</h1>
+    </div>
+
+    <!-- Controles a la derecha -->
+    <div class="header-right">
+        <!-- Input de búsqueda -->
+        <div class="search-container">
+            <input type="text" id="busqueda" name="busqueda" class="form-control custom-input"
+                placeholder="🔎Buscar persona..." [(ngModel)]="busqueda" (input)="onBusquedaChange()">
+        </div>
+
+        <!-- Primer grupo de radio buttons - Tipo -->
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por tipo">
+            <input type="radio" class="btn-check" name="tipo" id="PERSONAL" [value]="TipoPersona.PERSONAL"
+                [(ngModel)]="tipoSeleccionado" (change)="onTipoChange(TipoPersona.PERSONAL)" autocomplete="off">
+            <label class="btn custom-radio" for="PERSONAL">Personal</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="TODOS_TIPO" [value]="''"
+                [(ngModel)]="tipoSeleccionado" (change)="onTipoChange('')" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS_TIPO">Todos</label>
+
+            <input type="radio" class="btn-check" name="tipo" id="CLIENTE" [value]="TipoPersona.CLIENTE"
+                [(ngModel)]="tipoSeleccionado" (change)="onTipoChange(TipoPersona.CLIENTE)" autocomplete="off">
+            <label class="btn custom-radio" for="CLIENTE">Clientes</label>
+        </div>
+
+        <!-- Segundo grupo de radio buttons - Estado -->
+        <div class="btn-group filter-group" role="group" aria-label="Filtro por estado">
+            <input type="radio" class="btn-check" name="estado" id="ACTIVOS" value="ACTIVOS"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('ACTIVOS')" autocomplete="off">
+            <label class="btn custom-radio" for="ACTIVOS">Activos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="TODOS_ESTADO" value="TODOS"
+                [(ngModel)]="estadoSeleccionado" (change)="onEstadoChange('TODOS')" autocomplete="off">
+            <label class="btn custom-radio" for="TODOS_ESTADO">Todos</label>
+
+            <input type="radio" class="btn-check" name="estado" id="BAJA" value="BAJA" [(ngModel)]="estadoSeleccionado"
+                (change)="onEstadoChange('BAJA')" autocomplete="off">
+            <label class="btn custom-radio" for="BAJA">Baja</label>
+        </div>
+    </div>
+</div>
+
+<hr class="header-divider">
+
+<div class="body mt-5 mx-5 px-5">
+    <!-- Botón Nueva Persona alineado a la derecha -->
+    <div class="mb-3 d-flex justify-content-end">
+        <button class="btn custom-btn" (click)="openNewPersonModal()">
+            <span class="btn-icon">➕</span>
+            Nueva Persona
+        </button>
+    </div>
+
+    <!-- ✅ Loading spinner -->
+    <div *ngIf="cargando" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <!-- ✅ Tabla con datos reales -->
+    <div class="listado" *ngIf="!cargando">
+        <table class="table table-hover table-striped custom-table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Documento</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Teléfono</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <!-- ✅ Mostrar mensaje si no hay datos -->
+                <tr *ngIf="personas.length === 0">
+                    <td colspan="9" class="text-center text-muted py-4">
+                        No se encontraron personas
+                    </td>
+                </tr>
+
+                <!-- ✅ Iterar sobre las personas -->
+                @for (persona of personas; track persona.id; let i = $index) {
+                <tr>
+                    <th scope="row">{{ i + 1 + (paginaActual * tamanoPagina) }}</th>
+                    <td>{{ persona.nombre }}</td>
+                    <td>{{ persona.apellido }}</td>
+                    <td>{{ persona.dni }}</td>
+                    <td>{{ persona.email }}</td>
+                    <td>{{ persona.telefono }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                                        'badge-personal': persona.tipoPersona === 'PERSONAL',
+                                        'badge-cliente': persona.tipoPersona === 'CLIENTE'
+                                      }">
+                            {{ persona.tipoPersona }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                                        'badge-activo': persona.fechaBaja == null,
+                                        'badge-baja': persona.fechaBaja != null
+                                      }">
+                            {{ persona.fechaBaja ? 'Baja' : 'Activo' }}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-edit" (click)="openNewPersonModal(persona)" title="Editar">
+                            ✏️
+                        </button>
+                        <button class="btn btn-sm btn-delete" (click)="eliminarPersona(persona)" title="Eliminar">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- ✅ Paginación dinámica -->
+        <div class="pagination-container d-flex justify-content-between align-items-center mt-4"
+            *ngIf="pageInfo && pageInfo.totalElements > 0">
+
+            <div class="pagination-info">
+                <span class="text-muted">
+                    Mostrando {{ (pageInfo.number * pageInfo.size) + 1 }}-{{
+                    Math.min((pageInfo.number + 1) * pageInfo.size, pageInfo.totalElements)
+                    }} de {{ pageInfo.totalElements }} registros
+                </span>
+            </div>
+
+            <nav aria-label="Paginación de personas" *ngIf="pageInfo.totalPages > 1">
+                <ul class="pagination custom-pagination mb-0">
+                    <!-- Botón anterior -->
+                    <li class="page-item" [class.disabled]="pageInfo.first">
+                        <a class="page-link" href="#" (click)="irAPagina(pageInfo.number - 1); $event.preventDefault()"
+                            [attr.tabindex]="pageInfo.first ? -1 : null" [attr.aria-disabled]="pageInfo.first">‹</a>
+                    </li>
+                    <!-- Números de página -->
+                    @for (pagina of obtenerPaginasVisibles(); track pagina) {
+                    @if (pagina === null) {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    } @else {
+                        <li class="page-item" [class.active]="pagina === pageInfo.number">
+                            <a class="page-link" href="#" (click)="irAPagina(pagina); $event.preventDefault()">
+                                {{ pagina + 1 }}
+                            </a>
+                        </li>
+                    }
+                    }
+
+                    <!-- Botón siguiente -->
+                    <li class="page-item" [class.disabled]="pageInfo.last">
+                        <a class="page-link" href="#" (click)="irAPagina(pageInfo.number + 1); $event.preventDefault()"
+                            [attr.tabindex]="pageInfo.last ? -1 : null" [attr.aria-disabled]="pageInfo.last">›</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

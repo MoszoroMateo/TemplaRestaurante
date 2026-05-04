@@ -1,0 +1,178 @@
+<div class="modal-backdrop" *ngIf="isVisible" (click)="cancelar()"></div>
+
+<div class="modal-container" *ngIf="isVisible">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Crear Disponibilidades Mensuales</h2>
+      <button type="button" class="btn-close" (click)="cancelar()" [disabled]="isLoading">
+        ✖
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <div class="form-container">
+        
+        <!-- Descripción -->
+        <div class="alert alert-info">
+          <strong>ℹ️ Información:</strong> Este formulario creará disponibilidades para todos los días del mes seleccionado con los cupos especificados.
+        </div>
+
+        <!-- Selección de Año y Mes -->
+        <div class="form-row">
+          <!-- Selección de Año -->
+          <div class="form-group">
+            <label for="anio" class="form-label">
+              <strong>Año</strong> <span class="text-danger">*</span>
+            </label>
+            <select 
+              id="anio" 
+              class="form-control" 
+              [(ngModel)]="anioSeleccionado"
+              [disabled]="isLoading">
+              <option *ngFor="let anio of anios" [value]="anio">
+                {{ anio }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selección de Mes -->
+          <div class="form-group">
+            <label for="mes" class="form-label">
+              <strong>Mes</strong> <span class="text-danger">*</span>
+            </label>
+            <select 
+              id="mes" 
+              class="form-control" 
+              [(ngModel)]="mesSeleccionado"
+              [disabled]="isLoading">
+              <option *ngFor="let mes of obtenerMesesDisponibles()" [value]="mes.valor">
+                {{ mes.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cupos Máximos -->
+        <div class="form-group">
+          <label for="cupos" class="form-label">
+            <strong>Cupos Máximos por Día</strong> <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="number" 
+            id="cupos" 
+            class="form-control" 
+            [(ngModel)]="cuposMaximos"
+            [disabled]="isLoading"
+            min="1"
+            max="500"
+            placeholder="Ej: 100">
+          <small class="form-text text-muted">
+            Cantidad de comensales que se pueden reservar por día
+          </small>
+        </div>
+
+        <!-- Separador -->
+        <hr class="section-divider">
+
+        <!-- Exclusiones (Opcional) -->
+        <div class="exclusiones-section">
+          <h5 class="section-title">🚫 Excluir Días (Opcional)</h5>
+          <small class="form-text text-muted mb-3" style="display: block;">
+            Selecciona días que NO deseas habilitar (ej: días de cierre del restaurante)
+          </small>
+
+          <!-- Excluir días de la semana -->
+          <div class="form-group">
+            <label class="form-label">
+              <strong>Excluir días de la semana</strong>
+            </label>
+            <div class="dias-semana-grid">
+              <button 
+                type="button"
+                *ngFor="let dia of diasSemana"
+                class="dia-semana-btn"
+                [class.selected]="isDiaSemanaExcluido(dia.valor)"
+                [disabled]="isLoading"
+                (click)="toggleDiaSemana(dia.valor)">
+                {{ dia.nombre }}
+              </button>
+            </div>
+            <small class="form-text text-muted">
+              Ejemplo: Selecciona "Domingo" para excluir todos los domingos del mes
+            </small>
+          </div>
+
+          <!-- Excluir días específicos -->
+          <div class="form-group">
+            <label class="form-label">
+              <strong>Excluir días específicos del mes</strong>
+            </label>
+            <div class="dias-mes-grid">
+              <button 
+                type="button"
+                *ngFor="let dia of obtenerArrayDiasMes()"
+                class="dia-mes-btn"
+                [class.selected]="isDiaMesExcluido(dia)"
+                [disabled]="isLoading"
+                (click)="toggleDiaMes(dia)">
+                {{ dia }}
+              </button>
+            </div>
+            <small class="form-text text-muted">
+              Ejemplo: Selecciona el día 25 para no crear disponibilidad ese día
+            </small>
+          </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="resumen-card" *ngIf="!isLoading">
+          <h5>📊 Resumen</h5>
+          <hr>
+          <p><strong>Período:</strong> {{ obtenerNombreMes() }} {{ anioSeleccionado }}</p>
+          <p><strong>Total de días del mes:</strong> {{ obtenerDiasDelMes() }}</p>
+          <p *ngIf="diasSemanaExcluidos.length > 0" class="text-warning">
+            <strong>Días de semana excluidos:</strong> {{ diasSemanaExcluidos.length }} tipo(s)
+          </p>
+          <p *ngIf="diasMesExcluidos.length > 0" class="text-warning">
+            <strong>Días específicos excluidos:</strong> {{ diasMesExcluidos.length }}
+          </p>
+          <p><strong>Días a crear:</strong> {{ calcularDiasACrear() }}</p>
+          <p><strong>Cupos por día:</strong> {{ cuposMaximos }}</p>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-container" *ngIf="isLoading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Creando disponibilidades...</span>
+          </div>
+          <p class="mt-2">Creando disponibilidades, por favor espere...</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="cancelar()"
+        [disabled]="isLoading">
+        Cancelar
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="crearDisponibilidades()"
+        [disabled]="isLoading || cuposMaximos <= 0">
+        <span *ngIf="!isLoading">Crear Disponibilidades</span>
+        <span *ngIf="isLoading">
+          <span class="spinner-border spinner-border-sm" role="status"></span>
+          Creando...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

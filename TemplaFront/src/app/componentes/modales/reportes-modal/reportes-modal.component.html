@@ -1,0 +1,134 @@
+<!-- Contenido del modal (funciona tanto para NgBootstrap como standalone) -->
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'" *ngIf="!activeModal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <ng-container *ngTemplateOutlet="modalContent"></ng-container>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop del modal solo cuando no se usa NgBootstrap -->
+<div class="modal-backdrop fade" [class.show]="isVisible" *ngIf="isVisible && !activeModal" (click)="hide()"></div>
+
+<!-- Contenido para NgBootstrap -->
+<div class="modal-content" *ngIf="activeModal">
+  <ng-container *ngTemplateOutlet="modalContent"></ng-container>
+</div>
+
+<!-- Template del contenido del modal -->
+<ng-template #modalContent>
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-chart-bar me-2"></i>
+          {{ getTituloModal() }}
+        </h4>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Controles de filtro -->
+        <div class="row mb-4">
+          <div class="col-md-2">
+            <label class="form-label">Categoría:</label>
+            <div class="form-control-plaintext fw-bold">{{ getNombreCategoria() }}</div>
+          </div>
+          
+          <div class="col-md-3" *ngIf="categoriaReporte !== 'stock' && categoriaReporte !== 'platos'">
+            <label for="fechaInicio" class="form-label">Fecha Inicio:</label>
+            <input
+              type="date"
+              id="fechaInicio"
+              class="form-control"
+              [(ngModel)]="fechaInicio"
+              (change)="generarReporte()">
+          </div>
+          
+          <div class="col-md-3" *ngIf="categoriaReporte !== 'stock' && categoriaReporte !== 'platos'">
+            <label for="fechaFin" class="form-label">Fecha Fin:</label>
+            <input
+              type="date"
+              id="fechaFin"
+              class="form-control"
+              [(ngModel)]="fechaFin"
+              (change)="generarReporte()">
+          </div>
+          
+          <div class="col-md-2" *ngIf="categoriaReporte === 'reservas'">
+            <label for="tipoReporte" class="form-label">Tipo:</label>
+            <select
+              id="tipoReporte"
+              class="form-select"
+              [(ngModel)]="tipoReporte"
+              (change)="onTipoReporteChange()">
+              <option value="fechas">Por Fechas</option>
+              <option value="horarios">Por Horarios</option>
+            </select>
+          </div>
+          
+          <div class="col-md-2 d-flex align-items-end">
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="generarReporte()">
+              <i class="fas fa-sync-alt me-1"></i>
+              Actualizar
+            </button>
+          </div>
+        </div>
+        
+        <!-- Área del gráfico -->
+        <div class="chart-container">
+          <div id="chart-fechas" *ngIf="categoriaReporte === 'reservas' && tipoReporte === 'fechas'"></div>
+          <div id="chart-horarios" *ngIf="categoriaReporte === 'reservas' && tipoReporte === 'horarios'"></div>
+          <div id="chart-pedidos" *ngIf="categoriaReporte === 'pedidos'"></div>
+          <div id="chart-stock" *ngIf="categoriaReporte === 'stock'"></div>
+          <div id="chart-platos" *ngIf="categoriaReporte === 'platos'"></div>
+          <div id="chart-menus" *ngIf="categoriaReporte === 'menus'"></div>
+        </div>
+        
+        <!-- Tabla de datos para Menús -->
+        <div class="mt-4" *ngIf="categoriaReporte === 'menus' && datosMenus.length > 0">
+          <h5 class="mb-3">
+            <i class="fas fa-table me-2"></i>
+            Datos del Reporte
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Menú</th>
+                  <th class="text-center">Cantidad de Pedidos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dato of datosMenus; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td><strong>{{ dato.nombreMenu }}</strong></td>
+                  <td class="text-center">{{ dato.cantidadPedidos }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-success me-2" 
+          (click)="exportarPDF()"
+          [disabled]="(categoriaReporte === 'reservas' && (!datosReporte || datosReporte.length === 0)) || 
+                     (categoriaReporte === 'pedidos' && (!datosPedidos || datosPedidos.length === 0)) ||
+                     (categoriaReporte === 'stock' && (!datosStock || datosStock.length === 0)) ||
+                     (categoriaReporte === 'platos' && (!datosPlatos || datosPlatos.length === 0)) ||
+                     (categoriaReporte === 'menus' && (!datosMenus || datosMenus.length === 0))">
+          <i class="fas fa-file-pdf me-1"></i>
+          Exportar PDF
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="hide()">
+          <i class="fas fa-times me-1"></i>
+          Cerrar
+        </button>
+      </div>
+</ng-template>

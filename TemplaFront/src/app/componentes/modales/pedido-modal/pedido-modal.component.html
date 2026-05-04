@@ -1,0 +1,233 @@
+<div class="modal-content d-flex align-items-center">
+  <!-- Header del modal -->
+  <div class="modal-header custom-header d-flex justify-content-between align-items-center">
+    <h4 class="modal-title">
+      {{ soloLectura ? 'Detalle del Pedido' : (isEditMode ? 'Agregar Items al Pedido' : 'Nuevo Pedido') }}
+    </h4>
+    <button type="button" class="btn-close custom-close" aria-label="Close" (click)="onCancelar()"></button>
+  </div>
+
+  <!-- Body del modal -->
+  <div class="modal-body custom-body">
+
+    <!-- Loading -->
+    <div *ngIf="cargandoDatos" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="pedidoForm" *ngIf="!cargandoDatos">
+
+      <!-- ✅ Información del pedido (solo lectura) -->
+      <div *ngIf="soloLectura && pedidoData" class="info-pedido mb-4">
+        <div class="info-header">
+          <div class="info-header-left">
+            <span class="pedido-numero">Pedido #{{ pedidoData.idPedido }}</span>
+            <span class="badge custom-badge" [ngClass]="getEstadoBadgeClass(pedidoData.estado)">
+              {{ getEstadoTexto(pedidoData.estado) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-icon">🪑</div>
+            <div class="info-content">
+              <span class="info-label">Mesa</span>
+              <span class="info-value">{{ pedidoData.numeroMesa }}</span>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <div class="info-icon">👤</div>
+            <div class="info-content">
+              <span class="info-label">Mozo</span>
+              <span class="info-value">{{ pedidoData.nombreUsuario }}</span>
+            </div>
+          </div>
+
+          <div class="info-box info-box-full">
+            <div class="info-icon">📅</div>
+            <div class="info-content">
+              <span class="info-label">Fecha y Hora</span>
+              <span class="info-value">{{ formatearFecha(pedidoData.fechaHora) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selección de Mesa (solo si NO es solo lectura Y NO hay mesa preseleccionada) -->
+      <div class="form-row" *ngIf="!soloLectura && !isEditMode && !mesaSeleccionada">
+        <div class="form-group full-width">
+          <select id="idMesa" class="form-select custom-input" formControlName="idMesa">
+            <option value="">Seleccionar Mesa *</option>
+            <option *ngFor="let mesa of mesas" [value]="mesa.idMesa">
+              Mesa {{ mesa.numeroMesa }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ✅ Mostrar mesa preseleccionada (cuando viene desde el mapa) -->
+      <div class="mesa-preseleccionada-banner" *ngIf="!soloLectura && !isEditMode && mesaSeleccionada">
+        <div class="mesa-info-banner">
+          <i class="fas fa-utensils"></i>
+          <div class="mesa-info-content">
+            <span class="mesa-label">Mesa seleccionada:</span>
+            <span class="mesa-numero">{{ mesaSeleccionada.numeroMesa }}</span>
+          </div>
+          <span class="badge badge-estado" [style.background-color]="getColorEstado(mesaSeleccionada.estadoMesa)">
+            {{ mesaSeleccionada.estadoMesa }}
+          </span>
+        </div>
+      </div>
+
+      <!-- ✅ Solo mostrar los controles de agregar item si NO es solo lectura -->
+      <div *ngIf="!soloLectura">
+        <!-- Selección de Tipo de Item -->
+        <div class="form-row">
+          <div class="form-group">
+            <select id="tipoItem" class="form-select custom-input" [(ngModel)]="tipoItemSeleccionado"
+              [ngModelOptions]="{standalone: true}" (change)="onTipoItemChange()">
+              <option value="">Tipo de Item</option>
+              <option *ngFor="let tipo of tiposItem" [value]="tipo.valor">
+                {{ tipo.texto }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selección de Item específico -->
+          <div class="form-group">
+            <select id="item" class="form-select custom-input" [(ngModel)]="itemSeleccionado"
+              [ngModelOptions]="{standalone: true}" [disabled]="itemsDisponibles.length === 0">
+              <option [value]="null">Seleccionar {{ tipoItemSeleccionado || 'Item' }}...</option>
+              <option *ngFor="let item of itemsDisponibles" [value]="item.id">
+                {{ item.nombre }} - ${{ item.precio | number:'1.2-2' }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cantidad -->
+        <div class="form-row">
+          <div class="form-group">
+            <input type="number" class="form-control custom-input" [(ngModel)]="cantidadSeleccionada"
+              [ngModelOptions]="{standalone: true}" min="1" step="1" placeholder="Cantidad">
+          </div>
+
+          <!-- Botón Agregar -->
+          <div class="form-group">
+            <button type="button" class="btn custom-btn-add w-100" (click)="agregarDetalle()"
+              [disabled]="!tipoItemSeleccionado || !itemSeleccionado || cantidadSeleccionada < 1">
+              Agregar Item
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de detalles agregados -->
+      <div *ngIf="detallesAgregados.length > 0" class="items-agregados">
+        <h6 class="mb-3">Items del Pedido:</h6>
+        <div class="items-list">
+          <div class="item-card" *ngFor="let detalle of detallesAgregados; let i = index">
+            <div class="item-info">
+              <span class="item-nombre">{{ detalle.nombre }}</span>
+              <span class="item-detalle">
+                {{ detalle.tipo }} - Cantidad: {{ detalle.cantidad }} - ${{ detalle.precio * detalle.cantidad |
+                number:'1.2-2' }}
+              </span>
+              <!-- ✅ Estado debajo del detalle del item -->
+              <span *ngIf="detalle.estado" class="badge estado-badge"
+                [ngClass]="getEstadoDetalleClass(detalle.estado)">
+                {{ getEstadoDetalleTexto(detalle.estado) }}
+              </span>
+            </div>
+
+            <div class="item-actions">
+              <!-- ✅ Botón Cancelar:
+                   - PENDIENTE: siempre se puede cancelar
+                   - LISTO_PARA_ENTREGAR: solo si es PRODUCTO (tipo !== PLATO && tipo !== MENU)
+              -->
+              <button *ngIf="!soloLectura && (detalle.estado === 'PENDIENTE' || (detalle.estado === 'LISTO_PARA_ENTREGAR' && detalle.tipo === 'PRODUCTO'))" 
+                      type="button" 
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="cancelarDetalle(detalle.id)">
+                <i class="fas fa-times me-1"></i>
+                Cancelar
+              </button>
+
+              <!-- ✅ Botón Quitar (solo para items nuevos sin estado) -->
+              <button *ngIf="!soloLectura && !detalle.estado" 
+                      type="button" 
+                      class="btn btn-sm custom-btn-remove"
+                      (click)="quitarDetalle(i)">
+                Quitar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="total-pedido mt-3">
+          <h5>Total: ${{ calcularTotal() | number:'1.2-2' }}</h5>
+        </div>
+      </div>
+
+      <div *ngIf="detallesAgregados.length === 0" class="no-items">
+        <p class="text-muted text-center">
+          No hay items agregados al pedido
+        </p>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer del modal -->
+  <div class="modal-footer custom-footer">
+    <button type="button" class="btn custom-btn-cancel" (click)="onCancelar()" [disabled]="guardando">
+      {{ soloLectura ? 'Cerrar' : 'Cancelar' }}
+    </button>
+    
+    <!-- ✅ Botón Cancelar Pedido (solo si TODOS los items están CANCELADOS) -->
+    <button *ngIf="isEditMode && !soloLectura && todosItemsCancelados()" 
+            type="button" 
+            class="btn btn-danger" 
+            (click)="cancelarPedidoCompleto()"
+            [disabled]="guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      <i class="fas fa-times-circle me-1"></i>
+      Cancelar Pedido
+    </button>
+    
+    <!-- ✅ Botón Entregar Items Listos (solo si hay items LISTO) -->
+    <button *ngIf="isEditMode && !soloLectura && hayItemsListos()" 
+            type="button" 
+            class="btn btn-success" 
+            (click)="entregarItemsListos()"
+            [disabled]="guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      <i class="fas fa-hand-holding me-1"></i>
+      Entregar Items Listos
+    </button>
+    
+    <!-- ✅ Botón Finalizar Pedido (solo en modo edición y si todos están entregados, ignorando cancelados) -->
+    <button *ngIf="isEditMode && !soloLectura && todosPedidosEntregados()" 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="finalizarPedido()"
+            [disabled]="guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      <i class="fas fa-check-circle me-1"></i>
+      Finalizar Pedido
+    </button>
+    
+    <!-- ✅ Solo mostrar botón guardar si NO es solo lectura -->
+    <button *ngIf="!soloLectura" type="button" class="btn custom-btn-save" (click)="onGuardar()"
+      [disabled]="!esFormularioValido() || guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      {{ isEditMode ? 'Agregar Items' : 'Crear Pedido' }}
+    </button>
+  </div>
+</div>

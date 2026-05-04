@@ -1,0 +1,36 @@
+<div class="header pt-3 px-3">
+  <!-- Título a la izquierda -->
+  <div class="header-left">
+    <h1 class="texto-elegante">Centro de Reportes</h1>
+  </div>
+</div>
+
+<hr class="header-divider">
+
+<div class="reportes-container p-4">
+  <!-- Mensaje si no hay reportes disponibles -->
+  <div *ngIf="reportesFiltrados.length === 0" class="alert alert-info text-center">
+    <i class="fas fa-info-circle me-2"></i>
+    No hay reportes disponibles para tu rol de usuario.
+  </div>
+
+  <!-- Grid de tarjetas de reportes -->
+  <div class="reportes-grid" *ngIf="reportesFiltrados.length > 0">
+    <div class="reporte-card" *ngFor="let reporte of reportesFiltrados" (click)="abrirReporte(reporte)">
+      <div class="reporte-card-header">
+        <div class="reporte-icono">{{ reporte.icono }}</div>
+        <span class="reporte-categoria badge">{{ reporte.categoria }}</span>
+      </div>
+      <div class="reporte-card-body">
+        <h3 class="reporte-titulo">{{ reporte.titulo }}</h3>
+        <p class="reporte-descripcion">{{ reporte.descripcion }}</p>
+      </div>
+      <div class="reporte-card-footer">
+        <button class="btn btn-primary btn-sm w-100">
+          <i class="fas fa-chart-bar me-1"></i>
+          Ver Reporte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
