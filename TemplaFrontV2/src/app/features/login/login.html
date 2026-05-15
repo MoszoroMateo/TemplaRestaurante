@@ -1,0 +1,205 @@
+<div class="grid grid-cols-3 h-screen overflow-hidden font-body text-deep">
+
+  <!-- ══════════ LEFT PANEL — gradient bubbles ══════════ -->
+  <div class="relative overflow-hidden flex flex-col col-span-2 justify-between py-16 px-12">
+
+    <!-- Bubble canvas -->
+    <div class="bubbles-canvas">
+      <div class="bubble bubble-1"></div>
+      <div class="bubble bubble-2"></div>
+      <div class="bubble bubble-3"></div>
+      <div class="bubble bubble-4"></div>
+      <div class="bubble bubble-5"></div>
+    </div>
+
+    <!-- Top wordmark -->
+    <div class="relative z-10">
+      <span class="font-body font-semibold text-[11px] tracking-[0.3em] uppercase text-white/30">
+        TEMPLA
+      </span>
+    </div>
+
+    <!-- Center logo -->
+    <div class="relative z-10 flex justify-center">
+      <div class="relative">
+        <div class="absolute inset-0 rounded-full blur-3xl opacity-30"
+             style="background: #2E5C40; transform: scale(2);"></div>
+        <img
+          src="assets/logoHome.png"
+          alt="Templa"
+          class="relative w-32 h-32 object-contain opacity-90"
+        />
+      </div>
+    </div>
+
+    <!-- Bottom tagline -->
+    <div class="relative z-10">
+      <p class="font-heading font-medium text-[28px] leading-[1.25] text-white/90">
+        Where craft meets<br>the kitchen.
+      </p>
+      <div class="mt-4 w-8 h-px" style="background: #C07A50; opacity: 0.6;"></div>
+    </div>
+
+  </div><!-- /panel-left -->
+
+  <!-- ══════════ RIGHT PANEL — form area ══════════ -->
+  <div class="bg-bg flex items-center justify-center px-24 overflow-y-auto">
+
+    <!-- ─── LOGIN SCREEN ─── -->
+    <div class="w-full max-w-[380px] screen-enter" *ngIf="currentScreen === 'login'">
+        <p class="font-body font-semibold text-[11px] tracking-[0.25em] uppercase text-muted mb-12">
+        TEMPLA
+        </p>
+      <div class="mb-12">
+
+      </div>
+
+      <h1 class="font-heading font-medium text-[32px] leading-[1.2] text-deep mb-10">
+        Log in to<br>your kitchen.
+      </h1>
+
+      <form class="flex flex-col gap-8" #loginForm="ngForm" (ngSubmit)="login()" autocomplete="off">
+        <!-- Hidden fields to prevent browser autocomplete -->
+        <input type="text" autocomplete="new-username" style="position:absolute; left:-9999px; opacity:0" tabindex="-1">
+        <input type="password" autocomplete="new-password" style="position:absolute; left:-9999px; opacity:0" tabindex="-1">
+        <!-- Actual username and password fields -->
+        <div class="relative pt-5 border-b border-muted" [class.field-focused]="usernameFocused">
+          <label class="field-label" [class.floated]="usernameFocused || usernameHasValue" for="username">
+            Username
+          </label>
+          <input
+            id="username" name="username" type="text"
+            class="w-full bg-transparent border-none outline-none py-2 font-body text-[15px] text-deep caret-primary"
+            [(ngModel)]="username"
+            (focus)="usernameFocused = true"
+            (blur)="usernameFocused = false"
+            [disabled]="isLoading"
+            autocomplete="off"
+          />
+          <span class="field-line"></span>
+        </div>
+
+        <div class="relative pt-5 border-b border-muted" [class.field-focused]="passwordFocused">
+          <label class="field-label" [class.floated]="passwordFocused || passwordHasValue" for="password">
+            Password
+          </label>
+          <input
+            id="password" name="password" type="password"
+            class="w-full bg-transparent border-none outline-none py-2 font-body text-[15px] text-deep caret-primary"
+            [(ngModel)]="password"
+            (focus)="passwordFocused = true"
+            (blur)="passwordFocused = false"
+            [disabled]="isLoading"
+            autocomplete="off"
+          />
+          <span class="field-line"></span>
+        </div>
+
+        <div class="flex justify-end -mt-4">
+          <button type="button"
+                  class="font-body text-[13px] text-muted underline underline-offset-2 hover:text-deep transition-colors cursor-pointer bg-transparent border-none p-0"
+                  (click)="goTo('forgot')">
+            Forgot password?
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          class="flex items-center justify-center w-full h-14 bg-primary hover:bg-primary-hover text-white font-body font-semibold text-[15px] tracking-wide transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none"
+          [disabled]="isLoading || !username || !password"
+        >
+          <span *ngIf="!isLoading">Log In</span>
+          <span *ngIf="isLoading" class="flex items-center gap-1.5">
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.2s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.4s"></span>
+          </span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- ─── FORGOT PASSWORD SCREEN ─── -->
+    <div class="w-full max-w-[380px] screen-enter" *ngIf="currentScreen === 'forgot'">
+
+      <button
+        class="flex items-center gap-1.5 font-body font-semibold text-[11px] tracking-[0.2em] uppercase text-muted hover:text-deep transition-colors mb-12 bg-transparent border-none cursor-pointer p-0"
+        (click)="goTo('login')"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Login
+      </button>
+
+      <h1 class="font-heading font-medium text-[32px] leading-[1.2] text-deep mb-4">
+        Reset your<br>password.
+      </h1>
+      <p class="font-body text-[15px] text-muted leading-relaxed mb-10">
+        Enter the email linked to your account and we'll send recovery instructions.
+      </p>
+
+      <form class="flex flex-col gap-8" (ngSubmit)="sendRecovery()">
+
+        <div class="relative pt-5 border-b border-muted" [class.field-focused]="recoveryEmailFocused">
+          <label class="field-label" [class.floated]="recoveryEmailFocused || recoveryEmailHasValue" for="recoveryEmail">
+            Email address
+          </label>
+          <input
+            id="recoveryEmail" name="recoveryEmail" type="email"
+            class="w-full bg-transparent border-none outline-none py-2 font-body text-[15px] text-deep caret-primary"
+            [(ngModel)]="recoveryEmail"
+            (focus)="recoveryEmailFocused = true"
+            (blur)="recoveryEmailFocused = false"
+            [disabled]="isRecoveryLoading"
+          />
+          <span class="field-line"></span>
+        </div>
+
+        <button
+          type="submit"
+          class="flex items-center justify-center w-full h-14 bg-primary hover:bg-primary-hover text-white font-body font-semibold text-[15px] tracking-wide transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none"
+          [disabled]="isRecoveryLoading || !recoveryEmail"
+        >
+          <span *ngIf="!isRecoveryLoading">Send Recovery Link</span>
+          <span *ngIf="isRecoveryLoading" class="flex items-center gap-1.5">
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.2s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.4s"></span>
+          </span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- ─── RESET LINK SENT SCREEN ─── -->
+    <div class="w-full max-w-[380px] screen-enter flex flex-col" *ngIf="currentScreen === 'sent'">
+
+      <div class="icon-reveal mb-8">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect x="4" y="10" width="40" height="28" stroke="#2E5C40" stroke-width="1.5"/>
+          <path d="M4 10L24 27L44 10" stroke="#2E5C40" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M4 38L17 24" stroke="#2E5C40" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M44 38L31 24" stroke="#2E5C40" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <h1 class="font-heading font-medium text-[32px] leading-[1.2] text-deep mb-4">
+        Check your<br>inbox.
+      </h1>
+      <p class="font-body text-[15px] text-muted leading-relaxed mb-10">
+        We've sent recovery instructions to<br>
+        <span class="font-semibold text-deep">{{ recoveryEmail }}</span>
+      </p>
+
+      <button
+        class="flex items-center justify-center w-full h-14 bg-transparent border border-deep text-deep hover:bg-deep hover:text-bg font-body font-semibold text-[15px] tracking-wide transition-all cursor-pointer"
+        (click)="goTo('login')"
+      >
+        Return to Login
+      </button>
+
+    </div>
+
+  </div><!-- /panel-right -->
+</div>

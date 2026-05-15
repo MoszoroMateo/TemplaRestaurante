@@ -1,16 +1,16 @@
 -- ====================================================
 -- LIMPIEZA DE TABLAS (solo para desarrollo)
 -- ====================================================
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE usuarios;
-TRUNCATE TABLE personas;
-TRUNCATE TABLE productos;
-TRUNCATE TABLE platos_Detalle;
-TRUNCATE TABLE platos;
-TRUNCATE TABLE mesas;
-TRUNCATE TABLE disponibilidades;
-TRUNCATE TABLE reservas;
-SET FOREIGN_KEY_CHECKS = 1;
+--SET FOREIGN_KEY_CHECKS = 0;
+--TRUNCATE TABLE usuarios;
+--TRUNCATE TABLE personas;
+--TRUNCATE TABLE productos;
+--TRUNCATE TABLE platos_Detalle;
+--TRUNCATE TABLE platos;
+--TRUNCATE TABLE mesas;
+--TRUNCATE TABLE disponibilidades;
+--TRUNCATE TABLE reservas;
+--SET FOREIGN_KEY_CHECKS = 1;
 
 -- ====================================================
 -- INSERTAR PERSONAS
@@ -148,34 +148,33 @@ VALUES (NOW(), 20, 30, true);
 INSERT INTO disponibilidades (fecha, cupos_ocupados, cupos_maximos, activo)
 VALUES
     (CURRENT_DATE, 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 4 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 5 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 6 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 8 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 9 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 10 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 11 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 12 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 13 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 15 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 16 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 17 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 18 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 19 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 20 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 21 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 22 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 23 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 24 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 25 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 26 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 27 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 28 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 29 DAY), 0, 30, true),
-    (DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 0, 30, true);
-
+    (DATEADD('DAY', 1, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 2, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 3, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 4, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 5, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 6, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 7, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 8, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 9, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 10, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 11, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 12, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 13, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 14, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 15, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 16, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 17, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 18, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 19, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 20, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 21, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 22, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 23, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 24, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 25, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 26, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 27, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 28, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 29, CURRENT_DATE), 0, 30, true),
+    (DATEADD('DAY', 30, CURRENT_DATE), 0, 30, true);

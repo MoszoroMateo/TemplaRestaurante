@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,7 +22,9 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-    private static final String SECRET_KEY = "cF2xS9M38KkB8Kqx4UTxyHSwjA/ym6R7IoEWRQW8yqk=";
+
+    @Value("${jwt.secret.key}")
+    private String SECRET_KEY;
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 8;  // 8 horas
 
     public String generateToken(UserDetails user) {
