@@ -198,7 +198,158 @@
       >
         Return to Login
       </button>
+      
+      <button
+        class="flex items-center justify-center w-full h-14 bg-primary hover:bg-primary-hover text-white font-body font-semibold text-[15px] tracking-wide transition-all cursor-pointer border-none mt-4"
+        (click)="goTo('verify-token')"
+      >
+        Enter Code
+      </button>
 
+    </div>
+    
+    <!-- ─── VERIFY TOKEN SCREEN ─── -->
+    <div class="w-full max-w-[380px] screen-enter" *ngIf="currentScreen === 'verify-token'">
+      <button
+        class="flex items-center gap-1.5 font-body font-semibold text-[11px] tracking-[0.2em] uppercase text-muted hover:text-deep transition-colors mb-12 bg-transparent border-none cursor-pointer p-0"
+        (click)="goTo('forgot')"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back
+      </button>
+      <h1 class="font-heading font-medium text-[32px] leading-[1.2] text-deep mb-4">
+        Enter recovery<br>code.
+      </h1>
+      <p class="font-body text-[15px] text-muted leading-relaxed mb-10">
+        We sent a 6-digit code to<br>
+        <span class="font-semibold text-deep">{{ recoveryEmail }}</span>
+      </p>
+      <div class="flex flex-col gap-8">
+        <!-- 6 digit inputs -->
+        <div class="flex gap-3 justify-between">
+          <input
+            *ngFor="let digit of tokenDigits; let i = index"
+            [id]="'token-' + i"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="1"
+            class="w-12 h-14 text-center font-heading text-[24px] text-deep bg-transparent border-b-2 border-muted outline-none caret-primary transition-colors"
+            [class.border-primary]="tokenFocused"
+            [(ngModel)]="tokenDigits[i]"
+            (input)="onDigitInput($event, i)"
+            (keydown)="onDigitKeydown($event, i)"
+            (paste)="onDigitPaste($event, i)"
+            (focus)="tokenFocused = true"
+            (blur)="tokenFocused = false"
+            [disabled]="isTokenLoading"
+            autocomplete="off"
+          />
+        </div>
+        <button
+          class="flex items-center justify-center w-full h-14 bg-primary hover:bg-primary-hover text-white font-body font-semibold text-[15px] tracking-wide transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none"
+          [disabled]="isTokenLoading || !isTokenComplete"
+          (click)="verifyToken()"
+        >
+          <span *ngIf="!isTokenLoading">Verify Code</span>
+          <span *ngIf="isTokenLoading" class="flex items-center gap-1.5">
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.2s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.4s"></span>
+          </span>
+        </button>
+        <div class="text-center">
+          <button type="button"
+                  class="font-body text-[13px] text-muted underline underline-offset-2 hover:text-deep transition-colors cursor-pointer bg-transparent border-none p-0"
+                  (click)="sendRecovery()">
+            Resend code
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── NEW PASSWORD SCREEN ─── -->
+    <div class="w-full max-w-[380px] screen-enter" *ngIf="currentScreen === 'new-password'">
+      <button
+        class="flex items-center gap-1.5 font-body font-semibold text-[11px] tracking-[0.2em] uppercase text-muted hover:text-deep transition-colors mb-12 bg-transparent border-none cursor-pointer p-0"
+        (click)="goTo('verify-token')"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back
+      </button>
+      <h1 class="font-heading font-medium text-[32px] leading-[1.2] text-deep mb-10">
+        Set new<br>password.
+      </h1>
+      <form class="flex flex-col gap-8" (ngSubmit)="resetPassword()">
+        <div class="relative pt-5 border-b border-muted" [class.field-focused]="newPasswordFocused">
+          <label class="field-label" [class.floated]="newPasswordFocused || newPasswordHasValue" for="newPassword">
+            New Password
+          </label>
+          <input
+            id="newPassword" name="newPassword" type="password"
+            class="w-full bg-transparent border-none outline-none py-2 font-body text-[15px] text-deep caret-primary"
+            [(ngModel)]="newPassword"
+            (focus)="newPasswordFocused = true"
+            (blur)="newPasswordFocused = false"
+            [disabled]="isResetLoading"
+            autocomplete="off"
+          />
+          <span class="field-line"></span>
+        </div>
+        <div class="relative pt-5 border-b border-muted" [class.field-focused]="confirmPasswordFocused">
+          <label class="field-label" [class.floated]="confirmPasswordFocused || confirmPasswordHasValue" for="confirmPassword">
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword" name="confirmPassword" type="password"
+            class="w-full bg-transparent border-none outline-none py-2 font-body text-[15px] text-deep caret-primary"
+            [(ngModel)]="confirmPassword"
+            (focus)="confirmPasswordFocused = true"
+            (blur)="confirmPasswordFocused = false"
+            [disabled]="isResetLoading"
+            autocomplete="off"
+          />
+          <span class="field-line"></span>
+        </div>
+        <button
+          type="submit"
+          class="flex items-center justify-center w-full h-14 bg-primary hover:bg-primary-hover text-white font-body font-semibold text-[15px] tracking-wide transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none"
+          [disabled]="isResetLoading || !newPassword || !confirmPassword"
+        >
+          <span *ngIf="!isResetLoading">Reset Password</span>
+          <span *ngIf="isResetLoading" class="flex items-center gap-1.5">
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.2s"></span>
+            <span class="dot w-1.5 h-1.5 rounded-full bg-white inline-block" style="animation-delay: 0.4s"></span>
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- ─── SUCCESS SCREEN ─── -->
+    <div class="w-full max-w-[380px] screen-enter flex flex-col" *ngIf="currentScreen === 'success'">
+      <div class="icon-reveal mb-8">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="20" stroke="#2E5C40" stroke-width="1.5"/>
+          <path d="M16 24L22 30L32 18" stroke="#2E5C40" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="font-heading font-medium text-[32px] leading-[1.2] text-deep mb-4">
+        Password<br>updated!
+      </h1>
+      <p class="font-body text-[15px] text-muted leading-relaxed mb-10">
+        Your password has been changed successfully.
+      </p>
+      <button
+        class="flex items-center justify-center w-full h-14 bg-primary hover:bg-primary-hover text-white font-body font-semibold text-[15px] tracking-wide transition-all cursor-pointer border-none"
+        (click)="goTo('login')"
+      >
+        Return to Login
+      </button>
     </div>
 
   </div><!-- /panel-right -->

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { LoginRequest, LoginResponse, JwtPayload, RolUsuario } from '../models/auth.model';
+import { LoginRequest, LoginResponse, JwtPayload, RolUsuario, ForgotPasswordRequest, VerifyResetTokenRequest, ResetPasswordRequest } from '../models/auth.model';
 import { tap, Observable } from 'rxjs';
 
 @Injectable({providedIn: 'root',})
@@ -34,5 +34,17 @@ export class AuthService {
 
     const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
     return payload.sub;
+  }
+
+  forgotPassword(request: ForgotPasswordRequest): Observable<string>{
+    return this.http.post(`${this.API_URL}/forgot-password`, request, { responseType: 'text' });
+  }
+
+  verifyResetToken(request: VerifyResetTokenRequest): Observable<string>{
+    return this.http.post(`${this.API_URL}/verify-reset-token`, request, { responseType: 'text' });
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<string>{
+    return this.http.post(`${this.API_URL}/reset-password`, request, { responseType: 'text' });
   }
 }

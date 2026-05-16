@@ -21,7 +21,7 @@ INSERT INTO personas (nombre, apellido, email, telefono, dni, tipo_persona, fech
 VALUES ('Admin', 'Sistema', 'admin@gmail.com', '0000000000', 99999999, 'PERSONAL', NOW(), 0, NULL, NULL);
 
 INSERT INTO personas (nombre, apellido, email, telefono, dni, tipo_persona, fecha_alta, user_alta, fecha_baja, user_baja_id)
-VALUES ('Mateo', 'Moszoro', 'mateomoszoro@gmail.com', '1111111111', 12345678, 'CLIENTE', NOW(), 0, NULL, NULL);
+VALUES ('Juan', 'Bratti', 'JuanoBratti@gmail.com', '1111111111', 12345678, 'CLIENTE', NOW(), 0, NULL, NULL);
 
 INSERT INTO personas (nombre, apellido, email, telefono, dni, tipo_persona, fecha_alta, user_alta, fecha_baja, user_baja_id)
 VALUES ('Facundo', 'Ruiz', 'facuruiz@gmail.com', '2222222222', 87654321, 'CLIENTE', NOW(), 0, NULL, NULL);
@@ -36,7 +36,7 @@ VALUES ('admin','$2a$10$NewaJBkpaQZu/1xsTnpAqOr5nSnIbmVAV0IqPq6kP/SDtfeQJ83Xy', 
 
 -- Mozo
 INSERT INTO personas (nombre, apellido, email, telefono, dni, tipo_persona, fecha_alta, user_alta, fecha_baja, user_baja_id)
-VALUES ('Juan', 'Pérez', 'mozo@gmail.com', '3333333333', 11111111, 'PERSONAL', NOW(), 1, NULL, NULL);
+VALUES ('Mateo', 'Moszoro', 'mateomosz@hotmail.com', '3333333333', 11111111, 'PERSONAL', NOW(), 1, NULL, NULL);
 
 -- Cocina
 INSERT INTO personas (nombre, apellido, email, telefono, dni, tipo_persona, fecha_alta, user_alta, fecha_baja, user_baja_id)

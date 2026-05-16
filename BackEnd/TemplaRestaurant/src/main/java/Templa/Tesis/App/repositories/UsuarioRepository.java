@@ -22,6 +22,9 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity,Integer> 
     @Query("SELECT u FROM UsuarioEntity u WHERE u.username = :credential")
     Optional<UsuarioEntity> findByUsernameOrEmail(@Param("credential") String credential);
 
+    @Query("Select u from UsuarioEntity u where u.persona.email = :email")
+    Optional<UsuarioEntity> findByEmail(@Param("email" )String email);
+
     // Verificar si existe username
     boolean existsByUsername(String username);
 

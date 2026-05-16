@@ -22,3 +22,18 @@ export interface JwtPayload {
   iat: number;      // Issued At (automático)
   exp: number;      // Expiración
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyResetTokenRequest {
+  email: string;
+  token: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  newPassword: string;
+}

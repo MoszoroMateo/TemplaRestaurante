@@ -1,0 +1,44 @@
+spring.application.name=Scaffolding
+
+server.port=8081
+
+# Swagger/OpenAPI
+springdoc.api-docs.path=/v3/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.operationsSorter=alpha
+springdoc.swagger-ui.tagsSorter=alpha
+spring.servlet.multipart.max-file-size=20MB
+
+# H2 consola web (opcional)
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+spring.datasource.url=jdbc:h2:mem:testdb;MODE=MySQL
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+spring.sql.init.mode=always
+spring.jpa.defer-datasource-initialization=true
+
+# Email (SMTP) - REEMPLAZA con tus credenciales
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=TU_EMAIL@gmail.com
+spring.mail.password=TU_CONTRASENA_DE_Aplicacion
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# MercadoPago - REEMPLAZA con tus credenciales
+mercadopago.access.token=TU_ACCESS_TOKEN
+mercadopago.public.key=TU_PUBLIC_KEY
+
+# JWT - REEMPLAZA con un secret seguro
+jwt.secret.key=TU_JWT_SECRET_KEY
+
+# Precio de reserva VIP (en pesos argentinos)
+reserva.vip.precio=5000.00
