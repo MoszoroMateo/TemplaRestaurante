@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, ChangeDetectorRef, inject, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth-service';
@@ -54,6 +54,10 @@ export class LoginComponent {
   get confirmPasswordHasValue(): boolean { return this.confirmPassword.length > 0; }
   get isTokenComplete(): boolean { return this.tokenDigits.every(d => d !== ''); }
 
+  @ViewChild('pinInput') pinInputRef!: ElementRef<HTMLInputElement>;
+  pinFocused = false;
+  activeTokenIndex = 0;
+
   login(): void {
     if (!this.username || !this.password) return;
     this.isLoading = true;
@@ -106,85 +110,46 @@ export class LoginComponent {
     this.currentScreen = screen;
   }
 
-  onDigitInput(event: Event, index: number): void {
-    const input = event.target as HTMLInputElement;
-    const rawValue = input.value || '';
-    const sanitizedValue = rawValue.replace(/\D/g, '');
+  @HostListener('document:keydown', ['$event'])
+  onPinKeydown(e: KeyboardEvent): void {
+    if (this.currentScreen !== 'verify-token' || this.isTokenLoading) return;
 
-    if (!sanitizedValue) {
-      this.tokenDigits[index] = '';
-      input.value = '';
+    if (/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+      if (this.activeTokenIndex < 6) {
+        this.tokenDigits[this.activeTokenIndex] = e.key;
+        if (this.activeTokenIndex < 5) this.activeTokenIndex++;
+        //if (this.tokenDigits.every(d => d !== '')) this.verifyToken();
+      }
       return;
     }
 
-    const digit = sanitizedValue.charAt(0);
-    this.tokenDigits[index] = digit;
-    input.value = digit;
-
-    if (sanitizedValue.length > 1) {
-      this.fillPastedDigits(sanitizedValue.substring(1), index + 1);
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      if (this.tokenDigits[this.activeTokenIndex]) {
+        this.tokenDigits[this.activeTokenIndex] = '';
+      } else if (this.activeTokenIndex > 0) {
+        this.activeTokenIndex--;
+        this.tokenDigits[this.activeTokenIndex] = '';
+      }
+      return;
     }
 
-    if (index < 5) {
-      this.focusTokenInput(index + 1);
-    }
+    if (e.key === 'ArrowLeft' && this.activeTokenIndex > 0) { this.activeTokenIndex--; }
+    if (e.key === 'ArrowRight' && this.activeTokenIndex < 5) { this.activeTokenIndex++; }
   }
 
-  onDigitKeydown(event: KeyboardEvent, index: number): void {
-    const input = event.target as HTMLInputElement;
-
-    if (event.key === 'Backspace' && !input.value && index > 0) {
-      event.preventDefault();
-      const prevInput = document.getElementById(`token-${index - 1}`) as HTMLInputElement | null;
-      prevInput?.focus();
-      prevInput?.select();
-    }
+  onDigitPaste(e: ClipboardEvent): void {
+    e.preventDefault();
+    const digits = (e.clipboardData?.getData('text') ?? '')
+      .replace(/\D/g, '').slice(0, 6).split('');
+    this.tokenDigits = [...digits, '', '', '', '', ''].slice(0, 6);
+    this.activeTokenIndex = Math.min(digits.length, 5);
+    //if (this.tokenDigits.every(d => d !== '')) this.verifyToken();
   }
 
-  onDigitPaste(event: ClipboardEvent, index: number): void {
-    event.preventDefault();
-    const pasted = event.clipboardData?.getData('text') || '';
-    const digits = pasted.replace(/\D/g, '').slice(0, 6 - index).split('');
-
-    digits.forEach((digit, offset) => {
-      this.tokenDigits[index + offset] = digit;
-      const input = document.getElementById(`token-${index + offset}`) as HTMLInputElement | null;
-      if (input) {
-        input.value = digit;
-      }
-    });
-
-    const focusIndex = Math.min(index + digits.length, 5);
-    this.focusTokenInput(focusIndex);
-  }
-
-  private focusTokenInput(index: number): void {
-    setTimeout(() => {
-      const nextInput = document.getElementById(`token-${index}`) as HTMLInputElement | null;
-      nextInput?.focus();
-      nextInput?.select();
-    });
-  }
-
-  private fillPastedDigits(value: string, startIndex: number): void {
-    let currentIndex = startIndex;
-    for (const char of value) {
-      if (currentIndex > 5) {
-        break;
-      }
-      if (!/\d/.test(char)) {
-        continue;
-      }
-      this.tokenDigits[currentIndex] = char;
-      const input = document.getElementById(`token-${currentIndex}`) as HTMLInputElement | null;
-      if (input) {
-        input.value = char;
-      }
-      currentIndex += 1;
-    }
-    if (currentIndex <= 5) {
-      this.focusTokenInput(currentIndex);
-    }
+  focusPin(): void {
+    this.pinInputRef?.nativeElement.focus();
   }
 
   verifyToken(): void {
