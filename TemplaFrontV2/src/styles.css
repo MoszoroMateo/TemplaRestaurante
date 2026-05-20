@@ -1,3 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+@theme {
+  --color-primary:       #C07A50;
+  --color-primary-hover: #A86742;
+  --color-bg:            #F6F4F0;
+  --color-surface:       #FFFFFF;
+  --color-deep:          #1A2F24;
+  --color-muted:         #828C85;
+  --color-accent:        #2E5C40;
+  --color-dark:          #111111;
+  --color-error:         #D93838;
+ 
+  --font-heading: 'Lora', serif;
+  --font-body:    'DM Sans', sans-serif;
+}

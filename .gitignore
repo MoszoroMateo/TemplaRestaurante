@@ -1,0 +1,17 @@
+# --- Environment files ---
+.env
+.env.*
+*.local
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Application config with secrets ---
+BackEnd/TemplaRestaurant/src/main/resources/application.properties

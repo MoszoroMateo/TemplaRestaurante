@@ -73,4 +73,29 @@ public class EmailService {
 
         enviarMail(para, asunto, cuerpo);
     }
+
+    public void sendMailRecoveryPassword(String para, String code, Integer expirationTime) {
+        String asunto = "Recover Password - Templa";
+        String cuerpo = """
+            Hi!
+
+            We received a request to recover your password.
+
+            Use the following verification code:
+
+            =====================
+                    %s
+            =====================
+
+            The code expires in %d minutes.
+
+            If this wasn't you, simply ignore this email.
+
+            Thanks,
+            Templa
+            """.formatted(code, expirationTime);
+
+        enviarMail(para, asunto, cuerpo);
+    }
+
 }
