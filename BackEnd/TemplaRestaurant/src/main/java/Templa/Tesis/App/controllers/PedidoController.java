@@ -44,11 +44,11 @@ public class PedidoController {
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<PedidoDTO> actualizarPedido(@PathVariable Integer id,
                                                       @RequestBody PostPedidoDTO postPedidoDTO){
-        if (postPedidoDTO.getDetalles() != null && !postPedidoDTO.getDetalles().isEmpty()) {
-            PedidoDTO updated = pedidoService.insertarDetalles(id, postPedidoDTO);
-            return ResponseEntity.ok(updated);
+        if (postPedidoDTO.getDetalles() == null || postPedidoDTO.getDetalles().isEmpty()) {
+            throw new IllegalArgumentException("El pedido debe tener al menos un detalle");
         }
-        return ResponseEntity.badRequest().build();
+        PedidoDTO updated = pedidoService.insertarDetalles(id, postPedidoDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/cancelar/{id}")
@@ -90,11 +90,7 @@ public class PedidoController {
 
     @GetMapping("/mesa/{idMesa}")
     public ResponseEntity<PedidoDTO> obtenerPedidoActivoPorMesa(@PathVariable Integer idMesa) {
-        try {
-            PedidoDTO pedido = pedidoService.getPedidoByMesa(idMesa);
-            return ResponseEntity.ok(pedido);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        PedidoDTO pedido = pedidoService.getPedidoByMesa(idMesa);
+        return ResponseEntity.ok(pedido);
     }
 }

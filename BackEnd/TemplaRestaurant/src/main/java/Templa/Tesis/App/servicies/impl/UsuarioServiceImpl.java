@@ -144,7 +144,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public UsuarioDTO buscarUsuarioPorId(Integer id) {
         UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con el ID:" + id));
+                .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado con el ID:" + id));
 
         return modelMapper.map(usuario,UsuarioDTO.class);
     }

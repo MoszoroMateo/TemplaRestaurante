@@ -363,7 +363,7 @@ public class MenuServiceImpl implements IMenuService {
         List<MenuDetalleEntity> detalles = menuDetalleRepository.findByMenuId(idMenu);
 
         if (detalles.isEmpty()) {
-            throw new RuntimeException("El menú con id " + idMenu + " no existe o no tiene detalles");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El menú con id " + idMenu + " no existe o no tiene detalles");
         }
 
         return detalles;

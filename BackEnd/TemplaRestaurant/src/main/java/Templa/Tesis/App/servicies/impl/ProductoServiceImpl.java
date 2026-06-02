@@ -253,10 +253,10 @@ public class ProductoServiceImpl implements IProductoService {
     @Transactional
     public ProductoEntity reducirStock(Integer idProducto, double cantidad) {
         ProductoEntity producto = productoRepository.findByIdWithLock(idProducto)
-                .orElseThrow(() -> new RuntimeException("Producto no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("Producto no existe con ID: " + idProducto));
 
         if (producto.getStockActual() < cantidad) {
-            throw new RuntimeException("Stock insuficiente");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock insuficiente");
         }
 
         producto.setStockActual(producto.getStockActual() - cantidad);
@@ -304,7 +304,7 @@ public class ProductoServiceImpl implements IProductoService {
     @Transactional
     public void aumentarStock(Integer idProducto, double cantidad) {
         ProductoEntity producto = productoRepository.findByIdWithLock(idProducto)
-                .orElseThrow(() -> new RuntimeException("Producto no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("Producto no existe con ID: " + idProducto));
 
         producto.setStockActual(producto.getStockActual() + cantidad);
 

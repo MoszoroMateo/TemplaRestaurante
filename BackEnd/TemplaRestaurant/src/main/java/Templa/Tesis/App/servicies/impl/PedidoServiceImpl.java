@@ -10,6 +10,9 @@ import Templa.Tesis.App.repositories.*;
 import Templa.Tesis.App.servicies.*;
 import Templa.Tesis.App.controllers.SseController;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.transaction.Transactional;
@@ -81,13 +84,13 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO crearPedido(PostPedidoDTO dto) {
         if (dto.getDetalles().isEmpty()) {
-            throw new RuntimeException("El pedido debe tener al menos un detalle");
+            throw new IllegalArgumentException("El pedido debe tener al menos un detalle");
         }
         if (dto.getIdMesa() == null) {
-            throw new RuntimeException("El pedido debe tener una mesa asignada");
+            throw new IllegalArgumentException("El pedido debe tener una mesa asignada");
         }
         if (dto.getIdMozo() == null) {
-            throw new RuntimeException("El pedido debe tener un mozo asignado");
+            throw new IllegalArgumentException("El pedido debe tener un mozo asignado");
         }
 
         List<GetPedidoDetalleDTO> detallesDto = new ArrayList<>();
@@ -95,7 +98,7 @@ public class PedidoServiceImpl implements IPedidoService {
 
         GetMesaDto mesaDto = mesasService.getMesaById(dto.getIdMesa());
         if(mesaDto.getEstadoMesa()!= EstadoMesa.DISPONIBLE){
-            throw new RuntimeException("La mesa seleccionada no está disponible");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La mesa seleccionada no está disponible");
         }
         nuevoPedidoE.setMesa(modelMapper.map(mesaDto, MesaEntity.class));
 
@@ -138,7 +141,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Override
     public PedidoDTO obtenerPedido(Integer id) {
         PedidoEntity existe = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + id + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + id + " no existe"));
 
         return modelMapper.map(existe, PedidoDTO.class);
     }
@@ -201,7 +204,7 @@ public class PedidoServiceImpl implements IPedidoService {
                     EstadoPedido estado = EstadoPedido.valueOf(estadoPedido.toUpperCase());
                     predicates.add(cb.equal(root.get("estado"), estado));
                 } catch (IllegalArgumentException e) {
-                    throw new RuntimeException("Estado de pedido inválido: " + estadoPedido);
+                    throw new IllegalArgumentException("Estado de pedido inválido: " + estadoPedido);
                 }
             }
 
@@ -233,10 +236,10 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO cancelarPedido(Integer idPedido) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         if(existe.getEstado() == EstadoPedido.FINALIZADO) {
-            throw new RuntimeException("No se puede cancelar un pedido finalizado");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede cancelar un pedido finalizado");
         }
 
         for(PedidoDetalleEntity detalle : existe.getDetalles()) {
@@ -278,7 +281,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO cancelarDetalle(Integer idPedido) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         for(PedidoDetalleEntity detalle : existe.getDetalles()){
             if(detalle.getEstado() != EstadoPedidoDetalle.PENDIENTE) continue;
@@ -315,13 +318,13 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO cancelarDetalleEspecifico(Integer idPedido, Integer idDetalle) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         // Buscar el detalle específico
         PedidoDetalleEntity detalleEncontrado = existe.getDetalles().stream()
                 .filter(d -> d.getIdPedidoDetalle().equals(idDetalle))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("El detalle con id " + idDetalle + " no existe en el pedido"));
+                .orElseThrow(() -> new EntityNotFoundException("El detalle con id " + idDetalle + " no existe en el pedido"));
 
         // ✅ Validar si se puede cancelar:
         // - PENDIENTE: Siempre se puede cancelar
@@ -344,7 +347,7 @@ public class PedidoServiceImpl implements IPedidoService {
             detalleEncontrado.setEstado(EstadoPedidoDetalle.CANCELADO);
             pedidoDetalleRepository.save(detalleEncontrado);
         } else {
-            throw new RuntimeException("Solo se pueden cancelar items PENDIENTES o PRODUCTOS BEBIDA listos para entregar");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden cancelar items PENDIENTES o PRODUCTOS BEBIDA listos para entregar");
         }
 
         pedidoRepository.save(existe);
@@ -372,7 +375,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO marcarDetalleEntregado(Integer idPedido) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         for(PedidoDetalleEntity detalle : existe.getDetalles()){
             if(detalle.getEstado() != EstadoPedidoDetalle.LISTO_PARA_ENTREGAR) continue;
@@ -404,7 +407,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO iniciarPedido(Integer idPedido) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         existe.setEstado(EstadoPedido.EN_PROCESO);
         for(PedidoDetalleEntity detalle : existe.getDetalles()){
@@ -438,7 +441,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO marcarDetalleParaEntregar(Integer idPedido) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         for(PedidoDetalleEntity detalle : existe.getDetalles()){
             if(detalle.getEstado() != EstadoPedidoDetalle.EN_PREPARACION) continue;
@@ -480,10 +483,10 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO finalizarPedido(Integer idPedido) {
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         if(existe.getEstado() == EstadoPedido.CANCELADO || existe.getEstado() == EstadoPedido.FINALIZADO || existe.getEstado() == EstadoPedido.ORDENADO) {
-            throw new RuntimeException("No se puede finalizar un pedido en estado " + existe.getEstado());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede finalizar un pedido en estado " + existe.getEstado());
         }
 
         // ✅ Verificar que al menos haya un item activo (no cancelado)
@@ -492,7 +495,7 @@ public class PedidoServiceImpl implements IPedidoService {
                 .count();
 
         if (itemsActivos == 0) {
-            throw new RuntimeException("No se puede finalizar el pedido porque todos los items están cancelados. Use la opción de cancelar pedido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede finalizar el pedido porque todos los items están cancelados. Use la opción de cancelar pedido.");
         }
 
         // ✅ Validar que todos los items ACTIVOS (no cancelados) estén ENTREGADOS
@@ -503,7 +506,7 @@ public class PedidoServiceImpl implements IPedidoService {
             }
             
             if(detalle.getEstado() != EstadoPedidoDetalle.ENTREGADO) {
-                throw new RuntimeException("No se puede finalizar el pedido porque tiene detalles en estado " + detalle.getEstado());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede finalizar el pedido porque tiene detalles en estado " + detalle.getEstado());
             }
         }
 
@@ -539,14 +542,14 @@ public class PedidoServiceImpl implements IPedidoService {
     @Transactional
     public PedidoDTO insertarDetalles(Integer idPedido, PostPedidoDTO dto) {
         if(dto.getDetalles().isEmpty()) {
-            throw new RuntimeException("El pedido debe tener al menos un detalle");
+            throw new IllegalArgumentException("El pedido debe tener al menos un detalle");
         }
 
         PedidoEntity existe = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("El pedido con id " + idPedido + " no existe"));
+                .orElseThrow(() -> new EntityNotFoundException("El pedido con id " + idPedido + " no existe"));
 
         if(existe.getEstado() == EstadoPedido.FINALIZADO || existe.getEstado() == EstadoPedido.CANCELADO) {
-            throw new RuntimeException("No se pueden agregar detalles a un pedido: "+ existe.getEstado());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se pueden agregar detalles a un pedido: "+ existe.getEstado());
         }
 
         existe.setEstado(EstadoPedido.ORDENADO);
@@ -583,7 +586,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Override
     public PedidoDTO getPedidoByMesa(Integer idMesa) {
         PedidoEntity existe = pedidoRepository.findPedidoActivoByMesa(idMesa)
-                .orElseThrow(() -> new RuntimeException("No hay pedidos activos para la mesa con id " + idMesa));
+                .orElseThrow(() -> new EntityNotFoundException("No hay pedidos activos para la mesa con id " + idMesa));
 
         return modelMapper.map(existe, PedidoDTO.class);
     }
@@ -685,7 +688,7 @@ public class PedidoServiceImpl implements IPedidoService {
      */
     private GetPedidoDetalleDTO handleProductoDetalle(PostPedidoDetalleDTO detalleDto, PedidoEntity pedido) {
         if (detalleDto.getCantidad() <= 0) {
-            throw new RuntimeException("La cantidad debe ser mayor a 0");
+            throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
         }
 
         ProductoEntity producto = productoService.reducirStock(
@@ -764,7 +767,7 @@ public class PedidoServiceImpl implements IPedidoService {
         
         // ✅ VALIDACIÓN: Verificar que el menú esté activo
         if (!menu.isActivo()) {
-            throw new RuntimeException("El menú '" + menu.getNombre() + "' no está disponible actualmente");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El menú '" + menu.getNombre() + "' no está disponible actualmente");
         }
         
         List<MenuDetalleEntity> itemsDelMenu = menuService.obtenerDetallesMenu(detalleDto.getIdMenu());
@@ -774,18 +777,18 @@ public class PedidoServiceImpl implements IPedidoService {
             if (item.getProducto() != null) {
                 ProductoEntity producto = item.getProducto();
                 if (!producto.getActivo()) {
-                    throw new RuntimeException("El menú no está disponible: el producto '" + 
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El menú no está disponible: el producto '" + 
                         producto.getNombre() + "' está inactivo");
                 }
                 if (producto.getStockActual() <= 0) {
-                    throw new RuntimeException("El menú no está disponible: el producto '" + 
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El menú no está disponible: el producto '" + 
                         producto.getNombre() + "' no tiene stock");
                 }
             }
             if (item.getPlato() != null) {
                 PlatoEntity plato = item.getPlato();
                 if (!plato.getDisponible()) {
-                    throw new RuntimeException("El menú no está disponible: el plato '" + 
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El menú no está disponible: el plato '" + 
                         plato.getNombre() + "' no está disponible");
                 }
             }

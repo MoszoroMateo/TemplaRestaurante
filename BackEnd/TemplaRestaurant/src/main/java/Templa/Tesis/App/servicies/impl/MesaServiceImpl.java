@@ -18,7 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,7 @@ public class MesaServiceImpl implements IMesasService {
     public GetMesaDto createMesa(PostMesaDto postMesaDto) {
         Optional<MesaEntity> existe = mesaRepository.findByNumeroMesa(postMesaDto.getNumeroMesa());
         if (existe.isPresent()) {
-            throw new RuntimeException("La mesa con el numero " + postMesaDto.getNumeroMesa() + " ya existe");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "La mesa con el numero " + postMesaDto.getNumeroMesa() + " ya existe");
         }
 
         try{
@@ -58,7 +60,7 @@ public class MesaServiceImpl implements IMesasService {
 
             return modelMapper.map(mesaRepository.save(mesa), GetMesaDto.class);
         } catch (Exception e){
-            throw new RuntimeException("Error al crear la mesa: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al crear la mesa");
         }
     }
 
@@ -81,7 +83,7 @@ public class MesaServiceImpl implements IMesasService {
         Optional<MesaEntity> existe = mesaRepository.findById(mesaDto.getIdMesa());
 
         if (existe.isEmpty()) {
-            throw new RuntimeException("La mesa con el id " + mesaDto.getIdMesa() + " no existe");
+            throw new EntityNotFoundException("La mesa con el id " + mesaDto.getIdMesa() + " no existe");
         }
 
         try{
@@ -89,7 +91,7 @@ public class MesaServiceImpl implements IMesasService {
             MesaEntity mesaActualizada = mesaRepository.save(mesaEntity);
             return modelMapper.map(mesaActualizada, GetMesaDto.class);
         } catch (Exception e){
-            throw new RuntimeException("Error al actualizar la mesa: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al actualizar la mesa");
         }
     }
 
@@ -161,10 +163,10 @@ public class MesaServiceImpl implements IMesasService {
     public GetMesaDto cambiarEstadoMesa(Integer id, EstadoMesa nuevoEstado) {
         Optional<MesaEntity> existe = mesaRepository.findById(id);
         if (existe.isEmpty()) {
-            throw new RuntimeException("La mesa con el id " + id + " no existe");
+            throw new EntityNotFoundException("La mesa con el id " + id + " no existe");
         }
         if(nuevoEstado == null) {
-            throw new RuntimeException("El estado de la mesa no puede ser nulo");
+            throw new IllegalArgumentException("El estado de la mesa no puede ser nulo");
         }
         MesaEntity mesa = existe.get();
         mesa.setEstadoMesa(nuevoEstado);
@@ -183,7 +185,7 @@ public class MesaServiceImpl implements IMesasService {
     public GetMesaDto getMesaById(Integer id) {
         Optional<MesaEntity> existe = mesaRepository.findById(id);
         if (existe.isEmpty()) {
-            throw new RuntimeException("La mesa con el id " + id + " no existe");
+            throw new EntityNotFoundException("La mesa con el id " + id + " no existe");
         }
         return modelMapper.map(existe.get(), GetMesaDto.class);
     }

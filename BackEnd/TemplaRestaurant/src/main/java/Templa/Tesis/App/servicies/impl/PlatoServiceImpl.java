@@ -20,8 +20,8 @@ import org.springframework.data.domain.Sort;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -420,21 +420,21 @@ public class PlatoServiceImpl implements IPlatoService {
      */
     public PlatoEntity obtenerPlatoConIngredientes(Integer idPlato) {
         PlatoEntity plato = platoRepository.findById(idPlato)
-                .orElseThrow(() -> new RuntimeException("Plato no existe"));
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Plato no existe con id: " + idPlato));
 
         if (!plato.getDisponible()) {
-            throw new RuntimeException("Plato no disponible");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plato no disponible");
         }
         
         // ✅ VALIDACIÓN ADICIONAL: Verificar stock de ingredientes en tiempo real
         for (PlatoDetalleEntity ingrediente : plato.getIngredientes()) {
             ProductoEntity producto = ingrediente.getProducto();
             if (!producto.getActivo()) {
-                throw new RuntimeException("El plato '" + plato.getNombre() + 
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plato '" + plato.getNombre() + 
                     "' no está disponible: el ingrediente '" + producto.getNombre() + "' está inactivo");
             }
             if (producto.getStockActual() <= 0) {
-                throw new RuntimeException("El plato '" + plato.getNombre() + 
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El plato '" + plato.getNombre() + 
                     "' no está disponible: el ingrediente '" + producto.getNombre() + "' no tiene stock");
             }
         }

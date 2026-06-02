@@ -13,8 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -106,7 +108,7 @@ public class PasswordResetServiceImpl implements IPasswordResetService {
             exist.get().setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
             usuarioRepository.save(exist.get());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al restablecer la contraseña");
         }
 
         tokenStore.remove(requestDTO.getEmail());

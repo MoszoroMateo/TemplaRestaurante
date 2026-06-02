@@ -19,11 +19,14 @@ import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.exceptions.MPApiException;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -112,10 +115,10 @@ public class MercadoPagoServiceImpl implements IMercadoPagoService {
             log.error("Status code: {}", e.getStatusCode());
             log.error("API response content: {}", e.getApiResponse().getContent());
             log.error("API response headers: {}", e.getApiResponse().getHeaders());
-            throw new RuntimeException("Error al procesar el pago de la reserva VIP", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al procesar el pago de la reserva VIP");
         } catch (MPException e) {
             log.error("Error de configuración de Mercado Pago: ", e);
-            throw new RuntimeException("Error de configuración del sistema de pagos", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de configuración del sistema de pagos");
         }
     }
 
@@ -135,7 +138,7 @@ public class MercadoPagoServiceImpl implements IMercadoPagoService {
 
                 ReservaEntity reserva = reservaRepository.findByNroReserva(nroReserva);
                 if (reserva == null) {
-                    throw new RuntimeException("Reserva no encontrada: " + nroReserva);
+                    throw new EntityNotFoundException("Reserva no encontrada: " + nroReserva);
                 }
 
                 if ("approved".equals(payment.getStatus())) {
@@ -179,7 +182,7 @@ public class MercadoPagoServiceImpl implements IMercadoPagoService {
 
         } catch (MPException | MPApiException e) {
             log.error("Error al procesar pago de Mercado Pago: ", e);
-            throw new RuntimeException("Error al verificar el estado del pago", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al verificar el estado del pago");
         }
     }
 
@@ -191,7 +194,7 @@ public class MercadoPagoServiceImpl implements IMercadoPagoService {
             return payment.getStatus();
         } catch (MPException | MPApiException e) {
             log.error("Error al obtener estado del pago: ", e);
-            throw new RuntimeException("Error al consultar el estado del pago", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el estado del pago");
         }
     }
 
@@ -201,11 +204,11 @@ public class MercadoPagoServiceImpl implements IMercadoPagoService {
         log.info("🧪 Simulando pago aprobado para reserva ID: {}", reservaId);
 
         ReservaEntity reserva = reservaRepository.findById(reservaId)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada: " + reservaId));
+                .orElseThrow(() -> new EntityNotFoundException("Reserva no encontrada: " + reservaId));
 
         if (reserva.getPagoCompletado() ) {
             log.warn("La reserva {} ya tiene el pago completado", reservaId);
-            throw new RuntimeException("Esta reserva ya tiene el pago completado");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Esta reserva ya tiene el pago completado");
         }
 
         // Simular que el pago fue aprobado

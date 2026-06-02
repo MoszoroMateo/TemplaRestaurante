@@ -56,16 +56,9 @@ public class MesaController {
     }
 
     @PutMapping("/actualizarPosicion")
-    public ResponseEntity<GetMesaDto> actualizarPosicionMesa(
-            @Valid @RequestBody UpdateMesaPosicionDto dto) {
-        try {
-            GetMesaDto mesaActualizada = mesasService.actualizarPosicionMesa(dto);
-            return ResponseEntity.ok(mesaActualizada);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<GetMesaDto> actualizarPosicionMesa(@Valid @RequestBody UpdateMesaPosicionDto dto) {
+        GetMesaDto mesaActualizada = mesasService.actualizarPosicionMesa(dto);
+        return ResponseEntity.ok(mesaActualizada);
     }
 
     @GetMapping("/posiciones")
@@ -75,24 +68,15 @@ public class MesaController {
     }
 
     @GetMapping("/piso/{numeroPiso}")
-    public ResponseEntity<List<GetMesaDto>> obtenerMesasPorPiso(
-            @PathVariable Integer numeroPiso) {
-        try {
-            List<GetMesaDto> mesas = mesasService.obtenerMesasPorPiso(numeroPiso);
-            return ResponseEntity.ok(mesas);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<List<GetMesaDto>> obtenerMesasPorPiso(@PathVariable Integer numeroPiso) {
+        List<GetMesaDto> mesas = mesasService.obtenerMesasPorPiso(numeroPiso);
+        return ResponseEntity.ok(mesas);
     }
 
     @DeleteMapping("/desvincular/{idMesa}")
     public ResponseEntity<Void> desvincularMesaDelPlano(@PathVariable Integer idMesa) {
-        try {
-            mesasService.desvincularMesaDelPlano(idMesa);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        mesasService.desvincularMesaDelPlano(idMesa);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{idMesa}/vinculada")

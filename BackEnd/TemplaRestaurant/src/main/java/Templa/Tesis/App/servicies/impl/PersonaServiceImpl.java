@@ -242,7 +242,7 @@ public class PersonaServiceImpl implements IPersonaService {
     public PersonaDto buscarPorDni(Integer dni) {
         PersonaEntity persona = personaRepository.findByDni(dni);
         if (persona == null) {
-            return null;
+            throw new jakarta.persistence.EntityNotFoundException("Persona no encontrada con DNI: " + dni);
         }
         return modelMapper.map(persona, PersonaDto.class);
     }

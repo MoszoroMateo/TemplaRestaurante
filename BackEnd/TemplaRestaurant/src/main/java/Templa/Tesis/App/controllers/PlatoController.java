@@ -72,11 +72,7 @@ public class PlatoController {
 
     @DeleteMapping("/borrar/{id}")
     public ResponseEntity<Void> bajaPlato(@PathVariable Integer id) {
-            try {
-                platoService.bajaPlato(id);
-                return ResponseEntity.ok().build();
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al dar de baja el Plato");
-            }
+        platoService.bajaPlato(id);
+        return ResponseEntity.ok().build();
     }
 }

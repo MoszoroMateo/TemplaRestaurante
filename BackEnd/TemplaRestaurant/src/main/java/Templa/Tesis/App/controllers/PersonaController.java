@@ -61,9 +61,6 @@ public class PersonaController {
     @GetMapping("/personas/dni/{dni}")
     public ResponseEntity<PersonaDto> getPersonaPorDni(@PathVariable Integer dni) {
         PersonaDto persona = personaService.buscarPorDni(dni);
-        if (persona == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(persona);
     }
 
@@ -80,12 +77,8 @@ public class PersonaController {
 
     @DeleteMapping("/baja/{id}")
     public ResponseEntity<Void> bajaPersona(@PathVariable Integer id) {
-        try{
-            personaService.bajaPersona(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al dar de baja la Persona");
-        }
+        personaService.bajaPersona(id);
+        return ResponseEntity.ok().build();
     }
 
 
