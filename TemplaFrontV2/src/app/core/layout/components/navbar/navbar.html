@@ -1,0 +1,97 @@
+<header class="h-16 bg-[#F6F4F0]/80 backdrop-blur-md border-b border-[#1A2F24]/5 px-2 pr-5 flex items-center justify-between sticky top-0 z-40">
+
+  <!-- Left: toggle + breadcrumb title -->
+  <div class="flex items-center gap-3">
+    <button
+      class="flex items-center justify-center w-8 h-8 text-muted hover:text-deep transition-colors cursor-pointer border-none bg-transparent rounded-none"
+      (click)="toggleSidebar.emit()"
+      aria-label="Toggle sidebar"
+    >
+      @if (collapsed()) {
+        <svg lucideChevronFirst size="19"></svg>
+      } @else {
+        <svg lucideChevronLast size="19"></svg>
+      }
+    </button>
+    <h1 class="font-heading italic text-2xl font-medium text-deep">{{ pageTitle }}</h1>
+  </div>
+
+  <!-- Right: notifications, shift badge, user -->
+  <div class="flex items-center gap-3">
+
+    <!-- ───────────── BELL / NOTIFICATIONS ───────────── -->
+    <div class="relative" (click)="$event.stopPropagation()">
+      <button
+        class="relative flex items-center justify-center w-9 h-9 text-muted hover:text-deep transition-colors cursor-pointer border-none bg-transparent rounded-none"
+        (click)="toggleNotifPanel()"
+        aria-label="Notifications"
+      >
+        <svg lucideBell size="18"></svg>
+        @if (unreadCount() > 0) {
+          <span
+            class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center bg-signal text-white text-[9px] font-bold px-1 rounded-none"
+          >
+            {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+          </span>
+        }
+      </button>
+
+      <!-- Dropdown notifications -->
+      @if (notifOpen()) {
+        <div
+          class="absolute right-0 top-full mt-2 w-80 bg-surface border border-muted/10 shadow-lg z-50 rounded-none"
+          (click)="$event.stopPropagation()"
+        >
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 border-b border-muted/10">
+            <span class="font-nav text-[11px] font-semibold tracking-[0.15em] uppercase text-deep">Notifications</span>
+            @if (notifications().length > 0) {
+              <button
+                class="font-body text-[11px] text-muted hover:text-deep underline cursor-pointer bg-transparent border-none p-0"
+                (click)="clearAll()"
+              >
+                Clear all
+              </button>
+            }
+          </div>
+
+          <!-- List -->
+          <div class="max-h-[300px] overflow-y-auto">
+            @for (notif of unread(); track notif.timestamp) {
+              <div class="px-4 py-3 border-b border-muted/5 hover:bg-bg/40 transition-colors">
+                <div class="flex items-start gap-3">
+                  <div class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></div>
+                  <div class="min-w-0">
+                    <p class="font-body text-[13px] text-deep truncate">{{ notif.message }}</p>
+                    <span class="font-body text-[11px] text-muted">{{ notif.timestamp | date:'dd/MM HH:mm' }}</span>
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <div class="py-8 text-center">
+                <p class="font-body text-sm text-muted">No notifications</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Shift badge -->
+    <span class="hidden md:flex items-center font-body text-[11px] font-semibold tracking-[0.15em] uppercase text-muted border border-[#1A2F24]/10 px-3 h-7 rounded-none">
+      {{ shiftLabel }}
+    </span>
+
+    <!-- ───────────── USER AVATAR ───────────── -->
+    <div class="flex items-center gap-3 pl-3 border-l border-[#1A2F24]/10">
+      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+        <span class="text-white text-xs font-semibold">{{ username.charAt(0).toUpperCase() }}</span>
+      </div>
+      <div class="hidden md:flex flex-col leading-tight text-left">
+        <span class="font-body text-sm font-semibold text-deep">{{ username }}</span>
+        <span class="font-body text-[10px] font-medium tracking-[0.1em] uppercase text-muted">{{ roleLabel }}</span>
+      </div>
+    </div>
+
+  </div>
+</header>

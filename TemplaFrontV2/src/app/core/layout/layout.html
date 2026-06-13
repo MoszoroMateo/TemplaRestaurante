@@ -1,0 +1,23 @@
+<div class="layout-container">
+  <app-sidebar
+    [collapsed]="!sidebarOpen()"
+    (toggleSidebar)="toggleSidebar()"
+    (navClicked)="closeMobileSidebar()"
+    (logout)="logout()"
+  />
+
+  <div class="layout-main">
+    <app-navbar
+      [collapsed]="!sidebarOpen()"
+      (toggleSidebar)="toggleSidebar()"
+      (logout)="logout()"
+    />
+    <main class="main-content">
+      <router-outlet />
+    </main>
+  </div>
+
+  @if (!sidebarOpen()) {
+    <div class="mobile-backdrop" (click)="toggleSidebar()"></div>
+  }
+</div>

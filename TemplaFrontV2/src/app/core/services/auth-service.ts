@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LoginRequest, LoginResponse, JwtPayload, RolUsuario, ForgotPasswordRequest, VerifyResetTokenRequest, ResetPasswordRequest } from '../models/auth.model';
 import { tap, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({providedIn: 'root',})
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private readonly API_URL = 'http://localhost:8081/api/auth';
+  private readonly API_URL = `${environment.apiUrl}/auth`;
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(

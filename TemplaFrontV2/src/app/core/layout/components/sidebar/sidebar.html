@@ -1,0 +1,61 @@
+<aside class="sidebar" [class.is-collapsed]="collapsed()">
+
+  <!-- Header: brand -->
+  <div class="flex items-center h-[68px] pl-7 pr-4 border-b border-white/10 shrink-0">
+    @if (!collapsed()) {
+      <span class="font-heading text-lg tracking-[0.25em] text-white/90">
+        <span class="text-primary">T</span>EMPLA
+      </span>
+    } @else {
+      <span class="font-heading text-lg text-primary">T</span>
+    }
+  </div>
+
+  <!-- Nav items -->
+  <nav class="sidebar-nav flex-1 flex flex-col gap-px px-3 py-4 overflow-y-auto overflow-x-hidden">
+    @for (item of items; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="border-l-4 border-primary bg-primary/15 text-primary"
+        [routerLinkActiveOptions]="{ exact: item.route === '/principal' }"
+        class="nav-item flex items-center gap-3 px-3 py-2.5 text-white/60 hover:text-white transition-colors duration-150 no-underline cursor-pointer rounded-none"
+        (click)="onNavClick()"
+      >
+        <span class="flex items-center justify-center w-5 h-5 shrink-0">
+          @switch (item.icon) {
+            @case ('dashboard') { <svg lucideLayoutDashboard size="18"></svg> }
+            @case ('users')     { <svg lucideUsers           size="18"></svg> }
+            @case ('userCog')   { <svg lucideUserCog         size="18"></svg> }
+            @case ('package')   { <svg lucidePackage         size="18"></svg> }
+            @case ('utensils')  { <svg lucideUtensilsCrossed size="18"></svg> }
+            @case ('bookOpen')  { <svg lucideBookOpen        size="18"></svg> }
+            @case ('grid')      { <svg lucideGrid3x3         size="18"></svg> }
+            @case ('calendar')  { <svg lucideCalendarCheck   size="18"></svg> }
+            @case ('clipboard') { <svg lucideClipboardList   size="18"></svg> }
+            @case ('chefHat')   { <svg lucideChefHat         size="18"></svg> }
+            @case ('chart')     { <svg lucideBarChart3       size="18"></svg> }
+          }
+        </span>
+        @if (!collapsed()) {
+          <span class="font-nav text-[12px] font-medium tracking-[0.2em] uppercase">{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <!-- Logout -->
+  <div class="px-3 py-3 border-t border-white/10 shrink-0">
+    <button
+      class="nav-item flex items-center gap-3 w-full px-3 py-2.5 text-primary/60 hover:text-primary transition-colors duration-150 cursor-pointer border-none bg-transparent rounded-none"
+      (click)="logout.emit()"
+    >
+      <span class="flex items-center justify-center w-5 h-5 shrink-0">
+        <svg lucideLogOut size="18"></svg>
+      </span>
+      @if (!collapsed()) {
+        <span class="font-nav text-[12px] font-medium tracking-[0.2em] uppercase">Logout</span>
+      }
+    </button>
+  </div>
+
+</aside>

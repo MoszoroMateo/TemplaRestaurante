@@ -10,7 +10,9 @@
   --color-accent:        #2E5C40;
   --color-dark:          #111111;
   --color-error:         #D93838;
+  --color-signal:        #ed6c21;
  
   --font-heading: 'Lora', serif;
   --font-body:    'DM Sans', sans-serif;
+  --font-nav:     'Space Grotesk', sans-serif;
 }

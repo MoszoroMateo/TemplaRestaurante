@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit {
   isAdmin: boolean = false;
 
   ngOnInit(): void {
-    //this.username = this.authService.getUsername(); // Asegurate de que tu service devuelva el 'sub' o el nombre
+    this.username = this.authService.getUsername(); // Asegurate de que tu service devuelva el 'sub' o el nombre
     this.role = this.authService.getUserRole();
     this.isAdmin = this.role === RolUsuario.ADMINISTRADOR;
   }

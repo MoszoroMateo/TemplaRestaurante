@@ -1,0 +1,33 @@
+.layout-container {
+  display: flex;
+  height: 100vh;
+  background: var(--color-bg);
+}
+
+.layout-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+}
