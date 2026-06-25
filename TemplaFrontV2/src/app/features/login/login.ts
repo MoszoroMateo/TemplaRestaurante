@@ -79,6 +79,7 @@ export class LoginComponent {
           icon: 'error',
           title: 'Login Failed',
           text: 'Invalid username or password. Please try again.',
+          confirmButtonColor: '#D93838',
         });
       }
     });
@@ -101,7 +102,7 @@ export class LoginComponent {
         },
         error: (err) => {
           const msg = typeof err.error === 'string' ? err.error : 'Could not send recovery email. Please try again.';
-          Swal.fire({ icon: 'error', title: 'Error', text: msg });
+          Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#D93838' });
         }
       });
   }
@@ -173,7 +174,7 @@ export class LoginComponent {
         },
         error: (err) => {
           const msg = typeof err.error === 'string' ? err.error : 'Invalid or expired code.';
-          Swal.fire({ icon: 'error', title: 'Code Error', text: msg });
+          Swal.fire({ icon: 'error', title: 'Code Error', text: msg, confirmButtonColor: '#D93838' });
           this.tokenDigits = ['', '', '', '', '', ''];
           setTimeout(() => document.getElementById('token-0')?.focus(), 100);
         }
@@ -184,12 +185,12 @@ export class LoginComponent {
     if (!this.newPassword || !this.confirmPassword) return;
     
     if (this.newPassword !== this.confirmPassword) {
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Passwords do not match.' });
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Passwords do not match.', confirmButtonColor: '#D93838' });
       return;
     }
     
     if (this.newPassword.length < 6) {
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Password must be at least 6 characters.' });
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Password must be at least 6 characters.', confirmButtonColor: '#D93838' });
       return;
     }
     
@@ -213,7 +214,7 @@ export class LoginComponent {
         },
         error: (err) => {
           const msg = typeof err.error === 'string' ? err.error : 'Could not reset password. Please try again.';
-          Swal.fire({ icon: 'error', title: 'Error', text: msg });
+          Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#D93838' });
         }
       });
   }

@@ -162,7 +162,7 @@ export class PersonaListComponent implements OnInit {
           Swal.fire({ icon: 'success', title: 'Updated', text: 'Person updated successfully', timer: 1500, showConfirmButton: false });
         },
         error: () => {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Could not update person' });
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Could not update person', confirmButtonColor: '#D93838' });
         },
       });
     } else {
@@ -181,7 +181,7 @@ export class PersonaListComponent implements OnInit {
           Swal.fire({ icon: 'success', title: 'Created', text: 'Person created successfully', timer: 1500, showConfirmButton: false });
         },
         error: () => {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Could not create person' });
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Could not create person', confirmButtonColor: '#D93838' });
         },
       });
     }
@@ -191,23 +191,24 @@ export class PersonaListComponent implements OnInit {
 
   confirmActivate(persona: Persona): void {
     Swal.fire({
-      title: '¿Reactivar persona?',
-      text: `${persona.nombre} ${persona.apellido} volverá a estar activo.`,
-      icon: 'warning',
+      title: 'Activate person?',
+      text: `${persona.nombre} ${persona.apellido} will become active again.`,
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#2D6A4F',
-      cancelButtonText: 'Cancelar',
-      confirmButtonText: 'Sí, reactivar',
+      confirmButtonColor: '#2E5C40',
+      cancelButtonColor: '#D93838',
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Yes, activate',
       reverseButtons: true,
     }).then(result => {
       if (result.isConfirmed && persona.id) {
         this.personaService.activar(persona).subscribe({
           next: () => {
             this.personaService.filtrar({ page: this.pageInfo()?.number ?? 0 });
-            Swal.fire({ icon: 'success', title: 'Reactivado', text: 'Persona reactivada correctamente', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Activated', text: 'Person activated successfully', timer: 1500, showConfirmButton: false });
           },
           error: () => {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo reactivar la persona' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Could not activate person', confirmButtonColor: '#D93838' });
           },
         });
       }
@@ -216,23 +217,24 @@ export class PersonaListComponent implements OnInit {
 
   confirmDeactivate(persona: Persona): void {
     Swal.fire({
-      title: '¿Desactivar persona?',
-      text: `${persona.nombre} ${persona.apellido} quedará inactivo.`,
+      title: 'Deactivate person?',
+      text: `${persona.nombre} ${persona.apellido} will become inactive.`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#2D6A4F',
-      cancelButtonText: 'Cancelar',
-      confirmButtonText: 'Sí, desactivar',
+      confirmButtonColor: '#2E5C40',
+      cancelButtonColor: '#D93838',
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Yes, deactivate',
       reverseButtons: true,
     }).then(result => {
       if (result.isConfirmed && persona.id) {
         this.personaService.desactivar(persona).subscribe({
           next: () => {
             this.personaService.filtrar({ page: this.pageInfo()?.number ?? 0 });
-            Swal.fire({ icon: 'success', title: 'Desactivado', text: 'Persona desactivada correctamente', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Deactivated', text: 'Person deactivated successfully', timer: 1500, showConfirmButton: false });
           },
           error: () => {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo desactivar la persona' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Could not deactivate person', confirmButtonColor: '#D93838' });
           },
         });
       }
@@ -241,23 +243,24 @@ export class PersonaListComponent implements OnInit {
 
   confirmDelete(persona: Persona): void {
     Swal.fire({
-      title: '¿Eliminar persona?',
-      text: `Esto eliminará permanentemente a ${persona.nombre} ${persona.apellido}. No se puede deshacer.`,
+      title: 'Delete person?',
+      text: `This will permanently delete ${persona.nombre} ${persona.apellido}. This cannot be undone.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#D93838',
-      cancelButtonText: 'Cancelar',
-      confirmButtonText: 'Sí, eliminar',
+      cancelButtonColor: '#828C85',
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Yes, delete',
       reverseButtons: true,
     }).then(result => {
       if (result.isConfirmed && persona.id) {
         this.personaService.eliminarPermanente(persona.id).subscribe({
           next: () => {
             this.personaService.filtrar({ page: 0 });
-            Swal.fire({ icon: 'success', title: 'Eliminado', text: 'Persona eliminada permanentemente', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Deleted', text: 'Person permanently deleted', timer: 1500, showConfirmButton: false });
           },
           error: () => {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo eliminar la persona' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Could not delete person', confirmButtonColor: '#D93838' });
           },
         });
       }
