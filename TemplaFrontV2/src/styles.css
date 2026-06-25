@@ -11,7 +11,8 @@
   --color-dark:          #111111;
   --color-error:         #D93838;
   --color-signal:        #ed6c21;
- 
+  --color-info:          #4A7F8E;
+  
   --font-heading: 'Lora', serif;
   --font-body:    'DM Sans', sans-serif;
   --font-nav:     'Space Grotesk', sans-serif;

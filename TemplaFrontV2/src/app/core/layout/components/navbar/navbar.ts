@@ -104,12 +104,4 @@ export class NavbarComponent implements OnInit, OnDestroy {
   protected clearAll(): void {
     this.notificationService.clearAll();
   }
-
-  protected navigateToProfile(): void {
-    this.router.navigate(['/perfil']);
-  }
-
-  protected onBack(): void {
-    this.router.navigate(['/principal']);
-  }
 }

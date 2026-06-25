@@ -13,5 +13,10 @@
 .DS_Store
 Thumbs.db
 
+# --- AI / Tooling cache ---
+.atl/cache/
+.atl/*.cache.*
+.atl/*.cache.json
+
 # --- Application config with secrets ---
 BackEnd/TemplaRestaurant/src/main/resources/application.properties

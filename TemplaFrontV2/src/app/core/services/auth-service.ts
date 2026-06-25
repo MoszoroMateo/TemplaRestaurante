@@ -22,19 +22,27 @@ export class AuthService {
     this.router.navigate(['/principal']);
   }
 
-  getUserRole(): RolUsuario | null {
+  /** Parse JWT payload from stored token */
+  private getPayload(): JwtPayload | null {
     const token = localStorage.getItem('token');
     if (!token) return null;
-    const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-    return payload.rol;
+    try {
+      return JSON.parse(atob(token.split('.')[1])) as JwtPayload;
+    } catch {
+      return null;
+    }
+  }
+
+  getUserRole(): RolUsuario | null {
+    return this.getPayload()?.rol ?? null;
   }
 
   getUsername(): string {
-    const token = localStorage.getItem('token');
-    if (!token) return 'Usuario';
+    return this.getPayload()?.sub ?? 'Usuario';
+  }
 
-    const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-    return payload.sub;
+  getUserId(): number {
+    return this.getPayload()?.userId ?? 0;
   }
 
   forgotPassword(request: ForgotPasswordRequest): Observable<string>{

@@ -1,0 +1,14 @@
+<div class="flex border border-muted/20 divide-x divide-muted/20 rounded-none">
+  @for (opt of options(); track opt.value) {
+    <label class="cursor-pointer px-4 py-2 font-nav text-[11px] font-semibold tracking-[0.1em] uppercase transition-colors duration-150 select-none"
+      [class.bg-primary]="selected() === opt.value"
+      [class.text-white]="selected() === opt.value"
+      [class.text-muted]="selected() !== opt.value"
+      [class.hover:text-deep]="selected() !== opt.value">
+      <input type="radio" [name]="name()" [value]="opt.value" class="hidden"
+        [checked]="selected() === opt.value"
+        (change)="selected.set(opt.value); selectionChange.emit(opt.value)" />
+      {{ opt.label }}
+    </label>
+  }
+</div>
