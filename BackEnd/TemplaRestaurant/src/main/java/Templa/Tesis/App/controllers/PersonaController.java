@@ -81,5 +81,11 @@ public class PersonaController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarFisicamente(@PathVariable Integer id) {
+        personaService.eliminarFisicamente(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

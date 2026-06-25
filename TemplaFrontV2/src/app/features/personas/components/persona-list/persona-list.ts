@@ -189,26 +189,75 @@ export class PersonaListComponent implements OnInit {
     this.editPersona.set(undefined);
   }
 
-  confirmDelete(persona: Persona): void {
+  confirmActivate(persona: Persona): void {
     Swal.fire({
-      title: 'Are you sure?',
-      text: `Delete ${persona.nombre} ${persona.apellido}?`,
+      title: '¿Reactivar persona?',
+      text: `${persona.nombre} ${persona.apellido} volverá a estar activo.`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#D93838',
-      cancelButtonColor: '#828C85',
-      confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#2D6A4F',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Sí, reactivar',
       reverseButtons: true,
     }).then(result => {
       if (result.isConfirmed && persona.id) {
-        this.personaService.eliminar(persona.id).subscribe({
+        this.personaService.activar(persona).subscribe({
           next: () => {
-            this.personaService.filtrar({ page: 0 });
-            Swal.fire({ icon: 'success', title: 'Deleted', text: 'Person deleted', timer: 1500, showConfirmButton: false });
+            this.personaService.filtrar({ page: this.pageInfo()?.number ?? 0 });
+            Swal.fire({ icon: 'success', title: 'Reactivado', text: 'Persona reactivada correctamente', timer: 1500, showConfirmButton: false });
           },
           error: () => {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Could not delete person' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo reactivar la persona' });
+          },
+        });
+      }
+    });
+  }
+
+  confirmDeactivate(persona: Persona): void {
+    Swal.fire({
+      title: '¿Desactivar persona?',
+      text: `${persona.nombre} ${persona.apellido} quedará inactivo.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#2D6A4F',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Sí, desactivar',
+      reverseButtons: true,
+    }).then(result => {
+      if (result.isConfirmed && persona.id) {
+        this.personaService.desactivar(persona).subscribe({
+          next: () => {
+            this.personaService.filtrar({ page: this.pageInfo()?.number ?? 0 });
+            Swal.fire({ icon: 'success', title: 'Desactivado', text: 'Persona desactivada correctamente', timer: 1500, showConfirmButton: false });
+          },
+          error: () => {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo desactivar la persona' });
+          },
+        });
+      }
+    });
+  }
+
+  confirmDelete(persona: Persona): void {
+    Swal.fire({
+      title: '¿Eliminar persona?',
+      text: `Esto eliminará permanentemente a ${persona.nombre} ${persona.apellido}. No se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#D93838',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Sí, eliminar',
+      reverseButtons: true,
+    }).then(result => {
+      if (result.isConfirmed && persona.id) {
+        this.personaService.eliminarPermanente(persona.id).subscribe({
+          next: () => {
+            this.personaService.filtrar({ page: 0 });
+            Swal.fire({ icon: 'success', title: 'Eliminado', text: 'Persona eliminada permanentemente', timer: 1500, showConfirmButton: false });
+          },
+          error: () => {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo eliminar la persona' });
           },
         });
       }

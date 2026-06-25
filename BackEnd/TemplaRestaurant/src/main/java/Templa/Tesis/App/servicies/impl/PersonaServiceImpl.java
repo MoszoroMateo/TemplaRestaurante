@@ -193,7 +193,7 @@ public class PersonaServiceImpl implements IPersonaService {
         PersonaEntity existe = personaRepository.findById(personaActualizada.getId()).orElseThrow(()->new ResponseStatusException(HttpStatus.CONFLICT, "La Persona que desea modificar no existe."));
 
         try {
-            existe = modelMapper.map(personaActualizada, PersonaEntity.class);
+            modelMapper.map(personaActualizada, existe);
             PersonaEntity guardado = personaRepository.save(existe);
             return modelMapper.map(guardado, PersonaDto.class);
         }catch(Exception e){
@@ -229,6 +229,30 @@ public class PersonaServiceImpl implements IPersonaService {
         }
         catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al dar de baja la Persona");
+        }
+    }
+
+    /**
+     * Elimina físicamente una persona de la base de datos.
+     * Solo permite eliminar personas que ya están dadas de baja (fechaBaja != null).
+     *
+     * @param id Identificador único de la persona a eliminar.
+     * @throws ResponseStatusException con código 404 si no existe una persona con el ID proporcionado.
+     * @throws ResponseStatusException con código 400 si la persona no está dada de baja.
+     * @throws ResponseStatusException con código 500 si ocurre un error interno durante la operación.
+     */
+    @Override
+    public void eliminarFisicamente(Integer id) {
+        PersonaEntity existe = personaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la Persona"));
+        if (existe.getFechaBaja() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se puede eliminar una persona activa. Désela de baja primero.");
+        }
+        try {
+            personaRepository.delete(existe);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al eliminar la Persona");
         }
     }
 

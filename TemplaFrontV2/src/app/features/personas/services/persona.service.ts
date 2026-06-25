@@ -96,4 +96,24 @@ export class PersonaService {
     return this.http.delete<void>(`${this.API_URL}/baja/${id}`)
       .pipe(tap({ finalize: () => this.loadingState.set(false) }));
   }
+
+  activar(persona: Persona): Observable<Persona> {
+    this.loadingState.set(true);
+    const body = { ...persona, fechaBaja: null };
+    return this.http.put<Persona>(`${this.API_URL}/actualizar`, body)
+      .pipe(tap({ finalize: () => this.loadingState.set(false) }));
+  }
+
+  desactivar(persona: Persona): Observable<Persona> {
+    this.loadingState.set(true);
+    const body = { ...persona, fechaBaja: new Date().toISOString() };
+    return this.http.put<Persona>(`${this.API_URL}/actualizar`, body)
+      .pipe(tap({ finalize: () => this.loadingState.set(false) }));
+  }
+
+  eliminarPermanente(id: number): Observable<void> {
+    this.loadingState.set(true);
+    return this.http.delete<void>(`${this.API_URL}/${id}`)
+      .pipe(tap({ finalize: () => this.loadingState.set(false) }));
+  }
 }

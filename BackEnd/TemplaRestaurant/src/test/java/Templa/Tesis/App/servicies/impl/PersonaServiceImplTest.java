@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -156,21 +158,28 @@ class PersonaServiceImplTest {
         assertThrows(ResponseStatusException.class, ()-> personaService.insertarPersona(nuevaP));
     }
 
-    @DisplayName("Actualizacion Exitosa")
+    @DisplayName("Actualizacion Exitosa — merge preserves fechaAlta/userAlta")
     @Test
     void actualizarPersona() {
         PersonaDto editar = new PersonaDto(Integer.valueOf(1),"Mateo","Moszoro","mateomosz@hotmail.com","3516811074",43998130,TipoPersona.PERSONAL,null);
-        PersonaEntity existe = new PersonaEntity(Integer.valueOf(1),"Wateo","Woszoro","mateomosz@gmail.com","12313",43998130, TipoPersona.PERSONAL,null,null,null,null);
+        LocalDateTime fechaAltaOriginal = LocalDateTime.of(2024, 1, 15, 10, 30, 0);
+        PersonaEntity existe = new PersonaEntity(Integer.valueOf(1),"Wateo","Woszoro","mateomosz@gmail.com","12313",43998130, TipoPersona.PERSONAL, fechaAltaOriginal, 5, null, null);
         ArgumentCaptor<PersonaEntity> captor = ArgumentCaptor.forClass(PersonaEntity.class);
 
-        when(personaRepository.findByDni(editar.getDni())).thenReturn(existe);
+        when(personaRepository.findById(editar.getId())).thenReturn(Optional.of(existe));
         when(personaRepository.save(any(PersonaEntity.class))).thenReturn(existe);
 
         personaService.actualizarPersona(editar);
         verify(personaRepository).save(captor.capture());
 
-        assertNotEquals(existe.getNombre(), captor.getValue().getNombre());
-        assertEquals(editar.getApellido(), captor.getValue().getApellido());
+        PersonaEntity saved = captor.getValue();
+        // DTO fields must be updated
+        assertEquals("Mateo", saved.getNombre());
+        assertEquals("Moszoro", saved.getApellido());
+        assertEquals("mateomosz@hotmail.com", saved.getEmail());
+        // Fields NOT in the DTO must be preserved
+        assertEquals(fechaAltaOriginal, saved.getFechaAlta());
+        assertEquals(Integer.valueOf(5), saved.getUserAlta());
     }
 
     @DisplayName("Actualizacion No Exitosa")
@@ -220,5 +229,50 @@ class PersonaServiceImplTest {
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
         assertEquals("No existe la Persona", ex.getReason());
+    }
+
+
+    // ──────────────────────────────────────────────
+    // T2: eliminarFisicamente — hard delete
+    // ──────────────────────────────────────────────
+
+    @DisplayName("Eliminacion fisica exitosa — persona con fechaBaja seteada")
+    @Test
+    void eliminarFisicamente_Success() {
+        Integer id = 1;
+        PersonaEntity entity = new PersonaEntity(1, "Mateo", "Moszoro", "m@m.com", "123",
+                43998130, TipoPersona.PERSONAL, LocalDateTime.now(), 1, LocalDateTime.now(), 1);
+
+        when(personaRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        personaService.eliminarFisicamente(id);
+
+        verify(personaRepository).delete(entity);
+    }
+
+    @DisplayName("Eliminacion fisica rechazada — persona activa sin fechaBaja")
+    @Test
+    void eliminarFisicamente_ActivePerson_Throws400() {
+        Integer id = 1;
+        PersonaEntity entity = new PersonaEntity(1, "Mateo", "Moszoro", "m@m.com", "123",
+                43998130, TipoPersona.PERSONAL, LocalDateTime.now(), 1, null, null);
+
+        when(personaRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> personaService.eliminarFisicamente(id));
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+    }
+
+    @DisplayName("Eliminacion fisica rechazada — persona no existe")
+    @Test
+    void eliminarFisicamente_NotFound_Throws404() {
+        Integer id = 999;
+
+        when(personaRepository.findById(id)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> personaService.eliminarFisicamente(id));
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }
 }

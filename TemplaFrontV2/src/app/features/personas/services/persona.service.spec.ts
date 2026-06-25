@@ -164,4 +164,59 @@ describe('PersonaService', () => {
 
     expect(completed).toBe(true);
   });
+
+  // ── activar ──
+
+  it('should activate a persona via PUT with fechaBaja=null', () => {
+    const persona: Persona = {
+      id: 1, nombre: 'Mateo', apellido: 'Moszoro',
+      email: 'm@m.com', telefono: '123', dni: 43998130,
+      tipoPersona: TipoPersona.PERSONAL, fechaBaja: '2026-01-01T00:00:00.000Z',
+    };
+    const expected = { ...persona, fechaBaja: null };
+    let result: Persona | undefined;
+
+    service.activar(persona).subscribe(r => result = r);
+
+    const req = httpMock.expectOne('http://localhost:8081/api/persona/actualizar');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body.fechaBaja).toBeNull();
+    req.flush(expected);
+
+    expect(result?.fechaBaja).toBeNull();
+  });
+
+  // ── desactivar ──
+
+  it('should deactivate a persona via PUT with fechaBaja set', () => {
+    const persona: Persona = {
+      id: 1, nombre: 'Mateo', apellido: 'Moszoro',
+      email: 'm@m.com', telefono: '123', dni: 43998130,
+      tipoPersona: TipoPersona.PERSONAL, fechaBaja: null,
+    };
+    let result: Persona | undefined;
+
+    service.desactivar(persona).subscribe(r => result = r);
+
+    const req = httpMock.expectOne('http://localhost:8081/api/persona/actualizar');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body.fechaBaja).toBeTruthy();
+    expect(typeof req.request.body.fechaBaja).toBe('string');
+    req.flush({ ...persona, fechaBaja: req.request.body.fechaBaja });
+
+    expect(result?.fechaBaja).toBeTruthy();
+  });
+
+  // ── eliminarPermanente ──
+
+  it('should permanently delete a persona via DELETE /{id}', () => {
+    let completed = false;
+    service.eliminarPermanente(1).subscribe(() => completed = true);
+
+    const req = httpMock.expectOne('http://localhost:8081/api/persona/1');
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+
+    expect(completed).toBe(true);
+  });
 });
