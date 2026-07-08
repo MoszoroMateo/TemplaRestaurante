@@ -7,6 +7,7 @@ import { UsuarioDTO, RolUsuario } from '../../models/usuario.model';
 
 describe('UsuarioListComponent', () => {
   let component: UsuarioListComponent;
+  let fixture: any;
   let service: UserService;
   let httpMock: HttpTestingController;
 
@@ -36,7 +37,7 @@ describe('UsuarioListComponent', () => {
   });
 
   function createComponent(): void {
-    const fixture = TestBed.createComponent(UsuarioListComponent);
+    fixture = TestBed.createComponent(UsuarioListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     // Flush the initial loadUsuarios call
@@ -54,20 +55,20 @@ describe('UsuarioListComponent', () => {
 
   it('should render stats bar with correct computed values', () => {
     createComponent();
-    const stats = component.stats();
+    const stats = (component as any).stats();
     expect(stats.total).toBe(5);
     expect(stats.administradores).toBe(1);
-    expect(stats.service).toBe(2); // MOZO + ENCARGADO
-    expect(stats.kitchen).toBe(2); // COCINA × 2
+    expect(stats.mozo).toBe(1);
+    expect(stats.cocina).toBe(2);
   });
 
   it('should update stats reactively when filters change', () => {
     createComponent();
     service.filtrar({ rol: RolUsuario.COCINA });
-    const stats = component.stats();
+    const stats = (component as any).stats();
     expect(stats.total).toBe(2);
     expect(stats.administradores).toBe(0);
-    expect(stats.kitchen).toBe(2);
+    expect(stats.cocina).toBe(2);
   });
 
   // ── Modal state ──
@@ -75,31 +76,31 @@ describe('UsuarioListComponent', () => {
   it('should open modal in create mode', () => {
     createComponent();
     component.openNewUserModal();
-    expect(component.modalOpen()).toBe(true);
-    expect(component.editUser()).toBeUndefined();
+    expect((component as any).modalOpen()).toBe(true);
+    expect((component as any).editUser()).toBeUndefined();
   });
 
   it('should open modal in edit mode with user data', () => {
     createComponent();
     component.openEditUserModal(mockUsers[0]);
-    expect(component.modalOpen()).toBe(true);
-    expect(component.editUser()).toEqual(mockUsers[0]);
+    expect((component as any).modalOpen()).toBe(true);
+    expect((component as any).editUser()).toEqual(mockUsers[0]);
   });
 
   it('should close modal and reset editUser', () => {
     createComponent();
     component.openEditUserModal(mockUsers[0]);
     component.closeModal();
-    expect(component.modalOpen()).toBe(false);
-    expect(component.editUser()).toBeUndefined();
+    expect((component as any).modalOpen()).toBe(false);
+    expect((component as any).editUser()).toBeUndefined();
   });
 
   // ── Search (instant, like Personas) ──
 
   it('should apply filter immediately on search change', () => {
     createComponent();
-    const filtrarSpy = spyOn(service, 'filtrar');
-    component.busqueda = 'admin';
+    const filtrarSpy = vi.spyOn(service, 'filtrar');
+    (component as any).busqueda = 'admin';
     component.onBusquedaChange();
     expect(filtrarSpy).toHaveBeenCalledWith({ busqueda: 'admin' });
   });
@@ -108,14 +109,14 @@ describe('UsuarioListComponent', () => {
 
   it('should apply filter immediately on tipoFilter change', () => {
     createComponent();
-    const filtrarSpy = spyOn(service, 'filtrar');
+    const filtrarSpy = vi.spyOn(service, 'filtrar');
     component.onTipoFilterChange(RolUsuario.COCINA);
     expect(filtrarSpy).toHaveBeenCalledWith({ rol: RolUsuario.COCINA });
   });
 
   it('should apply filter immediately on estadoFilter change', () => {
     createComponent();
-    const filtrarSpy = spyOn(service, 'filtrar');
+    const filtrarSpy = vi.spyOn(service, 'filtrar');
     component.onEstadoFilterChange('activos');
     expect(filtrarSpy).toHaveBeenCalledWith({ activo: true });
   });
@@ -136,7 +137,7 @@ describe('UsuarioListComponent', () => {
 
   it('should call irAPagina when page changes', () => {
     createComponent();
-    const irAPaginaSpy = spyOn(service, 'irAPagina');
+    const irAPaginaSpy = vi.spyOn(service, 'irAPagina');
     component.irAPagina(2);
     expect(irAPaginaSpy).toHaveBeenCalledWith(2);
   });

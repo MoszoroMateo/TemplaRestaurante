@@ -4,6 +4,7 @@ import Templa.Tesis.App.Enums.TipoProducto;
 import Templa.Tesis.App.Enums.UnidadMedida;
 import Templa.Tesis.App.dtos.PostProductoDTO;
 import Templa.Tesis.App.dtos.ProductoDTO;
+import Templa.Tesis.App.dtos.ProductoStatsDTO;
 import Templa.Tesis.App.dtos.ReporteStockBajoDTO;
 import Templa.Tesis.App.entities.ProductoEntity;
 import Templa.Tesis.App.repositories.ProductoRepository;
@@ -23,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.toIntExact;
 
 @Service
 @RequiredArgsConstructor
@@ -339,8 +342,48 @@ public class ProductoServiceImpl implements IProductoService {
                         (Double) resultado[3],              // stockActual
                         (Double) resultado[4],              // stockMinimo
                         Double.valueOf(((Double) resultado[4]) - ((Double) resultado[3])), // cantidad faltante
-                        (Boolean) resultado[5]              // activo ← NUEVO
+                        (Boolean) resultado[5]              // activo
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductoStatsDTO obtenerStats() {
+        List<Object[]> rows = productoRepository.findStats();
+        if (rows == null || rows.isEmpty()) {
+            return ProductoStatsDTO.builder()
+                    .total(0).activos(0).inactivos(0)
+                    .insumos(0).acompanantes(0).bebidas(0)
+                    .stockCritico(0).stockBajo(0).stockSaludable(0)
+                    .valorInventario(0.0)
+                    .build();
+        }
+        Object[] row = rows.get(0);
+        return ProductoStatsDTO.builder()
+                .total(toLong(row[0]))
+                .activos(toLong(row[1]))
+                .inactivos(toLong(row[2]))
+                .insumos(toLong(row[3]))
+                .acompanantes(toLong(row[4]))
+                .bebidas(toLong(row[5]))
+                .stockCritico(toLong(row[6]))
+                .stockBajo(toLong(row[7]))
+                .stockSaludable(toLong(row[8]))
+                .valorInventario(toDouble(row[9]))
+                .build();
+    }
+
+    /** Safely cast Object to long — handles Long, Integer, and null */
+    private long toLong(Object o) {
+        if (o == null) return 0L;
+        if (o instanceof Number) return ((Number) o).longValue();
+        return Long.parseLong(o.toString());
+    }
+
+    /** Safely cast Object to double — handles Double, BigDecimal, and null */
+    private double toDouble(Object o) {
+        if (o == null) return 0.0;
+        if (o instanceof Number) return ((Number) o).doubleValue();
+        return Double.parseDouble(o.toString());
     }
 }

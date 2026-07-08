@@ -4,6 +4,7 @@ import Templa.Tesis.App.Enums.TipoProducto;
 import Templa.Tesis.App.dtos.GetProductosFiltroDTO;
 import Templa.Tesis.App.dtos.PostProductoDTO;
 import Templa.Tesis.App.dtos.ProductoDTO;
+import Templa.Tesis.App.dtos.ProductoStatsDTO;
 import Templa.Tesis.App.servicies.IProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -66,6 +67,12 @@ public class ProductoController {
         return ResponseEntity.ok(
                 productoService.traerProductos(page, size, filtros.getBuscar(), tipo, activo)
         );
+    }
+
+    // ✅ KPIs globales del inventario
+    @GetMapping("/stats")
+    public ResponseEntity<ProductoStatsDTO> obtenerStats() {
+        return ResponseEntity.ok(productoService.obtenerStats());
     }
 
     // ✅ Traer solo insumos paginados

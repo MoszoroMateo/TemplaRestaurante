@@ -22,7 +22,7 @@ export const routes: Routes = [
 
       { path: 'personas', loadChildren: () => import('./features/personas/personas.routes').then(m => m.PERSONA_ROUTES) },
       { path: 'usuarios', loadChildren: () => import('./features/usuarios/usuarios.routes').then(m => m.USUARIO_ROUTES) },
-      // { path: 'productos',  component: ProductosComponent,  canActivate: [RoleGuard], data: { permission: 'canViewProductos' } },
+      { path: 'productos', loadChildren: () => import('./features/productos/productos.routes').then(m => m.PRODUCTO_ROUTES) },
       // { path: 'platos',     component: PlatosComponent,     canActivate: [RoleGuard], data: { permission: 'canViewPlatos' } },
       // { path: 'menu',       component: MenuComponent,       canActivate: [RoleGuard], data: { permission: 'canViewMenu' } },
       // { path: 'mesas',      component: MesasComponent,      canActivate: [RoleGuard], data: { permission: 'canViewMesas' } },

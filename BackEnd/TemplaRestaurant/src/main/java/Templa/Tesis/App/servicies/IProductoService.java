@@ -22,4 +22,5 @@ public interface IProductoService {
 
     //Reporte
     List<ReporteStockBajoDTO> obtenerProductosStockBajo();
+    Templa.Tesis.App.dtos.ProductoStatsDTO obtenerStats();
 }

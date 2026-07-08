@@ -35,22 +35,22 @@ describe('UsuarioModalComponent', () => {
 
   it('should create the form with required controls', () => {
     const { component } = createComponent();
-    expect(component.form.contains('username')).toBe(true);
-    expect(component.form.contains('password')).toBe(true);
-    expect(component.form.contains('rol')).toBe(true);
-    expect(component.form.contains('personaDni')).toBe(true);
+    expect((component as any).form.contains('username')).toBe(true);
+    expect((component as any).form.contains('password')).toBe(true);
+    expect((component as any).form.contains('rol')).toBe(true);
+    expect((component as any).form.contains('personaDni')).toBe(true);
   });
 
   it('should require username and rol always', () => {
     const { component } = createComponent();
-    const usernameCtrl = component.form.get('username');
+    const usernameCtrl = (component as any).form.get('username');
     usernameCtrl?.setValue('');
     expect(usernameCtrl?.valid).toBe(false);
 
     usernameCtrl?.setValue('admin');
     expect(usernameCtrl?.valid).toBe(true);
 
-    const rolCtrl = component.form.get('rol');
+    const rolCtrl = (component as any).form.get('rol');
     expect(rolCtrl?.valid).toBe(false); // rol is required
   });
 
@@ -58,7 +58,7 @@ describe('UsuarioModalComponent', () => {
 
   it('should require password on create mode', () => {
     const { component } = createComponent(false); // create mode
-    const passwordCtrl = component.form.get('password');
+    const passwordCtrl = (component as any).form.get('password');
     passwordCtrl?.setValue('');
     expect(passwordCtrl?.valid).toBe(false);
 
@@ -72,7 +72,7 @@ describe('UsuarioModalComponent', () => {
       activo: true, personaNombre: 'Admin',
     };
     const { component } = createComponent(true, userData);
-    const passwordCtrl = component.form.get('password');
+    const passwordCtrl = (component as any).form.get('password');
     expect(passwordCtrl?.valid).toBe(true); // empty is valid in edit mode
   });
 
@@ -83,8 +83,8 @@ describe('UsuarioModalComponent', () => {
     };
     const { component } = createComponent(true, userData);
 
-    expect(component.form.get('username')?.value).toBe('admin');
-    expect(component.form.get('rol')?.value).toBe(RolUsuario.ADMINISTRADOR);
+    expect((component as any).form.get('username')?.value).toBe('admin');
+    expect((component as any).form.get('rol')?.value).toBe(RolUsuario.ADMINISTRADOR);
   });
 
   // ── Submit ──
@@ -94,14 +94,14 @@ describe('UsuarioModalComponent', () => {
     let emitted: any = null;
     component.save.subscribe(e => emitted = e);
 
-    component.form.patchValue({
+    (component as any).form.patchValue({
       username: 'newuser',
       password: 'pass123',
       rol: RolUsuario.MOZO,
       personaDni: 43998130,
     });
 
-    component.onSubmit();
+    (component as any).onSubmit();
 
     expect(emitted).toBeTruthy();
     expect(emitted.username).toBe('newuser');
@@ -119,12 +119,12 @@ describe('UsuarioModalComponent', () => {
     let emitted: any = null;
     component.save.subscribe(e => emitted = e);
 
-    component.form.patchValue({
+    (component as any).form.patchValue({
       username: 'admin-updated',
       rol: RolUsuario.ENCARGADO,
     });
 
-    component.onSubmit();
+    (component as any).onSubmit();
 
     expect(emitted).toBeTruthy();
     expect(emitted.username).toBe('admin-updated');
@@ -138,7 +138,7 @@ describe('UsuarioModalComponent', () => {
     let emitted = false;
     component.save.subscribe(() => emitted = true);
 
-    component.onSubmit(); // form is empty/invalid
+    (component as any).onSubmit(); // form is empty/invalid
     expect(emitted).toBe(false);
   });
 
@@ -149,7 +149,7 @@ describe('UsuarioModalComponent', () => {
     let emitted = false;
     component.cancel.subscribe(() => emitted = true);
 
-    component.onCancel();
+    (component as any).onCancel();
     expect(emitted).toBe(true);
   });
 

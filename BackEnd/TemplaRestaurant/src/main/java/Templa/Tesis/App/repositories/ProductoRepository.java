@@ -27,4 +27,18 @@ public interface ProductoRepository extends JpaRepository<ProductoEntity,Integer
             "ORDER BY p.activo DESC, (p.stockMinimo - p.stockActual) DESC")
     List<Object[]> findProductosStockBajo();
 
+    @Query("SELECT " +
+            "COUNT(p), " +
+            "SUM(CASE WHEN p.activo = true THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.activo = false THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.tipo = 'INSUMO' THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.tipo = 'ACOMPAÑANTE' THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.tipo = 'BEBIDA' THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.stockActual <= p.stockMinimo / 2 THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.stockActual <= p.stockMinimo THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.stockActual > p.stockMinimo THEN 1 ELSE 0 END), " +
+            "COALESCE(SUM(p.stockActual * p.precio), 0) " +
+            "FROM ProductoEntity p")
+    List<Object[]> findStats();
+
 }
