@@ -13,6 +13,8 @@ export class PersonaModalComponent implements OnInit {
   // ── Inputs ──
   isEditMode = input(false);
   personaData = input<Persona | undefined>();
+  saving = input(false);
+  apiError = input<string | null>(null);
 
   // ── Outputs ──
   save = output<Persona>();
@@ -20,11 +22,16 @@ export class PersonaModalComponent implements OnInit {
 
   // ── Form ──
   protected form = new FormGroup({
-    nombre: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    apellido: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    dni: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\d+$/)] }),
-    email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-    telefono: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    nombre: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(100)] }),
+    apellido: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(100)] }),
+    dni: new FormControl('', { nonNullable: true, validators: [
+      Validators.required,
+      Validators.pattern(/^\d+$/),
+      Validators.minLength(6),
+      Validators.maxLength(10),
+    ]}),
+    email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email, Validators.maxLength(255)] }),
+    telefono: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(20)] }),
     tipoPersona: new FormControl<TipoPersona>(TipoPersona.PERSONAL, { nonNullable: true, validators: [Validators.required] }),
   });
 
@@ -45,8 +52,22 @@ export class PersonaModalComponent implements OnInit {
     }
   }
 
+  /** Get validation error message for a field */
+  protected fieldError(field: string): string | null {
+    const control = this.form.get(field);
+    if (!control || !control.errors || !control.touched) return null;
+
+    const err = control.errors;
+    if (err['required']) return 'This field is required.';
+    if (err['pattern']) return 'Only numbers are allowed.';
+    if (err['email']) return 'Enter a valid email address.';
+    if (err['minlength']) return `Minimum ${err['minlength'].requiredLength} characters.`;
+    if (err['maxlength']) return `Maximum ${err['maxlength'].requiredLength} characters.`;
+    return null;
+  }
+
   protected onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.saving()) return;
 
     const raw = this.form.getRawValue();
     const persona: Persona = {
@@ -64,6 +85,7 @@ export class PersonaModalComponent implements OnInit {
   }
 
   protected onCancel(): void {
+    if (this.saving()) return;
     this.cancel.emit();
   }
 }

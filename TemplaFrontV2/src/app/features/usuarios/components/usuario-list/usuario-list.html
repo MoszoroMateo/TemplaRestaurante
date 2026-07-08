@@ -4,42 +4,48 @@
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div>
       <h1 class="font-heading text-2xl md:text-3xl font-medium text-deep italic tracking-tight leading-tight">
-        Staff &amp; Clients
+        Staff Users
       </h1>
       <p class="font-body text-sm text-muted mt-1">
-        Manage your team and clientele with precision.
+        Manage system access and roles for your team.
       </p>
     </div>
 
-    <!-- New Person Button — Vertical Fill Hover -->
+    <!-- New User Button -->
     <button
-      (click)="openNewPersonModal()"
+      (click)="openNewUserModal()"
       class="group relative flex items-center gap-2 h-12 px-7 bg-primary text-white font-nav text-[11px] font-semibold tracking-[0.15em] uppercase rounded-none cursor-pointer overflow-hidden shrink-0 transition-colors duration-300"
       style="--fill-color: var(--color-primary-hover, #A86742);"
     >
-      <!-- Fill effect -->
       <span
         class="absolute inset-0 bg-[var(--fill-color)] scale-y-0 origin-bottom transition-transform duration-300 ease-out group-hover:scale-y-100"
         aria-hidden="true"
       ></span>
-
       <svg class="w-4 h-4 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
-      <span class="relative z-10">New Person</span>
+      <span class="relative z-10">New User</span>
     </button>
   </div>
 
-  <!-- ══════════ TYPE STATS CARDS — only when type filter is All ══════════ -->
+  <!-- ══════════ ROLE STATS CARDS — only when role filter is All ══════════ -->
   <div class="kpi-grid grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4"
        [class.kpi-grid--visible]="tipoSeleccionado() === ''">
     <div class="kpi-card bg-primary/20 border border-primary/15 border-l-2 border-l-primary shadow-sm px-5 py-3">
-      <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Staff</p>
-      <p class="font-heading text-2xl font-medium text-primary mt-0.5">{{ stats().staff }}</p>
+      <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Administrators</p>
+      <p class="font-heading text-2xl font-medium text-primary mt-0.5">{{ stats().administradores }}</p>
     </div>
     <div class="kpi-card bg-info/20 border border-info/15 border-l-2 border-l-info shadow-sm px-5 py-3">
-      <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Clients</p>
-      <p class="font-heading text-2xl font-medium text-info mt-0.5">{{ stats().clients }}</p>
+      <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Waiters</p>
+      <p class="font-heading text-2xl font-medium text-info mt-0.5">{{ stats().mozo }}</p>
+    </div>
+    <div class="kpi-card bg-signal/20 border border-signal/15 border-l-2 border-l-signal shadow-sm px-5 py-3">
+      <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Kitchen</p>
+      <p class="font-heading text-2xl font-medium text-signal mt-0.5">{{ stats().cocina }}</p>
+    </div>
+    <div class="kpi-card bg-warning/20 border border-warning/15 border-l-2 border-l-warning shadow-sm px-5 py-3">
+      <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Managers</p>
+      <p class="font-heading text-2xl font-medium text-warning mt-0.5">{{ stats().encargado }}</p>
     </div>
   </div>
 
@@ -51,12 +57,12 @@
     </div>
 
     <div class="kpi-card bg-accent/20 border border-accent/15 border-l-2 border-l-accent shadow-sm px-5 py-3"
-         [class.kpi-card--hidden]="estadoSeleccionado() !== 'TODOS'">
+         [class.kpi-card--hidden]="estadoSeleccionado() !== 'todos'">
       <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Active</p>
       <p class="font-heading text-2xl font-medium text-accent mt-0.5">{{ stats().activos }}</p>
     </div>
     <div class="kpi-card bg-error/20 border border-error/15 border-l-2 border-l-error shadow-sm px-5 py-3"
-         [class.kpi-card--hidden]="estadoSeleccionado() !== 'TODOS'">
+         [class.kpi-card--hidden]="estadoSeleccionado() !== 'todos'">
       <p class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted">Inactive</p>
       <p class="font-heading text-2xl font-medium text-error mt-0.5">{{ stats().inactivos }}</p>
     </div>
@@ -66,22 +72,20 @@
   <div class="relative bg-surface/60 backdrop-blur-md border border-white/20 border-t-2 border-t-primary/30 shadow-sm">
     <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between px-7 py-5">
 
-      <!-- Search — Animated Focus Indicator -->
+      <!-- Search -->
       <div class="relative w-full md:w-80">
-        <label for="search" class="sr-only">Search people</label>
+        <label for="search" class="sr-only">Search users</label>
         <input
           type="text"
           id="search"
-          placeholder="Search person..."
+          placeholder="Search user..."
           class="peer w-full h-12 bg-white/60 backdrop-blur-sm border border-white/30 pl-11 pr-4 font-body text-sm text-deep outline-none placeholder:text-muted/60 transition-all duration-300 rounded-none"
           [(ngModel)]="busqueda"
           (input)="onBusquedaChange()"
         />
-        <!-- Search icon -->
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted/50 pointer-events-none transition-opacity duration-200 peer-focus:opacity-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
-        <!-- Animated focus bar -->
         <span class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 ease-out peer-focus:w-full peer-focus:left-0" aria-hidden="true"></span>
       </div>
 
@@ -90,10 +94,10 @@
         <span class="font-nav text-[10px] font-semibold tracking-[0.15em] uppercase text-muted/70">Filter by:</span>
 
         <app-filter-group
-          [options]="tipoFilterOptions"
-          name="tipoFilter"
+          [options]="rolFilterOptions"
+          name="rolFilter"
           [(selected)]="tipoSeleccionado"
-          (selectionChange)="onFilterChange()"
+          (selectionChange)="onTipoFilterChange($event)"
           class="bg-white/50 backdrop-blur-sm border border-white/30"
         />
 
@@ -101,7 +105,7 @@
           [options]="estadoFilterOptions"
           name="estadoFilter"
           [(selected)]="estadoSeleccionado"
-          (selectionChange)="onFilterChange()"
+          (selectionChange)="onEstadoFilterChange($event)"
           class="bg-white/50 backdrop-blur-sm border border-white/30"
         />
       </div>
@@ -109,11 +113,11 @@
     </div>
   </div>
 
-  <!-- ══════════ TABLE CARD — Zen Mode Transparency ══════════ -->
+  <!-- ══════════ TABLE CARD ══════════ -->
   <div class="bg-white/40 backdrop-blur-md border border-white/20 shadow-sm overflow-hidden">
     <app-data-table
       [columns]="columns"
-      [data]="personas()"
+      [data]="usuarios()"
       [loading]="isLoading()"
       [skeleton]="isLoading()"
       [minLoadingMs]="850"
@@ -121,19 +125,19 @@
       [customValues]="customValues"
       [cellPrefixes]="cellPrefixes"
       [cellRenderers]="cellRenderers"
-      [totalItems]="pageInfo()?.totalElements ?? 0"
-      [pageSize]="pageInfo()?.size ?? 10"
-      [currentPage]="pageInfo()?.number ?? 0"
+      [totalItems]="totalElements()"
+      [pageSize]="pageSize()"
+      [currentPage]="currentPage()"
       [trackBy]="'id'"
-      emptyMessage='No people found. Click <span class=\"font-semibold text-primary\">New Person</span> to add your first team member.'
+      emptyMessage='No users found. Click <span class=\"font-semibold text-primary\">New User</span> to add your first team member.'
       (pageChange)="irAPagina($event)"
     >
-      <ng-template let-persona>
+      <ng-template let-user>
         <div class="flex items-center justify-center gap-1.5">
           <!-- Edit — always visible -->
           <button
             class="action-btn flex items-center justify-center w-9 h-9 text-muted/60 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-none cursor-pointer border-none bg-transparent"
-            (click)="openNewPersonModal(persona)"
+            (click)="openEditUserModal(user)"
             title="Edit"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -141,11 +145,11 @@
             </svg>
           </button>
 
-          <!-- Active person: show Deactivate button -->
-          @if (!persona.fechaBaja) {
+          <!-- Active user: show Deactivate button -->
+          @if (user.activo) {
             <button
               class="action-btn flex items-center justify-center w-9 h-9 text-muted/60 hover:text-signal hover:bg-signal/5 transition-all duration-200 rounded-none cursor-pointer border-none bg-transparent"
-              (click)="confirmDeactivate(persona)"
+              (click)="confirmToggleActivo(user)"
               title="Deactivate"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -154,11 +158,11 @@
             </button>
           }
 
-          <!-- Inactive person: show Activate + Delete buttons -->
-          @if (persona.fechaBaja) {
+          <!-- Inactive user: show Activate + Delete buttons -->
+          @if (!user.activo) {
             <button
               class="action-btn flex items-center justify-center w-9 h-9 text-muted/60 hover:text-accent hover:bg-accent/5 transition-all duration-200 rounded-none cursor-pointer border-none bg-transparent"
-              (click)="confirmActivate(persona)"
+              (click)="confirmToggleActivo(user)"
               title="Activate"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -168,7 +172,7 @@
 
             <button
               class="action-btn flex items-center justify-center w-9 h-9 text-muted/60 hover:text-error hover:bg-error/5 transition-all duration-200 rounded-none cursor-pointer border-none bg-transparent"
-              (click)="confirmDelete(persona)"
+              (click)="confirmDelete(user)"
               title="Delete permanently"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -185,9 +189,10 @@
 
 <!-- ══════════ MODAL ══════════ -->
 @if (modalOpen()) {
-  <app-persona-modal
-    [isEditMode]="!!editPersona()"
-    [personaData]="editPersona()"
+  <app-usuario-modal
+    [isEditMode]="!!editUser()"
+    [usuarioData]="editUser()"
+    [personas]="personasSinUsuario()"
     [saving]="saving()"
     [apiError]="apiError()"
     (save)="onModalSave($event)"

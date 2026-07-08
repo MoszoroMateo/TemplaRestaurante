@@ -219,4 +219,31 @@ describe('PersonaService', () => {
 
     expect(completed).toBe(true);
   });
+
+  // ── obtenerPersonasSinUsuario ──
+
+  it('should fetch personas without user via GET /personas/sin-usuario', () => {
+    const dummyPage: Page<Persona> = {
+      content: [
+        {
+          id: 10, nombre: 'Libre', apellido: 'Person',
+          email: 'libre@test.com', telefono: '111', dni: 11111111,
+          tipoPersona: TipoPersona.PERSONAL, fechaBaja: null,
+        },
+      ],
+      totalElements: 1, totalPages: 1, size: 1000,
+      number: 0, first: true, last: true, numberOfElements: 1,
+    };
+
+    let result: Persona[] | undefined;
+    service.obtenerPersonasSinUsuario().subscribe(r => result = r);
+
+    const req = httpMock.expectOne('http://localhost:8081/api/persona/personas/sin-usuario?page=0&size=1000');
+    expect(req.request.method).toBe('GET');
+    req.flush(dummyPage);
+
+    expect(result).toBeDefined();
+    expect(result!.length).toBe(1);
+    expect(result![0].nombre).toBe('Libre');
+  });
 });

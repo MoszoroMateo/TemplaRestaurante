@@ -34,6 +34,8 @@ export class PersonaListComponent implements OnInit {
   // ── Modal state ──
   protected modalOpen = signal(false);
   protected editPersona = signal<Persona | undefined>(undefined);
+  protected saving = signal(false);
+  protected apiError = signal<string | null>(null);
 
   // ── Data-table column definitions ──
   protected readonly columns: ColumnDef[] = [
@@ -67,14 +69,12 @@ export class PersonaListComponent implements OnInit {
   // ── Stats cards — computed from current data ──
   protected readonly stats = computed(() => {
     const all = this.personas();
-    const staff = all.filter(p => p.tipoPersona === TipoPersona.PERSONAL);
-    const clients = all.filter(p => p.tipoPersona === TipoPersona.CLIENTE);
-    const inactive = all.filter(p => p.fechaBaja);
     return {
       total: all.length,
-      staffActive: staff.filter(p => !p.fechaBaja).length,
-      clientsActive: clients.filter(p => !p.fechaBaja).length,
-      inactive: inactive.length,
+      staff: all.filter(p => p.tipoPersona === TipoPersona.PERSONAL).length,
+      clients: all.filter(p => p.tipoPersona === TipoPersona.CLIENTE).length,
+      activos: all.filter(p => !p.fechaBaja).length,
+      inactivos: all.filter(p => p.fechaBaja).length,
     };
   });
 
@@ -148,22 +148,33 @@ export class PersonaListComponent implements OnInit {
   }
 
   closeModal(): void {
+    if (this.saving()) return;
     this.modalOpen.set(false);
     this.editPersona.set(undefined);
+    this.apiError.set(null);
   }
 
   onModalSave(persona: Persona): void {
-    this.modalOpen.set(false);
+    this.saving.set(true);
+    this.apiError.set(null);
+
+    const handleError = (err: any) => {
+      this.saving.set(false);
+      const msg = err?.error?.mensaje || err?.error?.message || err?.statusText || 'An unexpected error occurred. Please try again.';
+      this.apiError.set(msg);
+    };
 
     if (this.editPersona()) {
       this.personaService.actualizar(persona).subscribe({
         next: () => {
+          this.saving.set(false);
+          this.modalOpen.set(false);
+          this.editPersona.set(undefined);
+          this.apiError.set(null);
           this.personaService.filtrar({ page: this.pageInfo()?.number ?? 0 });
           Swal.fire({ icon: 'success', title: 'Updated', text: 'Person updated successfully', timer: 1500, showConfirmButton: false });
         },
-        error: () => {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Could not update person', confirmButtonColor: '#D93838' });
-        },
+        error: handleError,
       });
     } else {
       const userAlta = this.authService.getUserId();
@@ -177,16 +188,16 @@ export class PersonaListComponent implements OnInit {
         userAlta,
       }).subscribe({
         next: () => {
+          this.saving.set(false);
+          this.modalOpen.set(false);
+          this.editPersona.set(undefined);
+          this.apiError.set(null);
           this.personaService.loadPersonas();
           Swal.fire({ icon: 'success', title: 'Created', text: 'Person created successfully', timer: 1500, showConfirmButton: false });
         },
-        error: () => {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Could not create person', confirmButtonColor: '#D93838' });
-        },
+        error: handleError,
       });
     }
-
-    this.editPersona.set(undefined);
   }
 
   confirmActivate(persona: Persona): void {

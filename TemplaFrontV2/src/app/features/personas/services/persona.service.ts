@@ -1,6 +1,6 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Persona, PostPersonaDto, FiltroPersona, Page } from '../models/persona.model';
 
@@ -115,5 +115,16 @@ export class PersonaService {
     this.loadingState.set(true);
     return this.http.delete<void>(`${this.API_URL}/${id}`)
       .pipe(tap({ finalize: () => this.loadingState.set(false) }));
+  }
+
+  /** Fetch personas that have no linked user account (for usuarios modal dropdown).
+   *  Does NOT touch loadingState — called from a different feature context. */
+  obtenerPersonasSinUsuario(): Observable<Persona[]> {
+    const params = new HttpParams()
+      .set('page', '0')
+      .set('size', '1000');
+
+    return this.http.get<Page<Persona>>(`${this.API_URL}/personas/sin-usuario`, { params })
+      .pipe(map(page => page.content));
   }
 }

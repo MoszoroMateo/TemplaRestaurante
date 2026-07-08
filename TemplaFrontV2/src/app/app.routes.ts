@@ -21,7 +21,7 @@ export const routes: Routes = [
       { path: 'perfil', component: ProfileComponent },
 
       { path: 'personas', loadChildren: () => import('./features/personas/personas.routes').then(m => m.PERSONA_ROUTES) },
-      // { path: 'usuarios',   component: UsuariosComponent,   canActivate: [RoleGuard], data: { permission: 'canViewUsuarios' } },
+      { path: 'usuarios', loadChildren: () => import('./features/usuarios/usuarios.routes').then(m => m.USUARIO_ROUTES) },
       // { path: 'productos',  component: ProductosComponent,  canActivate: [RoleGuard], data: { permission: 'canViewProductos' } },
       // { path: 'platos',     component: PlatosComponent,     canActivate: [RoleGuard], data: { permission: 'canViewPlatos' } },
       // { path: 'menu',       component: MenuComponent,       canActivate: [RoleGuard], data: { permission: 'canViewMenu' } },
